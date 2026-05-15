@@ -1,0 +1,172 @@
+/* 水墨风格全局样式 */
+:root {
+  --color-ink-black: #1a1a1a;
+  --color-ink-gray: #3d3d3d;
+  --color-ink-light: #6b6b6b;
+  --color-ink-faint: #9a9a9a;
+  --color-paper: #f5f5f0;
+  --color-paper-warm: #fafaf5;
+  --color-accent: #8b7355;
+  --color-accent-light: #a68b6a;
+  --color-success: #5b8c5a;
+  --color-warning: #c9a227;
+  --color-error: #b54747;
+  
+  --font-family-chinese: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-family-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.16);
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  font-family: var(--font-family-sans);
+  background: var(--color-paper);
+  color: var(--color-ink-black);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-faint);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-light);
+}
+
+/* 水墨风格背景 */
+.ink-bg {
+  background: linear-gradient(135deg, var(--color-paper) 0%, var(--color-paper-warm) 100%);
+  min-height: 100vh;
+}
+
+/* 古典卡片样式 */
+.classic-card {
+  background: var(--color-paper-warm);
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s ease;
+}
+
+.classic-card:hover {
+  box-shadow: var(--shadow-medium);
+  border-color: rgba(139, 115, 85, 0.3);
+}
+
+/* 古典按钮 */
+.classic-btn {
+  padding: 8px 20px;
+  border: 1px solid var(--color-accent);
+  background: transparent;
+  color: var(--color-accent);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-chinese);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.classic-btn:hover {
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+.classic-btn-primary {
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+.classic-btn-primary:hover {
+  background: var(--color-accent-light);
+}
+
+/* 古典输入框 */
+.classic-input {
+  padding: 10px 14px;
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  border-radius: var(--radius-md);
+  background: var(--color-paper);
+  font-family: var(--font-family-sans);
+  transition: all 0.3s ease;
+}
+
+.classic-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
+}
+
+/* 文字样式 */
+.title-chinese {
+  font-family: var(--font-family-chinese);
+  font-weight: 600;
+  color: var(--color-ink-black);
+}
+
+.text-muted {
+  color: var(--color-ink-faint);
+}
+
+.text-small {
+  font-size: 12px;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.typing-cursor::after {
+  content: "|";
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
