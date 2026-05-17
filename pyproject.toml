@@ -1,3 +1,41 @@
+[project]
+name = "sushi-digital-human"
+version = "0.1.0"
+description = "苏轼文化数字人问答系统"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.4.0",
+    "python-dotenv>=1.0.0",
+    "langchain>=0.3.0",
+    "langchain-community>=0.3.0",
+    "langchain-core>=0.3.0",
+    "dashscope>=1.14.0",
+    "chromadb>=0.5.0",
+    "rank-bm25>=0.2.0",
+    "sentence-transformers>=2.2.0",
+    "transformers>=4.30.0",
+    "torch>=2.0.0",
+    "numpy>=1.26.0",
+    "redis>=5.0.0",
+    "httpx>=0.26.0",
+    "requests>=2.30.0",
+    "loguru>=0.7.0",
+    "jieba>=0.42.0",
+    "prometheus-client>=0.20.0",
+    "python-multipart>=0.0.9",
+]
+
+[dependency-groups]
+dev = [
+    "flake8>=7.3.0",
+    "mypy>=2.1.0",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --tb=short"
@@ -22,11 +60,3 @@ omit = ["backend/__init__.py", "backend/*/__init__.py"]
 [tool.coverage.report]
 show_missing = true
 fail_under = 80
-
-[dependency-groups]
-dev = [
-    "flake8>=7.3.0",
-    "mypy>=2.1.0",
-    "pytest>=9.0.3",
-    "pytest-cov>=7.1.0",
-]
