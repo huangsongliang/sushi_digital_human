@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sushi-digital-human.fullname" . }}
+  labels:
+    {{- include "sushi-digital-human.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "sushi-digital-human.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "sushi-digital-human.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.security.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.security.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP
+          env:
+            {{- if .Values.backend.env.DASHSCOPE_API_KEY }}
+            - name: DASHSCOPE_API_KEY
+              value: {{ .Values.backend.env.DASHSCOPE_API_KEY }}
+            {{- end }}
+            - name: EMBEDDING_MODEL
+              value: {{ .Values.backend.env.EMBEDDING_MODEL }}
+            - name: LLM_MODEL
+              value: {{ .Values.backend.env.LLM_MODEL }}
+            {{- if .Values.backend.env.MYSQL_HOST }}
+            - name: MYSQL_HOST
+              value: {{ .Values.backend.env.MYSQL_HOST }}
+            {{- end }}
+            {{- if .Values.backend.env.MYSQL_PORT }}
+            - name: MYSQL_PORT
+              value: {{ .Values.backend.env.MYSQL_PORT }}
+            {{- end }}
+            {{- if .Values.backend.env.MYSQL_USER }}
+            - name: MYSQL_USER
+              value: {{ .Values.backend.env.MYSQL_USER }}
+            {{- end }}
+            {{- if .Values.backend.env.MYSQL_PASSWORD }}
+            - name: MYSQL_PASSWORD
+              value: {{ .Values.backend.env.MYSQL_PASSWORD }}
+            {{- end }}
+            {{- if .Values.backend.env.MYSQL_DATABASE }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.backend.env.MYSQL_DATABASE }}
+            {{- end }}
+            {{- if .Values.backend.env.REDIS_URL }}
+            - name: REDIS_URL
+              value: {{ .Values.backend.env.REDIS_URL }}
+            {{- else if .Values.redis.enabled }}
+            - name: REDIS_URL
+              value: "redis://{{ include \"redis.fullname\" . }}:6379/0"
+            {{- end }}
+            {{- if .Values.redis.enabled }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "redis.fullname" . }}
+                  key: redis-password
+            {{- end }}
+            - name: DEBUG
+              value: {{ .Values.backend.env.DEBUG }}
+            - name: LOG_LEVEL
+              value: {{ .Values.backend.env.LOG_LEVEL }}
+            - name: APP_NAME
+              value: {{ .Chart.Name }}
+          {{- if .Values.backend.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.backend.livenessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.backend.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.livenessProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.backend.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.backend.readinessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.backend.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.readinessProbe.timeoutSeconds }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
