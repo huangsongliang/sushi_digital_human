@@ -11,6 +11,8 @@ export interface Message {
     distance: number
     metadata?: Record<string, any>
   }>
+  status?: 'pending' | 'processing' | 'completed' | 'failed'
+  taskId?: string
 }
 
 export interface ChatSession {
@@ -217,6 +219,103 @@ export const useChatStore = defineStore('chat', () => {
     settings.value = { ...settings.value, ...newSettings }
   }
 
+  async function sendMessageAsync(content: string): Promise<void> {
+    if (!currentSession.value) {
+      createSession()
+    }
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content,
+      timestamp: new Date()
+    }
+    currentSession.value!.messages.push(userMessage)
+
+    if (currentSession.value!.title === '新对话') {
+      currentSession.value!.title = content.substring(0, 20) + (content.length > 20 ? '...' : '')
+    }
+
+    isStreaming.value = true
+
+    const assistantMessage: Message = {
+      id: Date.now().toString(),
+      role: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      references: [],
+      status: 'processing'
+    }
+    currentSession.value!.messages.push(assistantMessage)
+
+    try {
+      const response = await fetch('/api/chat/async/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: content,
+          session_id: currentSession.value!.id,
+          use_rag: settings.value.useRag,
+          top_k: settings.value.topK
+        })
+      })
+
+      if (!response.body) {
+        throw new Error('流式响应不可用')
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder('utf-8')
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+
+        const lines = buffer.split('\n\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const dataStr = line.slice(6)
+            
+            if (!dataStr.trim()) continue
+
+            try {
+              const data = JSON.parse(dataStr)
+              
+              if (data.type === 'references') {
+                assistantMessage.references = data.data || []
+              } else if (data.type === 'chunk') {
+                assistantMessage.content += data.data || ''
+              } else if (data.type === 'done') {
+                assistantMessage.status = 'completed'
+                break
+              } else if (data.type === 'error') {
+                assistantMessage.content = `错误: ${data.data}`
+                assistantMessage.status = 'failed'
+                break
+              }
+            } catch (e) {
+              assistantMessage.content += dataStr
+            }
+            
+            currentSession.value!.messages = [...currentSession.value!.messages]
+          }
+        }
+      }
+    } catch (error) {
+      assistantMessage.content = '抱歉，请求失败。'
+      assistantMessage.status = 'failed'
+    } finally {
+      isStreaming.value = false
+    }
+  }
+
   return {
     sessions,
     currentSessionId,
@@ -229,6 +328,7 @@ export const useChatStore = defineStore('chat', () => {
     deleteSession,
     sendMessage,
     sendMessageStream,
+    sendMessageAsync,
     updateSettings
   }
 })

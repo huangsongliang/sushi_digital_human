@@ -1,25 +1,62 @@
 """RAG 链模块
 实现完整的 RAG 流程：文档获取 -> 分块 -> 检索 -> 提示词构建 -> LLM 调用
 支持同步和流式两种调用方式
+使用混合检索器（BM25 + 向量 + RRF + 重排序）提升检索质量
 """
 
 from typing import List, Dict, Any, Optional, AsyncGenerator
+import asyncio
 
-from backend.generator import get_llm
-from backend.retrieval import get_vector_store
+from backend.generator import get_llm, get_async_llm
+from backend.retrieval import get_hybrid_retriever
 from backend.prompt import default_prompts
+from backend.core.config import settings
+from backend.utils.logger import get_logger
+from backend.utils.performance import timed_operation
+
+logger = get_logger(__name__)
 
 
 class RAGChain:
-    """RAG 链实现"""
+    """RAG 链实现 - 使用混合检索"""
     
     def __init__(self):
         self.llm = get_llm()
-        self.vector_store = get_vector_store()
+        self.async_llm = get_async_llm()
+        self.hybrid_retriever = get_hybrid_retriever()
+        self.use_reranking = settings.enable_reranking
     
     def retrieve(self, query: str, top_k: int = 3) -> List[Dict]:
-        """检索相关文档"""
-        return self.vector_store.similarity_search(query, k=top_k)
+        """检索相关文档（使用混合检索）"""
+        logger.info(f"开始混合检索 - 查询: {query}")
+        
+        with timed_operation("hybrid_retrieval"):
+            results = self.hybrid_retriever.search(
+                query,
+                top_k=top_k,
+                use_bm25=True,
+                use_vector=True,
+                use_rerank=self.use_reranking
+            )
+        
+        logger.info(f"混合检索完成 - 获取到 {len(results)} 条结果")
+        return results
+    
+    async def async_retrieve(self, query: str, top_k: int = 3) -> List[Dict]:
+        """异步检索相关文档（使用混合检索，带缓存）"""
+        logger.info(f"开始异步混合检索 - 查询: {query}")
+        
+        with timed_operation("async_hybrid_retrieval"):
+            results = await self.hybrid_retriever.async_search(
+                query,
+                top_k=top_k,
+                use_bm25=True,
+                use_vector=True,
+                use_rerank=self.use_reranking
+            )
+        
+        logger.info(f"异步混合检索完成 - 获取到 {len(results)} 条结果")
+        return results
     
     def build_context(self, documents: List[Dict]) -> str:
         """构建上下文文本"""
@@ -36,8 +73,13 @@ class RAGChain:
         )
     
     def generate(self, prompt: str) -> str:
-        """调用 LLM 生成回答"""
+        """调用 LLM 生成回答（同步）"""
         response = self.llm.invoke(prompt)
+        return response.output['choices'][0]['message']['content']
+    
+    async def async_generate(self, prompt: str) -> str:
+        """异步调用 LLM 生成回答"""
+        response = await self.async_llm.invoke(prompt)
         return response.output['choices'][0]['message']['content']
     
     def run(self, query: str, top_k: int = 3, use_rag: bool = True) -> Dict[str, Any]:
@@ -65,21 +107,54 @@ class RAGChain:
             "prompt": prompt
         }
     
-    async def stream_run(self, query: str, top_k: int = 3, use_rag: bool = True) -> AsyncGenerator[str, None]:
-        """流式执行 RAG 流程"""
-        # 1. 检索阶段（同步）
+    async def async_run(self, query: str, top_k: int = 3, use_rag: bool = True) -> Dict[str, Any]:
+        """异步执行完整的 RAG 流程（使用线程池优化）"""
+        # 1. 检索阶段（异步，带缓存）
         documents = []
         context = ""
         
         if use_rag:
-            documents = self.retrieve(query, top_k=top_k)
+            documents = await self.async_retrieve(query, top_k=top_k)
             context = self.build_context(documents)
         
         # 2. 构建提示词
         prompt = self.build_prompt(query, context)
         
-        # 3. 流式生成
-        async for chunk in self.llm.stream(prompt):
+        # 3. 异步生成回答
+        answer = await self.async_generate(prompt)
+        
+        # 4. 整理结果
+        return {
+            "answer": answer,
+            "query": query,
+            "references": documents,
+            "context": context,
+            "prompt": prompt
+        }
+    
+    async def stream_run(self, query: str, top_k: int = 3, use_rag: bool = True, history: str = "") -> AsyncGenerator[str, None]:
+        """流式执行 RAG 流程（使用异步检索，带缓存）"""
+        # 1. 检索阶段（异步，带缓存）
+        documents = []
+        context = ""
+        
+        if use_rag:
+            documents = await self.async_retrieve(query, top_k=top_k)
+            context = self.build_context(documents)
+        
+        # 2. 构建提示词（支持历史对话）
+        if history:
+            prompt = default_prompts.format(
+                'multi_turn',
+                history=history,
+                question=query,
+                context=context
+            )
+        else:
+            prompt = self.build_prompt(query, context)
+        
+        # 3. 流式生成（使用异步 LLM）
+        async for chunk in self.async_llm.stream(prompt):
             yield chunk
     
     def get_references(self, query: str, top_k: int = 3) -> List[Dict]:

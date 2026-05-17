@@ -165,17 +165,25 @@ class HybridRetriever:
         self.vector_retriever = VectorRetriever(self.vector_store)
         self.reranker = Reranker()
         self._bm25_loaded = False
+        self._last_doc_count = 0
         self._use_reranking = settings.enable_reranking
+        self._cache_enabled = True
     
     def _ensure_bm25_index(self):
-        """确保 BM25 索引已构建"""
-        if not self._bm25_loaded:
-            documents = self.vector_store.get_all_documents()
+        """确保 BM25 索引已构建（支持动态更新）"""
+        documents = self.vector_store.get_all_documents()
+        current_count = len(documents)
+        
+        # 如果文档数量变化或索引未加载，重新构建
+        if not self._bm25_loaded or current_count != self._last_doc_count:
             if documents:
                 texts = [doc['content'] for doc in documents]
                 ids = [doc['id'] for doc in documents]
                 self.bm25_retriever.add_documents(texts, ids)
                 self._bm25_loaded = True
+                self._last_doc_count = current_count
+            else:
+                logger.warning("向量库中没有文档")
     
     def _rrf_fusion(self, results_list: List[List[Dict]], k: int = 60) -> List[Dict]:
         """RRF (Reciprocal Rank Fusion) 融合算法"""
@@ -208,7 +216,7 @@ class HybridRetriever:
     
     def search(self, query: str, top_k: int = 5, use_bm25: bool = True, 
                use_vector: bool = True, use_rerank: Optional[bool] = None) -> List[Dict]:
-        """混合检索
+        """混合检索（同步版本）
         
         Args:
             query: 查询文本
@@ -220,6 +228,44 @@ class HybridRetriever:
         Returns:
             检索结果列表
         """
+        return self._do_search(query, top_k, use_bm25, use_vector, use_rerank)
+    
+    async def async_search(self, query: str, top_k: int = 5, use_bm25: bool = True, 
+                           use_vector: bool = True, use_rerank: Optional[bool] = None) -> List[Dict]:
+        """混合检索（异步版本，带缓存）
+        
+        Args:
+            query: 查询文本
+            top_k: 返回结果数量
+            use_bm25: 是否使用 BM25 检索
+            use_vector: 是否使用向量检索
+            use_rerank: 是否使用重排序（None 表示使用配置设置）
+        
+        Returns:
+            检索结果列表
+        """
+        # 尝试从缓存获取
+        if self._cache_enabled:
+            from backend.memory.cache import cache_manager
+            cache_key = f"search:{query}:{top_k}:{use_bm25}:{use_vector}:{use_rerank}"
+            cached = await cache_manager.get(cache_key)
+            if cached:
+                logger.debug(f"检索缓存命中: {query[:20]}...")
+                return cached
+        
+        # 执行实际检索
+        results = self._do_search(query, top_k, use_bm25, use_vector, use_rerank)
+        
+        # 缓存结果
+        if self._cache_enabled and results:
+            from backend.memory.cache import cache_manager
+            await cache_manager.set(cache_key, results, ttl=300)  # 5分钟缓存
+        
+        return results
+    
+    def _do_search(self, query: str, top_k: int = 5, use_bm25: bool = True, 
+                   use_vector: bool = True, use_rerank: Optional[bool] = None) -> List[Dict]:
+        """执行实际混合检索"""
         if use_rerank is None:
             use_rerank = self._use_reranking
         

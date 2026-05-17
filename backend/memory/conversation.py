@@ -38,6 +38,7 @@ class ConversationMemory:
     KEY_PREFIX = "conversation:"
     DEFAULT_TTL = 86400 * 7  # 7 天过期
     MAX_HISTORY = 50  # 最大保留历史消息数
+    DEFAULT_CONTEXT_LIMIT = 20  # 默认用于上下文的消息条数
     
     def __init__(self, session_id: str):
         self.session_id = session_id

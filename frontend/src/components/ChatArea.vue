@@ -43,6 +43,11 @@
             </div>
             <div class="message-content">
               <p class="message-text">{{ message.content }}</p>
+              <div v-if="message.status && message.status !== 'completed'" class="message-status">
+                <span v-if="message.status === 'pending'" class="status-badge status-pending">排队中...</span>
+                <span v-else-if="message.status === 'processing'" class="status-badge status-processing">处理中...</span>
+                <span v-else-if="message.status === 'failed'" class="status-badge status-failed">失败</span>
+              </div>
               <div class="message-meta">
                 <span class="message-time">{{ formatTime(message.timestamp) }}</span>
               </div>
@@ -86,6 +91,10 @@
             />
             <span>使用知识库</span>
           </label>
+          <span class="mode-indicator">
+            <span class="mode-badge">异步模式</span>
+            <span class="mode-hint">发送后可继续提问</span>
+          </span>
         </div>
       </div>
     </div>
@@ -109,7 +118,9 @@ function handleSend() {
   
   const message = inputMessage.value.trim()
   inputMessage.value = ''
-  store.sendMessageStream(message)
+  
+  // 默认使用异步模式
+  store.sendMessageAsync(message)
   
   nextTick(() => {
     scrollToBottom()
@@ -439,5 +450,59 @@ watch(() => {
   width: 16px;
   height: 16px;
   accent-color: var(--color-accent);
+}
+
+.message-status {
+  margin-bottom: 8px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-pending {
+  background: rgba(255, 193, 7, 0.15);
+  color: #856404;
+}
+
+.status-processing {
+  background: rgba(33, 150, 243, 0.15);
+  color: #1565c0;
+}
+
+.status-failed {
+  background: rgba(244, 67, 54, 0.15);
+  color: #c62828;
+}
+
+.input-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.mode-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-badge {
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(33, 150, 243, 0.15);
+  color: #1565c0;
+  border-radius: var(--radius-sm);
+}
+
+.mode-hint {
+  font-size: 11px;
+  color: var(--color-ink-faint);
 }
 </style>
