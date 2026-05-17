@@ -182,7 +182,7 @@ async def generate_stream_response(
                 "data": "消息内容不能为空"
             }, ensure_ascii=False)
             yield f"data: {error_info}\n\n"
-            yield f"data: [DONE]\n\n"
+            yield "data: [DONE]\n\n"
             return
         
         # 获取对话记忆
@@ -265,14 +265,6 @@ async def chat_stream(request: ChatRequest):
 async def health_check():
     """健康检查接口"""
     return {"status": "healthy", "service": "苏轼文化数字人问答系统"}
-
-
-@router.post("/docs")
-async def add_documents(documents: List[str]):
-    """添加文档到向量库"""
-    vector_store = get_vector_store()
-    ids = vector_store.add_documents(documents)
-    return {"status": "success", "added_count": len(ids), "ids": ids}
 
 
 @router.get("/docs/count")
