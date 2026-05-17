@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-from backend.api import chat_router, ab_test_router
+from backend.api import chat_router, ab_test_router, dify_router
 from backend.core.config import settings
 from backend.database.session import async_initialize_database
 from backend.utils.rate_limiter import rate_limit_middleware, concurrency_limit_middleware
@@ -120,6 +120,7 @@ async def add_request_count_middleware(request, call_next):
 # 注册路由
 app.include_router(chat_router)
 app.include_router(ab_test_router)
+app.include_router(dify_router)
 
 # 设置全局异常处理器
 setup_exception_handlers(app)
