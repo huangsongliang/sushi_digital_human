@@ -234,8 +234,8 @@ class ABTestManager:
         if result.feedback is not None:
             variant.metrics["total_score"] += result.feedback
             variant.metrics["avg_score"] = (
-                variant.metrics["total_score"] /
-                variant.metrics["total_count"]
+                variant.metrics["total_score"]
+                / variant.metrics["total_count"]
             )
 
         if "response_times" not in variant.metrics:

@@ -18,18 +18,14 @@ class DatabaseSessionManager:
         if settings.database_url:
             self._engine = create_async_engine(
                 settings.database_url,
-                echo=False,
-                pool_size=10,
-                max_overflow=20,
-                pool_timeout=30,
-                pool_recycle=1800,
+                echo=False, pool_size=10, max_overflow=20, pool_timeout=30, pool_recycle=1800
             )
             self._session_factory = sessionmaker(
                 bind=self._engine,
                 class_=AsyncSession,
                 expire_on_commit=False,
                 autocommit=False,
-                autoflush=False,
+                autoflush=False
             )
     
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
