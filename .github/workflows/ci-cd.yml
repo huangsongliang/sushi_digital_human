@@ -30,6 +30,9 @@ jobs:
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
+      - name: Install dependencies
+        run: uv sync
+
       - name: Install dev dependencies
         run: uv add --dev flake8 mypy
 
@@ -68,7 +71,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        run: uv sync --frozen
+        run: uv sync
 
       - name: Install test dependencies
         run: uv add --dev pytest pytest-cov
