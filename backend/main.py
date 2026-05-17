@@ -1,4 +1,5 @@
 """FastAPI 主应用入口"""
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -6,9 +7,31 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from backend.api import chat_router
 from backend.core.config import settings
+from backend.database.session import async_initialize_database
 from backend.utils.rate_limiter import rate_limit_middleware, concurrency_limit_middleware
 from backend.utils.performance import generate_prometheus_metrics, get_prometheus_content_type
 from backend.utils.error_tracking import setup_exception_handlers
+from backend.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """应用生命周期管理"""
+    # 启动时初始化
+    logger.info("启动应用...")
+    
+    # 初始化数据库
+    logger.info("初始化数据库...")
+    await async_initialize_database()
+    logger.info("数据库初始化完成")
+    
+    yield
+    
+    # 关闭时清理
+    logger.info("关闭应用...")
+
 
 app = FastAPI(
     title=settings.app_name,
@@ -16,7 +39,8 @@ app = FastAPI(
     description="苏轼文化数字人问答系统 API",
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
+    lifespan=lifespan
 )
 
 # 请求体大小限制

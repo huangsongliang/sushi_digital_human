@@ -4,6 +4,7 @@ LLM 依赖模块
 直接使用 DashScope SDK，简洁高效
 """
 
+import os
 from functools import lru_cache
 from typing import Annotated, List, Any, AsyncGenerator
 import asyncio
@@ -13,6 +14,10 @@ from concurrent.futures import ThreadPoolExecutor
 from fastapi import Depends
 from dashscope import Generation, TextEmbedding
 from backend.core.config import settings
+
+# 确保 API Key 已设置
+if settings.dashscope_api_key:
+    os.environ['DASHSCOPE_API_KEY'] = settings.dashscope_api_key
 
 
 class AsyncLLM:

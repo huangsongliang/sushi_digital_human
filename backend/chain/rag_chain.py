@@ -107,7 +107,7 @@ class RAGChain:
             "prompt": prompt
         }
     
-    async def async_run(self, query: str, top_k: int = 3, use_rag: bool = True) -> Dict[str, Any]:
+    async def async_run(self, query: str, top_k: int = 3, use_rag: bool = True, history: str = "") -> Dict[str, Any]:
         """异步执行完整的 RAG 流程（使用线程池优化）"""
         # 1. 检索阶段（异步，带缓存）
         documents = []
@@ -117,8 +117,16 @@ class RAGChain:
             documents = await self.async_retrieve(query, top_k=top_k)
             context = self.build_context(documents)
         
-        # 2. 构建提示词
-        prompt = self.build_prompt(query, context)
+        # 2. 构建提示词（支持历史对话）
+        if history:
+            prompt = default_prompts.format(
+                'multi_turn',
+                history=history,
+                question=query,
+                context=context
+            )
+        else:
+            prompt = self.build_prompt(query, context)
         
         # 3. 异步生成回答
         answer = await self.async_generate(prompt)

@@ -213,11 +213,22 @@ class Settings(BaseSettings):
     def mysql_url(self) -> Optional[str]:
         """生成 MySQL 连接 URL"""
         if self.mysql_host and self.mysql_user and self.mysql_database:
+            password_part = f":{self.mysql_password}" if self.mysql_password else ""
             return (
-                f"mysql+aiomysql://{self.mysql_user}:{self.mysql_password or ''}"
+                f"mysql+asyncmy://{self.mysql_user}{password_part}"
                 f"@{self.mysql_host}:{self.mysql_port}/{self.mysql_database}"
             )
         return None
+    
+    @property
+    def database_url(self) -> Optional[str]:
+        """生成数据库连接 URL（优先 MySQL，备选 SQLite）"""
+        if self.mysql_url:
+            return self.mysql_url
+        # 如果没有配置 MySQL，使用 SQLite 作为备选
+        data_dir = Path(__file__).parent.parent.parent / "data"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        return f"sqlite+aiosqlite:///{data_dir / 'sushi.db'}"
 
     model_config = SettingsModelConfig(
         env_file=".env",

@@ -291,12 +291,22 @@ def setup_exception_handlers(app):
                 method=request.method
             )
         
+        # 处理 exc.detail 可能是字符串或字典的情况
+        if isinstance(exc.detail, dict):
+            error_type = exc.detail.get("error", "HTTP_ERROR")
+            message = exc.detail.get("message", str(exc.detail))
+            detail = exc.detail.get("detail")
+        else:
+            error_type = "HTTP_ERROR"
+            message = str(exc.detail)
+            detail = None
+        
         return JSONResponse(
             status_code=exc.status_code,
             content={
-                "error": exc.detail.get("error", "HTTP_ERROR"),
-                "message": exc.detail.get("message", str(exc.detail)),
-                "detail": exc.detail.get("detail"),
+                "error": error_type,
+                "message": message,
+                "detail": detail,
                 "request_id": request_id,
                 "timestamp": datetime.now().isoformat()
             }
