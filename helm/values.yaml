@@ -37,7 +37,7 @@ backend:
     MYSQL_HOST: ""
     MYSQL_PORT: "3306"
     MYSQL_USER: "root"
-    MYSQL_PASSWORD: ""
+    MYSQL_PASSWORD: "7531188"
     MYSQL_DATABASE: "sushi"
     
     # Redis 配置（如果使用外部 Redis）
