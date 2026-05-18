@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     # 模型配置
     embedding_model: str = Field(
-        default="text_embedding_v2",
+        default="text-embedding-v2",
         description="嵌入模型名称"
     )
     llm_model: str = Field(
