@@ -3,7 +3,7 @@ A/B 测试 API 接口
 """
 
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Query
 from pydantic import BaseModel, Field
 
 from backend.core.ab_test import (
@@ -188,10 +188,10 @@ async def record_result(request: RecordResultRequest):
 
 @router.post("/feedback")
 async def submit_feedback(
-    experiment_id: str,
-    variant_id: str,
-    session_id: str,
-    feedback: int = Field(..., ge=1, le=5),
+    experiment_id: str = Query(...),
+    variant_id: str = Query(...),
+    session_id: str = Query(...),
+    feedback: int = Query(..., ge=1, le=5),
     x_user_id: Optional[str] = Header(None)
 ):
     """提交用户反馈"""
