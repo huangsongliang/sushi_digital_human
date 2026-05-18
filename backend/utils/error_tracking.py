@@ -37,22 +37,22 @@ class ErrorInfo:
 
 class ErrorTracker:
     """错误追踪器"""
-    
+
     def __init__(self):
         self._error_counts: Dict[str, int] = {}
         self._last_error_time: Dict[str, float] = {}
-        self._alert_threshold = 5  # 每分钟超过此数量触发告警
-        self._alert_cooldown = 60  # 告警冷却时间（秒）
-    
+        self._alert_threshold = 5
+        self._alert_cooldown = 60
+
     def track_error(self, error_type: str, message: str, **kwargs) -> str:
         """
         追踪错误
-        
+
         Args:
             error_type: 错误类型
             message: 错误消息
             **kwargs: 额外信息（request_id, endpoint, method 等）
-        
+
         Returns:
             错误 ID
         """
@@ -60,21 +60,20 @@ class ErrorTracker:
         request_id = kwargs.get("request_id", "")
         endpoint = kwargs.get("endpoint", "unknown")
         method = kwargs.get("method", "GET")
-        
-        # 获取堆栈跟踪
-        stack_trace = traceback.format_exc() if kwargs.get("include_stack", True) else ""
-        
-        # 记录错误指标
+
+        stack_trace = traceback.format_exc() if kwargs.get(
+            "include_stack", True
+        ) else ""
+
         record_error(error_type, endpoint)
-        
-        # 更新错误计数
-        self._error_counts[error_type] = self._error_counts.get(error_type, 0) + 1
+
+        self._error_counts[error_type] = self._error_counts.get(
+            error_type, 0
+        ) + 1
         self._last_error_time[error_type] = time.time()
-        
-        # 检查是否需要告警
+
         self._check_alert(error_type)
-        
-        # 记录错误日志
+
         logger.error(
             f"[错误追踪] ID={error_id[:8]} 类型={error_type} 消息={message}",
             extra={
@@ -87,44 +86,41 @@ class ErrorTracker:
                 "additional_info": kwargs
             }
         )
-        
+
         return error_id
-    
+
     def _check_alert(self, error_type: str):
         """
         检查是否需要发送告警
-        
+
         Args:
             error_type: 错误类型
         """
         count = self._error_counts.get(error_type, 0)
         last_time = self._last_error_time.get(error_type, 0)
         current_time = time.time()
-        
-        # 每分钟超过阈值触发告警
+
         if count >= self._alert_threshold and (current_time - last_time) < 60:
             self._send_alert(error_type, count)
-            # 重置计数
             self._error_counts[error_type] = 0
-    
+
     def _send_alert(self, error_type: str, count: int):
         """
         发送告警通知
-        
+
         Args:
             error_type: 错误类型
             count: 错误数量
         """
-        alert_message = f"⚠️ 告警：错误类型 '{error_type}' 在最近一分钟内发生 {count} 次"
+        alert_message = (
+            f"告警：错误类型 '{error_type}' 在最近一分钟内发生 {count} 次"
+        )
         logger.critical(alert_message)
-        
-        # 可以扩展：发送到 Webhook、邮件、钉钉、飞书等
-        # self._send_webhook_alert(error_type, count)
-    
+
     def get_error_stats(self) -> Dict[str, Any]:
         """
         获取错误统计信息
-        
+
         Returns:
             错误统计字典
         """
@@ -133,7 +129,7 @@ class ErrorTracker:
             "total_errors": sum(self._error_counts.values()),
             "error_types": list(self._error_counts.keys())
         }
-    
+
     def reset_stats(self):
         """重置错误统计"""
         self._error_counts.clear()
@@ -147,11 +143,11 @@ error_tracker = ErrorTracker()
 def capture_exception(error: Exception, **kwargs) -> str:
     """
     捕获并追踪异常
-    
+
     Args:
         error: 异常对象
         **kwargs: 额外信息
-    
+
     Returns:
         错误 ID
     """
@@ -163,15 +159,17 @@ def capture_exception(error: Exception, **kwargs) -> str:
     )
 
 
-def capture_message(message: str, error_type: str = "CustomError", **kwargs) -> str:
+def capture_message(
+    message: str, error_type: str = "CustomError", **kwargs
+) -> str:
     """
     捕获自定义错误消息
-    
+
     Args:
         message: 错误消息
         error_type: 错误类型
         **kwargs: 额外信息
-    
+
     Returns:
         错误 ID
     """
@@ -186,23 +184,23 @@ def capture_message(message: str, error_type: str = "CustomError", **kwargs) -> 
 def error_handler_middleware(func: Callable) -> Callable:
     """
     装饰器：统一错误处理中间件
-    
+
     Args:
         func: 被装饰的函数
-    
+
     Returns:
         包装后的函数
     """
     import asyncio
-    
+
     if asyncio.iscoroutinefunction(func):
         async def async_wrapper(*args, **kwargs):
             request_id = set_request_id()
-            
+
             try:
                 return await func(*args, **kwargs)
             except Exception as e:
-                error_id = capture_exception(
+                capture_exception(
                     e,
                     request_id=request_id,
                     endpoint=kwargs.get("endpoint", "unknown"),
@@ -213,11 +211,11 @@ def error_handler_middleware(func: Callable) -> Callable:
     else:
         def sync_wrapper(*args, **kwargs):
             request_id = set_request_id()
-            
+
             try:
                 return func(*args, **kwargs)
             except Exception as e:
-                error_id = capture_exception(
+                capture_exception(
                     e,
                     request_id=request_id,
                     endpoint=kwargs.get("endpoint", "unknown"),
@@ -230,59 +228,59 @@ def error_handler_middleware(func: Callable) -> Callable:
 def get_error_info(error_id: str) -> Optional[ErrorInfo]:
     """
     根据错误 ID 获取错误详情（预留接口，可扩展存储）
-    
+
     Args:
         error_id: 错误 ID
-    
+
     Returns:
         错误信息对象
     """
-    # 当前实现：返回 None（可扩展存储到数据库）
     return None
 
 
 # ==================== FastAPI 异常处理器 ====================
 
+
 def setup_exception_handlers(app):
     """
     为 FastAPI 应用设置全局异常处理器
-    
+
     Args:
         app: FastAPI 应用实例
     """
     from fastapi import Request, HTTPException
     from fastapi.responses import JSONResponse
-    
+
     @app.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
         """全局异常处理器"""
         request_id = request.headers.get("X-Request-ID", str(uuid4()))
         set_request_id(request_id)
-        
-        error_id = capture_exception(
+
+        capture_exception(
             exc,
             request_id=request_id,
             endpoint=str(request.url.path),
             method=request.method
         )
-        
+
         return JSONResponse(
             status_code=500,
             content={
                 "error": "INTERNAL_ERROR",
                 "message": "服务器内部错误",
-                "error_id": error_id,
+                "error_id": str(uuid4()),
                 "request_id": request_id,
                 "timestamp": datetime.now().isoformat()
             }
         )
-    
+
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
         """HTTP 异常处理器"""
         request_id = request.headers.get("X-Request-ID", str(uuid4()))
         set_request_id(request_id)
-        
+
         if exc.status_code >= 500:
             capture_exception(
                 exc,
@@ -290,8 +288,7 @@ def setup_exception_handlers(app):
                 endpoint=str(request.url.path),
                 method=request.method
             )
-        
-        # 处理 exc.detail 可能是字符串或字典的情况
+
         if isinstance(exc.detail, dict):
             error_type = exc.detail.get("error", "HTTP_ERROR")
             message = exc.detail.get("message", str(exc.detail))
@@ -300,7 +297,7 @@ def setup_exception_handlers(app):
             error_type = "HTTP_ERROR"
             message = str(exc.detail)
             detail = None
-        
+
         return JSONResponse(
             status_code=exc.status_code,
             content={

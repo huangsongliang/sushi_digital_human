@@ -9,7 +9,7 @@
 
 import asyncio
 import time
-from typing import Dict, Any, Optional, List, Tuple
+from typing import Dict, Any, Optional, List
 from sqlalchemy import text
 from dataclasses import dataclass
 from datetime import datetime
@@ -236,12 +236,20 @@ class HealthChecker:
                 "status": check.status.value,
                 "message": check.message,
                 "latency_ms": check.latency_ms,
-                "last_checked": check.last_checked.isoformat() if check.last_checked else None
+                "last_checked": (
+                    check.last_checked.isoformat()
+                    if check.last_checked
+                    else None
+                )
             })
 
         return {
             "status": self.get_overall_status().value,
-            "timestamp": self._last_check_time.isoformat() if self._last_check_time else None,
+            "timestamp": (
+                self._last_check_time.isoformat()
+                if self._last_check_time
+                else None
+            ),
             "checks": checks_data,
             "service": settings.app_name,
             "version": settings.app_version
@@ -286,7 +294,9 @@ class GracefulShutdownManager:
         while self._active_requests > 0:
             elapsed = time.time() - start_time
             if elapsed >= self._max_wait_time:
-                logger.warning(f"等待请求完成超时，仍有 {self._active_requests} 个请求")
+                logger.warning(
+                    f"等待请求完成超时，仍有 {self._active_requests} 个请求"
+                )
                 break
 
             await asyncio.sleep(0.5)
