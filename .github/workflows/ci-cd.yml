@@ -74,7 +74,7 @@ jobs:
         run: uv sync
 
       - name: Install test dependencies
-        run: uv add --dev pytest pytest-cov
+        run: uv add --dev pytest pytest-cov pytest-asyncio
 
       - name: Run unit tests
         run: uv run pytest tests/unit/ -v --tb=short
