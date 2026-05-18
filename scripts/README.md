@@ -33,6 +33,27 @@ uv run python scripts/local_ci_check.py
 .\scripts\local_ci_check.ps1
 ```
 
+### 3. github_ci_helper.py (GitHub CI 辅助工具)
+
+通过 GitHub CLI 获取和分析 CI/CD 运行状态和日志。
+
+**前置要求：**
+
+1. 安装 GitHub CLI: https://cli.github.com/
+2. 运行 `gh auth login` 进行登录
+
+**使用方法：**
+
+```bash
+uv run python scripts/github_ci_helper.py
+```
+
+**功能：**
+- 📊 查看最近的 Workflow 运行状态
+- 🔍 查找最近失败的 Workflow
+- 📝 获取详细日志并保存到文件
+- 💡 一键准备好日志供 AI 助手分析
+
 ## 工作流程建议
 
 ### 推荐的开发工作流：
@@ -54,9 +75,36 @@ uv run python scripts/local_ci_check.py
 | Mypy | 类型检查（可选，用于发现潜在问题） | 🟡 建议修复 |
 | 单元测试 | 核心功能测试 | 🔴 必须通过 |
 
+## 🔐 关于 GitHub API 访问权限
+
+### 为什么 AI 助手无法直接访问 GitHub API
+
+出于安全考虑，AI 助手无法直接：
+- 直接访问您的 GitHub 账户
+- 获取 API 密钥或令牌
+- 直接读取仓库的 Actions 日志
+
+### ✅ 替代方案（推荐）
+
+使用 `github_ci_helper.py` 工具，它可以：
+1. 在您的本地运行（通过 GitHub CLI）访问 GitHub
+2. 获取 CI/CD 日志
+3. 将日志保存到文件
+4. 您可以将日志文件内容发给我分析
+
+这样既安全又方便！
+
 ## CI/CD 错误日志获取
 
-### 如何获取 GitHub Actions 错误日志：
+### 方法 1：使用辅助工具（推荐）
+
+```bash
+uv run python scripts/github_ci_helper.py
+```
+
+选择选项 3 可以自动获取日志并保存到文件。
+
+### 方法 2：手动获取 GitHub Actions 错误日志：
 
 1. 访问您的 GitHub 仓库
 2. 点击 **Actions** 标签页

@@ -1,0 +1,1300 @@
+Code Linting	Set up job	﻿2026-05-18T00:00:06.5719841Z Current runner version: '2.334.0'
+Code Linting	Set up job	2026-05-18T00:00:06.5787854Z ##[group]Runner Image Provisioner
+Code Linting	Set up job	2026-05-18T00:00:06.5789097Z Hosted Compute Agent
+Code Linting	Set up job	2026-05-18T00:00:06.5789916Z Version: 20260213.493
+Code Linting	Set up job	2026-05-18T00:00:06.5790742Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+Code Linting	Set up job	2026-05-18T00:00:06.5791883Z Build Date: 2026-02-13T00:28:41Z
+Code Linting	Set up job	2026-05-18T00:00:06.5792800Z Worker ID: {039867aa-b19a-474a-8898-a121c963a059}
+Code Linting	Set up job	2026-05-18T00:00:06.5794128Z Azure Region: eastus
+Code Linting	Set up job	2026-05-18T00:00:06.5794866Z ##[endgroup]
+Code Linting	Set up job	2026-05-18T00:00:06.5796881Z ##[group]Operating System
+Code Linting	Set up job	2026-05-18T00:00:06.5797732Z Ubuntu
+Code Linting	Set up job	2026-05-18T00:00:06.5798504Z 24.04.4
+Code Linting	Set up job	2026-05-18T00:00:06.5799199Z LTS
+Code Linting	Set up job	2026-05-18T00:00:06.5799872Z ##[endgroup]
+Code Linting	Set up job	2026-05-18T00:00:06.5800639Z ##[group]Runner Image
+Code Linting	Set up job	2026-05-18T00:00:06.5801435Z Image: ubuntu-24.04
+Code Linting	Set up job	2026-05-18T00:00:06.5802198Z Version: 20260513.135.3
+Code Linting	Set up job	2026-05-18T00:00:06.5804126Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260513.135/images/ubuntu/Ubuntu2404-Readme.md
+Code Linting	Set up job	2026-05-18T00:00:06.5806856Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260513.135
+Code Linting	Set up job	2026-05-18T00:00:06.5808379Z ##[endgroup]
+Code Linting	Set up job	2026-05-18T00:00:06.5810010Z ##[group]GITHUB_TOKEN Permissions
+Code Linting	Set up job	2026-05-18T00:00:06.5812822Z Contents: read
+Code Linting	Set up job	2026-05-18T00:00:06.5813869Z Metadata: read
+Code Linting	Set up job	2026-05-18T00:00:06.5814662Z Packages: read
+Code Linting	Set up job	2026-05-18T00:00:06.5815461Z ##[endgroup]
+Code Linting	Set up job	2026-05-18T00:00:06.5818456Z Secret source: Actions
+Code Linting	Set up job	2026-05-18T00:00:06.5819510Z Prepare workflow directory
+Code Linting	Set up job	2026-05-18T00:00:06.6388947Z Prepare all required actions
+Code Linting	Set up job	2026-05-18T00:00:06.6495040Z Getting action download info
+Code Linting	Set up job	2026-05-18T00:00:07.0003630Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+Code Linting	Set up job	2026-05-18T00:00:07.1439014Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+Code Linting	Set up job	2026-05-18T00:00:07.3362790Z Complete job name: Code Linting
+Code Linting	Checkout code	﻿2026-05-18T00:00:07.4057698Z ##[group]Run actions/checkout@v4
+Code Linting	Checkout code	2026-05-18T00:00:07.4058513Z with:
+Code Linting	Checkout code	2026-05-18T00:00:07.4058998Z   repository: huangsongliang/sushi_digital_human
+Code Linting	Checkout code	2026-05-18T00:00:07.4059840Z   token: ***
+Code Linting	Checkout code	2026-05-18T00:00:07.4060238Z   ssh-strict: true
+Code Linting	Checkout code	2026-05-18T00:00:07.4060629Z   ssh-user: git
+Code Linting	Checkout code	2026-05-18T00:00:07.4061031Z   persist-credentials: true
+Code Linting	Checkout code	2026-05-18T00:00:07.4061471Z   clean: true
+Code Linting	Checkout code	2026-05-18T00:00:07.4061870Z   sparse-checkout-cone-mode: true
+Code Linting	Checkout code	2026-05-18T00:00:07.4062351Z   fetch-depth: 1
+Code Linting	Checkout code	2026-05-18T00:00:07.4062723Z   fetch-tags: false
+Code Linting	Checkout code	2026-05-18T00:00:07.4063120Z   show-progress: true
+Code Linting	Checkout code	2026-05-18T00:00:07.4063665Z   lfs: false
+Code Linting	Checkout code	2026-05-18T00:00:07.4064035Z   submodules: false
+Code Linting	Checkout code	2026-05-18T00:00:07.4064425Z   set-safe-directory: true
+Code Linting	Checkout code	2026-05-18T00:00:07.4065029Z env:
+Code Linting	Checkout code	2026-05-18T00:00:07.4065390Z   PYTHON_VERSION: 3.11
+Code Linting	Checkout code	2026-05-18T00:00:07.4065809Z   UV_VERSION: 0.2.0
+Code Linting	Checkout code	2026-05-18T00:00:07.4066199Z   DOCKER_REGISTRY: ghcr.io
+Code Linting	Checkout code	2026-05-18T00:00:07.4066631Z ##[endgroup]
+Code Linting	Checkout code	2026-05-18T00:00:07.5426984Z Syncing repository: huangsongliang/sushi_digital_human
+Code Linting	Checkout code	2026-05-18T00:00:07.6273889Z ##[group]Getting Git version info
+Code Linting	Checkout code	2026-05-18T00:00:07.6302423Z Working directory is '/home/runner/work/sushi_digital_human/sushi_digital_human'
+Code Linting	Checkout code	2026-05-18T00:00:07.6305111Z [command]/usr/bin/git version
+Code Linting	Checkout code	2026-05-18T00:00:07.6306127Z git version 2.54.0
+Code Linting	Checkout code	2026-05-18T00:00:07.6308746Z ##[endgroup]
+Code Linting	Checkout code	2026-05-18T00:00:07.6334253Z Temporarily overriding HOME='/home/runner/work/_temp/15b93ce4-e3e5-4bce-9c07-a1881f83b44f' before making global git config changes
+Code Linting	Checkout code	2026-05-18T00:00:07.6336523Z Adding repository directory to the temporary git global config as a safe directory
+Code Linting	Checkout code	2026-05-18T00:00:07.6338634Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sushi_digital_human/sushi_digital_human
+Code Linting	Checkout code	2026-05-18T00:00:07.6341864Z Deleting the contents of '/home/runner/work/sushi_digital_human/sushi_digital_human'
+Code Linting	Checkout code	2026-05-18T00:00:07.6343966Z ##[group]Initializing the repository
+Code Linting	Checkout code	2026-05-18T00:00:07.6345517Z [command]/usr/bin/git init /home/runner/work/sushi_digital_human/sushi_digital_human
+Code Linting	Checkout code	2026-05-18T00:00:07.6347620Z hint: Using 'master' as the name for the initial branch. This default branch name
+Code Linting	Checkout code	2026-05-18T00:00:07.6349104Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Code Linting	Checkout code	2026-05-18T00:00:07.6350580Z hint: to use in all of your new repositories, which will suppress this warning,
+Code Linting	Checkout code	2026-05-18T00:00:07.6351701Z hint: call:
+Code Linting	Checkout code	2026-05-18T00:00:07.6352370Z hint:
+Code Linting	Checkout code	2026-05-18T00:00:07.6353163Z hint: 	git config --global init.defaultBranch <name>
+Code Linting	Checkout code	2026-05-18T00:00:07.6354738Z hint:
+Code Linting	Checkout code	2026-05-18T00:00:07.6355675Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Code Linting	Checkout code	2026-05-18T00:00:07.6357138Z hint: 'development'. The just-created branch can be renamed via this command:
+Code Linting	Checkout code	2026-05-18T00:00:07.6358508Z hint:
+Code Linting	Checkout code	2026-05-18T00:00:07.6359194Z hint: 	git branch -m <name>
+Code Linting	Checkout code	2026-05-18T00:00:07.6359956Z hint:
+Code Linting	Checkout code	2026-05-18T00:00:07.6361058Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Code Linting	Checkout code	2026-05-18T00:00:07.6362870Z Initialized empty Git repository in /home/runner/work/sushi_digital_human/sushi_digital_human/.git/
+Code Linting	Checkout code	2026-05-18T00:00:07.6506126Z [command]/usr/bin/git remote add origin https://github.com/huangsongliang/sushi_digital_human
+Code Linting	Checkout code	2026-05-18T00:00:07.6508556Z ##[endgroup]
+Code Linting	Checkout code	2026-05-18T00:00:07.6509572Z ##[group]Disabling automatic garbage collection
+Code Linting	Checkout code	2026-05-18T00:00:07.6510458Z [command]/usr/bin/git config --local gc.auto 0
+Code Linting	Checkout code	2026-05-18T00:00:07.6512455Z ##[endgroup]
+Code Linting	Checkout code	2026-05-18T00:00:07.6513567Z ##[group]Setting up auth
+Code Linting	Checkout code	2026-05-18T00:00:07.6514669Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Code Linting	Checkout code	2026-05-18T00:00:07.6517672Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Code Linting	Checkout code	2026-05-18T00:00:07.6521134Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Code Linting	Checkout code	2026-05-18T00:00:07.6525038Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Code Linting	Checkout code	2026-05-18T00:00:07.6766111Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Code Linting	Checkout code	2026-05-18T00:00:07.6769321Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Code Linting	Checkout code	2026-05-18T00:00:07.7032209Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Code Linting	Checkout code	2026-05-18T00:00:07.7074803Z ##[endgroup]
+Code Linting	Checkout code	2026-05-18T00:00:07.7076373Z ##[group]Fetching the repository
+Code Linting	Checkout code	2026-05-18T00:00:07.7084456Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d71050000b44e1ee8968e6b83cd52d7ed046d075:refs/remotes/origin/main
+Code Linting	Checkout code	2026-05-18T00:00:08.5005152Z From https://github.com/huangsongliang/sushi_digital_human
+Code Linting	Checkout code	2026-05-18T00:00:08.5007935Z  * [new ref]         d71050000b44e1ee8968e6b83cd52d7ed046d075 -> origin/main
+Code Linting	Checkout code	2026-05-18T00:00:08.5043022Z ##[endgroup]
+Code Linting	Checkout code	2026-05-18T00:00:08.5045250Z ##[group]Determining the checkout info
+Code Linting	Checkout code	2026-05-18T00:00:08.5047283Z ##[endgroup]
+Code Linting	Checkout code	2026-05-18T00:00:08.5051142Z [command]/usr/bin/git sparse-checkout disable
+Code Linting	Checkout code	2026-05-18T00:00:08.5100141Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Code Linting	Checkout code	2026-05-18T00:00:08.5132242Z ##[group]Checking out the ref
+Code Linting	Checkout code	2026-05-18T00:00:08.5137171Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+Code Linting	Checkout code	2026-05-18T00:00:08.7975807Z Switched to a new branch 'main'
+Code Linting	Checkout code	2026-05-18T00:00:08.7977755Z branch 'main' set up to track 'origin/main'.
+Code Linting	Checkout code	2026-05-18T00:00:08.8044594Z ##[endgroup]
+Code Linting	Checkout code	2026-05-18T00:00:08.8174021Z [command]/usr/bin/git log -1 --format=%H
+Code Linting	Checkout code	2026-05-18T00:00:08.8175912Z d71050000b44e1ee8968e6b83cd52d7ed046d075
+Code Linting	Set up Python	﻿2026-05-18T00:00:08.8350957Z ##[group]Run actions/setup-python@v5
+Code Linting	Set up Python	2026-05-18T00:00:08.8351348Z with:
+Code Linting	Set up Python	2026-05-18T00:00:08.8351578Z   python-version: 3.11
+Code Linting	Set up Python	2026-05-18T00:00:08.8351838Z   check-latest: false
+Code Linting	Set up Python	2026-05-18T00:00:08.8352478Z   token: ***
+Code Linting	Set up Python	2026-05-18T00:00:08.8352718Z   update-environment: true
+Code Linting	Set up Python	2026-05-18T00:00:08.8352990Z   allow-prereleases: false
+Code Linting	Set up Python	2026-05-18T00:00:08.8353237Z   freethreaded: false
+Code Linting	Set up Python	2026-05-18T00:00:08.8353631Z env:
+Code Linting	Set up Python	2026-05-18T00:00:08.8353839Z   PYTHON_VERSION: 3.11
+Code Linting	Set up Python	2026-05-18T00:00:08.8354086Z   UV_VERSION: 0.2.0
+Code Linting	Set up Python	2026-05-18T00:00:08.8354321Z   DOCKER_REGISTRY: ghcr.io
+Code Linting	Set up Python	2026-05-18T00:00:08.8354581Z ##[endgroup]
+Code Linting	Set up Python	2026-05-18T00:00:09.0069620Z ##[group]Installed versions
+Code Linting	Set up Python	2026-05-18T00:00:09.0161257Z Successfully set up CPython (3.11.15)
+Code Linting	Set up Python	2026-05-18T00:00:09.0162878Z ##[endgroup]
+Code Linting	Install uv	﻿2026-05-18T00:00:09.0297442Z ##[group]Run curl -LsSf https://astral.sh/uv/install.sh | sh
+Code Linting	Install uv	2026-05-18T00:00:09.0298088Z ^[[36;1mcurl -LsSf https://astral.sh/uv/install.sh | sh^[[0m
+Code Linting	Install uv	2026-05-18T00:00:09.0298503Z ^[[36;1mecho "$HOME/.cargo/bin" >> $GITHUB_PATH^[[0m
+Code Linting	Install uv	2026-05-18T00:00:09.0349408Z shell: /usr/bin/bash -e {0}
+Code Linting	Install uv	2026-05-18T00:00:09.0349766Z env:
+Code Linting	Install uv	2026-05-18T00:00:09.0349985Z   PYTHON_VERSION: 3.11
+Code Linting	Install uv	2026-05-18T00:00:09.0350268Z   UV_VERSION: 0.2.0
+Code Linting	Install uv	2026-05-18T00:00:09.0350503Z   DOCKER_REGISTRY: ghcr.io
+Code Linting	Install uv	2026-05-18T00:00:09.0350833Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install uv	2026-05-18T00:00:09.0351290Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Code Linting	Install uv	2026-05-18T00:00:09.0351719Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install uv	2026-05-18T00:00:09.0352106Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install uv	2026-05-18T00:00:09.0352496Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install uv	2026-05-18T00:00:09.0352885Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Code Linting	Install uv	2026-05-18T00:00:09.0353259Z ##[endgroup]
+Code Linting	Install uv	2026-05-18T00:00:09.1979203Z downloading uv 0.11.14 x86_64-unknown-linux-gnu
+Code Linting	Install uv	2026-05-18T00:00:09.9369347Z installing to /home/runner/.local/bin
+Code Linting	Install uv	2026-05-18T00:00:09.9436190Z   uv
+Code Linting	Install uv	2026-05-18T00:00:09.9457914Z   uvx
+Code Linting	Install uv	2026-05-18T00:00:09.9498802Z everything's installed!
+Code Linting	Install dependencies	﻿2026-05-18T00:00:09.9609839Z ##[group]Run uv sync
+Code Linting	Install dependencies	2026-05-18T00:00:09.9610129Z ^[[36;1muv sync^[[0m
+Code Linting	Install dependencies	2026-05-18T00:00:09.9649129Z shell: /usr/bin/bash -e {0}
+Code Linting	Install dependencies	2026-05-18T00:00:09.9649380Z env:
+Code Linting	Install dependencies	2026-05-18T00:00:09.9649564Z   PYTHON_VERSION: 3.11
+Code Linting	Install dependencies	2026-05-18T00:00:09.9649768Z   UV_VERSION: 0.2.0
+Code Linting	Install dependencies	2026-05-18T00:00:09.9649966Z   DOCKER_REGISTRY: ghcr.io
+Code Linting	Install dependencies	2026-05-18T00:00:09.9650247Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install dependencies	2026-05-18T00:00:09.9650654Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Code Linting	Install dependencies	2026-05-18T00:00:09.9651069Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install dependencies	2026-05-18T00:00:09.9651431Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install dependencies	2026-05-18T00:00:09.9651815Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install dependencies	2026-05-18T00:00:09.9652158Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Code Linting	Install dependencies	2026-05-18T00:00:09.9652460Z ##[endgroup]
+Code Linting	Install dependencies	2026-05-18T00:00:10.0875794Z Using CPython 3.11.15 interpreter at: /opt/hostedtoolcache/Python/3.11.15/x64/bin/python3
+Code Linting	Install dependencies	2026-05-18T00:00:10.0877269Z Creating virtual environment at: .venv
+Code Linting	Install dependencies	2026-05-18T00:00:10.1075266Z Resolved 174 packages in 1ms
+Code Linting	Install dependencies	2026-05-18T00:00:12.4022408Z Downloading nvidia-cufft (204.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4023824Z Downloading networkx (2.0MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4024728Z Downloading aiohttp (1.7MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4043967Z Downloading dashscope (1.3MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4044514Z Downloading ast-serialize (1.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4044946Z Downloading pygments (1.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4045298Z Downloading nvidia-cufile (1.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4045651Z Downloading setuptools (1.0MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4046062Z Downloading nvidia-cublas (403.5MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4046485Z Downloading nvidia-cudnn-cu13 (349.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4047017Z Downloading torch (507.5MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4047390Z Downloading nvidia-nccl-cu13 (196.4MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4048824Z Downloading triton (192.1MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4064424Z Downloading nvidia-cusolver (191.6MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4084222Z Downloading nvidia-cusparselt-cu13 (162.3MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4088337Z Downloading nvidia-cusparse (139.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4089197Z Downloading nvidia-cuda-nvrtc (86.0MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4089928Z Downloading nvidia-nvshmem-cu13 (57.6MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4090595Z Downloading nvidia-curand (56.8MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4091228Z Downloading nvidia-nvjitlink (38.8MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4091953Z Downloading scipy (33.7MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4092673Z Downloading chromadb (22.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4093867Z Downloading onnxruntime (17.3MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4094569Z Downloading numpy (16.1MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4095172Z Downloading nvidia-cuda-cupti (10.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4095795Z Downloading mypy (14.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4096415Z Downloading scikit-learn (8.7MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4097018Z Downloading transformers (10.1MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4097634Z Downloading grpcio (6.5MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4098303Z Downloading sympy (6.0MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4098958Z Downloading cuda-bindings (6.0MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4099577Z Downloading zstandard (5.3MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4100162Z Downloading asyncmy (5.1MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4100759Z Downloading hf-xet (4.3MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4101334Z Downloading cryptography (4.5MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4101954Z Downloading uvloop (3.6MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4102533Z Downloading sqlalchemy (3.2MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4103119Z Downloading tokenizers (3.1MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4103957Z Downloading langchain-community (2.4MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4104606Z Downloading nvidia-cuda-runtime (2.1MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4105384Z Downloading pydantic-core (2.0MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:12.4106473Z Downloading kubernetes (1.9MiB)
+Code Linting	Install dependencies	2026-05-18T00:00:18.3349247Z  Downloaded networkx
+Code Linting	Install dependencies	2026-05-18T00:00:18.8304717Z  Downloaded dashscope
+Code Linting	Install dependencies	2026-05-18T00:00:21.0672795Z  Downloaded setuptools
+Code Linting	Install dependencies	2026-05-18T00:00:21.4285614Z  Downloaded ast-serialize
+Code Linting	Install dependencies	2026-05-18T00:00:21.6557038Z  Downloaded pydantic-core
+Code Linting	Install dependencies	2026-05-18T00:00:21.9244478Z  Downloaded pygments
+Code Linting	Install dependencies	2026-05-18T00:00:21.9289340Z  Downloaded nvidia-cufile
+Code Linting	Install dependencies	2026-05-18T00:00:22.2789640Z  Downloaded kubernetes
+Code Linting	Install dependencies	2026-05-18T00:00:22.5140474Z  Downloaded aiohttp
+Code Linting	Install dependencies	2026-05-18T00:00:22.5466458Z  Downloaded sqlalchemy
+Code Linting	Install dependencies	2026-05-18T00:00:24.5607531Z  Downloaded langchain-community
+Code Linting	Install dependencies	2026-05-18T00:00:26.3147452Z  Downloaded nvidia-cuda-runtime
+Code Linting	Install dependencies	2026-05-18T00:00:26.6811603Z  Downloaded uvloop
+Code Linting	Install dependencies	2026-05-18T00:00:27.1714250Z  Downloaded sympy
+Code Linting	Install dependencies	2026-05-18T00:00:27.5190724Z  Downloaded tokenizers
+Code Linting	Install dependencies	2026-05-18T00:00:29.2831601Z  Downloaded zstandard
+Code Linting	Install dependencies	2026-05-18T00:00:30.1596993Z  Downloaded asyncmy
+Code Linting	Install dependencies	2026-05-18T00:00:30.9678400Z  Downloaded hf-xet
+Code Linting	Install dependencies	2026-05-18T00:00:32.3823776Z  Downloaded cryptography
+Code Linting	Install dependencies	2026-05-18T00:00:33.9399525Z  Downloaded grpcio
+Code Linting	Install dependencies	2026-05-18T00:00:35.4458161Z  Downloaded scikit-learn
+Code Linting	Install dependencies	2026-05-18T00:00:36.6350611Z  Downloaded cuda-bindings
+Code Linting	Install dependencies	2026-05-18T00:00:40.8769192Z  Downloaded nvidia-cuda-cupti
+Code Linting	Install dependencies	2026-05-18T00:00:44.3477389Z  Downloaded transformers
+Code Linting	Install dependencies	2026-05-18T00:00:51.3950923Z  Downloaded mypy
+Code Linting	Install dependencies	2026-05-18T00:00:52.2746873Z  Downloaded onnxruntime
+Code Linting	Install dependencies	2026-05-18T00:00:54.3485541Z  Downloaded numpy
+Code Linting	Install dependencies	2026-05-18T00:00:56.3743062Z  Downloaded chromadb
+Code Linting	Install dependencies	2026-05-18T00:01:00.0862567Z    Building jieba==0.42.1
+Code Linting	Install dependencies	2026-05-18T00:01:07.9600113Z       Built jieba==0.42.1
+Code Linting	Install dependencies	2026-05-18T00:01:11.2166463Z  Downloaded scipy
+Code Linting	Install dependencies	2026-05-18T00:01:24.3710717Z  Downloaded nvidia-nvjitlink
+Code Linting	Install dependencies	2026-05-18T00:01:40.9817906Z  Downloaded nvidia-nvshmem-cu13
+Code Linting	Install dependencies	2026-05-18T00:01:45.7461939Z  Downloaded nvidia-curand
+Code Linting	Install dependencies	2026-05-18T00:02:04.9449019Z  Downloaded nvidia-cuda-nvrtc
+Code Linting	Install dependencies	2026-05-18T00:02:48.1202824Z  Downloaded nvidia-cusparse
+Code Linting	Install dependencies	2026-05-18T00:03:08.4576058Z  Downloaded nvidia-cusparselt-cu13
+Code Linting	Install dependencies	2026-05-18T00:03:27.4826855Z  Downloaded triton
+Code Linting	Install dependencies	2026-05-18T00:03:28.3473967Z  Downloaded nvidia-cusolver
+Code Linting	Install dependencies	2026-05-18T00:03:30.1069368Z  Downloaded nvidia-cufft
+Code Linting	Install dependencies	2026-05-18T00:03:30.1334889Z  Downloaded nvidia-nccl-cu13
+Code Linting	Install dependencies	2026-05-18T00:04:10.4094140Z  Downloaded nvidia-cudnn-cu13
+Code Linting	Install dependencies	2026-05-18T00:04:22.1429266Z  Downloaded nvidia-cublas
+Code Linting	Install dependencies	2026-05-18T00:04:42.5904856Z  Downloaded torch
+Code Linting	Install dependencies	2026-05-18T00:04:42.5953123Z Prepared 169 packages in 4m 32s
+Code Linting	Install dependencies	2026-05-18T00:04:43.1657288Z Installed 169 packages in 569ms
+Code Linting	Install dependencies	2026-05-18T00:04:43.1660463Z  + aiohappyeyeballs==2.6.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1661056Z  + aiohttp==3.13.5
+Code Linting	Install dependencies	2026-05-18T00:04:43.1661688Z  + aiosignal==1.4.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1662191Z  + aiosqlite==0.22.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1662632Z  + alembic==1.18.4
+Code Linting	Install dependencies	2026-05-18T00:04:43.1663173Z  + annotated-doc==0.0.4
+Code Linting	Install dependencies	2026-05-18T00:04:43.1663824Z  + annotated-types==0.7.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1664312Z  + anyio==4.13.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1664743Z  + ast-serialize==0.4.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1665204Z  + asyncmy==0.2.11
+Code Linting	Install dependencies	2026-05-18T00:04:43.1665624Z  + attrs==26.1.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1666045Z  + bcrypt==5.0.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1666451Z  + build==1.5.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1666881Z  + certifi==2026.4.22
+Code Linting	Install dependencies	2026-05-18T00:04:43.1667335Z  + cffi==2.0.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1667767Z  + charset-normalizer==3.4.7
+Code Linting	Install dependencies	2026-05-18T00:04:43.1668255Z  + chromadb==1.5.9
+Code Linting	Install dependencies	2026-05-18T00:04:43.1668680Z  + click==8.4.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1669166Z  + coverage==7.14.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1669612Z  + cryptography==48.0.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1670082Z  + cuda-bindings==13.2.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1670559Z  + cuda-pathfinder==1.5.4
+Code Linting	Install dependencies	2026-05-18T00:04:43.1671033Z  + cuda-toolkit==13.0.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1671498Z  + dashscope==1.25.18
+Code Linting	Install dependencies	2026-05-18T00:04:43.1671943Z  + dataclasses-json==0.6.7
+Code Linting	Install dependencies	2026-05-18T00:04:43.1672416Z  + durationpy==0.10
+Code Linting	Install dependencies	2026-05-18T00:04:43.1672847Z  + fastapi==0.136.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1673262Z  + filelock==3.29.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1673889Z  + flake8==7.3.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1674309Z  + flatbuffers==25.12.19
+Code Linting	Install dependencies	2026-05-18T00:04:43.1674767Z  + frozenlist==1.8.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1675197Z  + fsspec==2026.4.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1675656Z  + googleapis-common-protos==1.75.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1676178Z  + greenlet==3.5.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1676598Z  + grpcio==1.80.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1677016Z  + h11==0.16.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1677421Z  + hf-xet==1.5.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1677862Z  + httpcore==1.0.9
+Code Linting	Install dependencies	2026-05-18T00:04:43.1678630Z  + httptools==0.7.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1679075Z  + httpx==0.28.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1679494Z  + httpx-sse==0.4.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1679927Z  + huggingface-hub==1.15.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1680393Z  + idna==3.15
+Code Linting	Install dependencies	2026-05-18T00:04:43.1680819Z  + importlib-metadata==8.7.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1681328Z  + importlib-resources==7.1.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1681812Z  + iniconfig==2.3.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1682230Z  + jieba==0.42.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1682640Z  + jinja2==3.1.6
+Code Linting	Install dependencies	2026-05-18T00:04:43.1683042Z  + joblib==1.5.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1683606Z  + jsonpatch==1.33
+Code Linting	Install dependencies	2026-05-18T00:04:43.1684043Z  + jsonpointer==3.1.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1684492Z  + jsonschema==4.26.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1684966Z  + jsonschema-specifications==2025.9.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1685493Z  + kubernetes==35.0.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1685933Z  + langchain==1.3.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1686366Z  + langchain-classic==1.0.7
+Code Linting	Install dependencies	2026-05-18T00:04:43.1686864Z  + langchain-community==0.4.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1687436Z  + langchain-core==1.4.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1690527Z  + langchain-protocol==0.0.15
+Code Linting	Install dependencies	2026-05-18T00:04:43.1694921Z  + langchain-text-splitters==1.1.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1695521Z  + langgraph==1.2.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1695995Z  + langgraph-checkpoint==4.1.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1696536Z  + langgraph-prebuilt==1.1.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1697027Z  + langgraph-sdk==0.3.14
+Code Linting	Install dependencies	2026-05-18T00:04:43.1697540Z  + langsmith==0.8.5
+Code Linting	Install dependencies	2026-05-18T00:04:43.1698094Z  + librt==0.11.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1698510Z  + loguru==0.7.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1699026Z  + mako==1.3.12
+Code Linting	Install dependencies	2026-05-18T00:04:43.1699483Z  + markdown-it-py==4.2.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1699965Z  + markupsafe==3.0.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1700422Z  + marshmallow==3.26.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1700870Z  + mccabe==0.7.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1701294Z  + mdurl==0.1.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1701712Z  + mmh3==5.2.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1702129Z  + mpmath==1.3.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1702550Z  + multidict==6.7.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1702970Z  + mypy==2.1.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1703554Z  + mypy-extensions==1.1.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1704060Z  + networkx==3.6.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1704988Z  + numpy==2.4.5
+Code Linting	Install dependencies	2026-05-18T00:04:43.1708364Z  + nvidia-cublas==13.1.1.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1708909Z  + nvidia-cuda-cupti==13.0.85
+Code Linting	Install dependencies	2026-05-18T00:04:43.1713254Z  + nvidia-cuda-nvrtc==13.0.88
+Code Linting	Install dependencies	2026-05-18T00:04:43.1715068Z  + nvidia-cuda-runtime==13.0.96
+Code Linting	Install dependencies	2026-05-18T00:04:43.1716639Z  + nvidia-cudnn-cu13==9.20.0.48
+Code Linting	Install dependencies	2026-05-18T00:04:43.1718316Z  + nvidia-cufft==12.0.0.61
+Code Linting	Install dependencies	2026-05-18T00:04:43.1719100Z  + nvidia-cufile==1.15.1.6
+Code Linting	Install dependencies	2026-05-18T00:04:43.1719424Z  + nvidia-curand==10.4.0.35
+Code Linting	Install dependencies	2026-05-18T00:04:43.1719739Z  + nvidia-cusolver==12.0.4.66
+Code Linting	Install dependencies	2026-05-18T00:04:43.1720713Z  + nvidia-cusparse==12.6.3.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1721058Z  + nvidia-cusparselt-cu13==0.8.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1722544Z  + nvidia-nccl-cu13==2.29.7
+Code Linting	Install dependencies	2026-05-18T00:04:43.1722938Z  + nvidia-nvjitlink==13.0.88
+Code Linting	Install dependencies	2026-05-18T00:04:43.1723263Z  + nvidia-nvshmem-cu13==3.4.5
+Code Linting	Install dependencies	2026-05-18T00:04:43.1724167Z  + nvidia-nvtx==13.0.85
+Code Linting	Install dependencies	2026-05-18T00:04:43.1724471Z  + oauthlib==3.3.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1724726Z  + onnxruntime==1.26.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1725038Z  + opentelemetry-api==1.41.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1725439Z  + opentelemetry-exporter-otlp-proto-common==1.41.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1725935Z  + opentelemetry-exporter-otlp-proto-grpc==1.41.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1726365Z  + opentelemetry-proto==1.41.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1726687Z  + opentelemetry-sdk==1.41.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1727045Z  + opentelemetry-semantic-conventions==0.62b1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1727435Z  + orjson==3.11.9
+Code Linting	Install dependencies	2026-05-18T00:04:43.1727680Z  + ormsgpack==1.12.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1727951Z  + overrides==7.7.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1728215Z  + packaging==26.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1728471Z  + pathspec==1.1.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1728710Z  + pluggy==1.6.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1728970Z  + prometheus-client==0.25.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1729260Z  + propcache==0.5.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1729505Z  + protobuf==6.33.6
+Code Linting	Install dependencies	2026-05-18T00:04:43.1729742Z  + pybase64==1.4.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1730008Z  + pycodestyle==2.14.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1730273Z  + pycparser==3.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1730795Z  + pydantic==2.13.4
+Code Linting	Install dependencies	2026-05-18T00:04:43.1731077Z  + pydantic-core==2.46.4
+Code Linting	Install dependencies	2026-05-18T00:04:43.1731373Z  + pydantic-settings==2.14.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1731676Z  + pyflakes==3.4.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1731940Z  + pygments==2.20.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1732206Z  + pypika==0.51.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1732467Z  + pyproject-hooks==1.2.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1732775Z  + pytest==9.0.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1733028Z  + pytest-cov==7.1.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1733496Z  + python-dateutil==2.9.0.post0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1733813Z  + python-dotenv==1.2.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1734134Z  + python-multipart==0.0.28
+Code Linting	Install dependencies	2026-05-18T00:04:43.1734441Z  + pyyaml==6.0.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1734685Z  + rank-bm25==0.2.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1734939Z  + redis==7.4.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1735192Z  + referencing==0.37.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1735471Z  + regex==2026.5.9
+Code Linting	Install dependencies	2026-05-18T00:04:43.1735725Z  + requests==2.34.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1736007Z  + requests-oauthlib==2.0.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1736329Z  + requests-toolbelt==1.0.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1736641Z  + rich==15.0.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1736899Z  + rpds-py==0.30.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1737170Z  + safetensors==0.7.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1737454Z  + scikit-learn==1.8.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1737832Z  + scipy==1.17.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1738112Z  + sentence-transformers==5.5.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1738438Z  + setuptools==81.0.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1738703Z  + shellingham==1.5.4
+Code Linting	Install dependencies	2026-05-18T00:04:43.1738944Z  + six==1.17.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1739195Z  + sqlalchemy==2.0.49
+Code Linting	Install dependencies	2026-05-18T00:04:43.1739469Z  + starlette==1.0.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1739734Z  + sympy==1.14.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1739981Z  + tenacity==9.1.4
+Code Linting	Install dependencies	2026-05-18T00:04:43.1740253Z  + threadpoolctl==3.6.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1740541Z  + tokenizers==0.22.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1740814Z  + torch==2.12.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1741069Z  + tqdm==4.67.3
+Code Linting	Install dependencies	2026-05-18T00:04:43.1741319Z  + transformers==5.8.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1741588Z  + triton==3.7.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1741846Z  + typer==0.25.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1742117Z  + typing-extensions==4.15.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1742630Z  + typing-inspect==0.9.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1742947Z  + typing-inspection==0.4.2
+Code Linting	Install dependencies	2026-05-18T00:04:43.1743207Z  + urllib3==2.7.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1743610Z  + uuid-utils==0.15.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1743979Z  + uvicorn==0.47.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1744233Z  + uvloop==0.22.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1744462Z  + watchfiles==1.1.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1744659Z  + websocket-client==1.9.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1744857Z  + websockets==16.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1745024Z  + xxhash==3.7.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1745234Z  + yarl==1.23.0
+Code Linting	Install dependencies	2026-05-18T00:04:43.1745453Z  + zipp==3.23.1
+Code Linting	Install dependencies	2026-05-18T00:04:43.1745674Z  + zstandard==0.25.0
+Code Linting	Install dev dependencies	﻿2026-05-18T00:04:43.1952478Z ##[group]Run uv add --dev flake8 mypy
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.1952803Z ^[[36;1muv add --dev flake8 mypy^[[0m
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2024075Z shell: /usr/bin/bash -e {0}
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2024345Z env:
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2024533Z   PYTHON_VERSION: 3.11
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2024736Z   UV_VERSION: 0.2.0
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2024920Z   DOCKER_REGISTRY: ghcr.io
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2025229Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2025627Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2026009Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2026355Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2026701Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2027039Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.2027324Z ##[endgroup]
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.3010171Z Resolved 174 packages in 2ms
+Code Linting	Install dev dependencies	2026-05-18T00:04:43.3118382Z Checked 169 packages in 2ms
+Code Linting	Run flake8	﻿2026-05-18T00:04:43.3182113Z ##[group]Run uv run flake8 backend/ --max-line-length=120 --ignore=E501,W503,W291,W293,F401,F841,E302,F821
+Code Linting	Run flake8	2026-05-18T00:04:43.3182821Z ^[[36;1muv run flake8 backend/ --max-line-length=120 --ignore=E501,W503,W291,W293,F401,F841,E302,F821^[[0m
+Code Linting	Run flake8	2026-05-18T00:04:43.3222936Z shell: /usr/bin/bash -e {0}
+Code Linting	Run flake8	2026-05-18T00:04:43.3223220Z env:
+Code Linting	Run flake8	2026-05-18T00:04:43.3223665Z   PYTHON_VERSION: 3.11
+Code Linting	Run flake8	2026-05-18T00:04:43.3223935Z   UV_VERSION: 0.2.0
+Code Linting	Run flake8	2026-05-18T00:04:43.3224163Z   DOCKER_REGISTRY: ghcr.io
+Code Linting	Run flake8	2026-05-18T00:04:43.3224448Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Run flake8	2026-05-18T00:04:43.3224848Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Code Linting	Run flake8	2026-05-18T00:04:43.3225244Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Run flake8	2026-05-18T00:04:43.3225581Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Run flake8	2026-05-18T00:04:43.3225925Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Run flake8	2026-05-18T00:04:43.3226269Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Code Linting	Run flake8	2026-05-18T00:04:43.3226616Z ##[endgroup]
+Code Linting	Run mypy	﻿2026-05-18T00:04:44.4337454Z ##[group]Run uv run mypy backend/ --ignore-missing-imports 2>/dev/null || true
+Code Linting	Run mypy	2026-05-18T00:04:44.4337974Z ^[[36;1muv run mypy backend/ --ignore-missing-imports 2>/dev/null || true^[[0m
+Code Linting	Run mypy	2026-05-18T00:04:44.4376111Z shell: /usr/bin/bash -e {0}
+Code Linting	Run mypy	2026-05-18T00:04:44.4376389Z env:
+Code Linting	Run mypy	2026-05-18T00:04:44.4376570Z   PYTHON_VERSION: 3.11
+Code Linting	Run mypy	2026-05-18T00:04:44.4376770Z   UV_VERSION: 0.2.0
+Code Linting	Run mypy	2026-05-18T00:04:44.4376959Z   DOCKER_REGISTRY: ghcr.io
+Code Linting	Run mypy	2026-05-18T00:04:44.4377243Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Run mypy	2026-05-18T00:04:44.4377647Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Code Linting	Run mypy	2026-05-18T00:04:44.4378029Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Run mypy	2026-05-18T00:04:44.4378374Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Run mypy	2026-05-18T00:04:44.4378725Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Code Linting	Run mypy	2026-05-18T00:04:44.4379064Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Code Linting	Run mypy	2026-05-18T00:04:44.4379361Z ##[endgroup]
+Code Linting	Run mypy	2026-05-18T00:05:05.1028643Z backend/prompt/templates.py:27: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:07.8238854Z backend/models/schemas.py:258: error: List item 2 has incompatible type "EllipsisType"; expected "int | float | str | list[JsonValue] | JsonDict | None"  [list-item]
+Code Linting	Run mypy	2026-05-18T00:05:11.6449447Z backend/utils/logger.py:193: error: Variable "loguru.logger" is not valid as a type  [valid-type]
+Code Linting	Run mypy	2026-05-18T00:05:11.6454679Z backend/utils/logger.py:193: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+Code Linting	Run mypy	2026-05-18T00:05:11.8723016Z backend/core/config.py:242: error: Missing named argument "dashscope_api_key" for "Settings"  [call-arg]
+Code Linting	Run mypy	2026-05-18T00:05:11.8868691Z backend/utils/performance.py:19: error: Cannot determine type of "logger"  [has-type]
+Code Linting	Run mypy	2026-05-18T00:05:11.8869889Z backend/utils/performance.py:19: error: Name "logger" is used before definition  [used-before-def]
+Code Linting	Run mypy	2026-05-18T00:05:11.8871444Z backend/utils/performance.py:137: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:11.8872964Z backend/utils/performance.py:209: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:11.8874205Z backend/utils/performance.py:265: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:11.9089737Z backend/core/ab_test.py:88: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:11.9091501Z backend/core/ab_test.py:89: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:11.9093157Z backend/core/ab_test.py:90: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:11.9094866Z backend/core/ab_test.py:134: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:11.9095784Z backend/core/ab_test.py:140: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:11.9096642Z backend/core/ab_test.py:147: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:11.9097485Z backend/core/ab_test.py:158: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:11.9098353Z backend/core/ab_test.py:170: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:11.9099251Z backend/core/ab_test.py:202: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:12.1832876Z backend/database/session.py:34: error: Incompatible types in "yield" (actual type "None", expected type "AsyncSession")  [misc]
+Code Linting	Run mypy	2026-05-18T00:05:19.9648090Z backend/memory/redis_client.py:24: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:19.9649497Z backend/memory/redis_client.py:33: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:19.9651836Z backend/memory/redis_client.py:47: error: Incompatible types in "await" (actual type "Awaitable[bool] | bool", expected type "Awaitable[Any]")  [misc]
+Code Linting	Run mypy	2026-05-18T00:05:19.9653938Z backend/memory/redis_client.py:50: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3731922Z backend/memory/conversation.py:52: error: Incompatible types in "await" (actual type "Awaitable[int] | int", expected type "Awaitable[Any]")  [misc]
+Code Linting	Run mypy	2026-05-18T00:05:20.3734163Z backend/memory/conversation.py:55: error: Incompatible types in "await" (actual type "Awaitable[str] | str", expected type "Awaitable[Any]")  [misc]
+Code Linting	Run mypy	2026-05-18T00:05:20.3735766Z backend/memory/conversation.py:60: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3736992Z backend/memory/conversation.py:63: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3738450Z backend/memory/conversation.py:70: error: Incompatible types in "await" (actual type "Awaitable[list[Any]] | list[Any]", expected type "Awaitable[Any]")  [misc]
+Code Linting	Run mypy	2026-05-18T00:05:20.3739934Z backend/memory/conversation.py:77: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3741006Z backend/memory/conversation.py:80: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3742624Z backend/memory/conversation.py:96: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3743908Z backend/memory/conversation.py:99: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3859254Z backend/memory/cache.py:61: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3860312Z backend/memory/cache.py:66: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3861493Z backend/memory/cache.py:69: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3862512Z backend/memory/cache.py:91: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3863695Z backend/memory/cache.py:94: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3864616Z backend/memory/cache.py:109: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3865522Z backend/memory/cache.py:112: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3866382Z backend/memory/cache.py:115: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3867270Z backend/memory/cache.py:131: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3868211Z backend/memory/cache.py:134: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3869117Z backend/memory/cache.py:154: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3870134Z backend/memory/cache.py:160: error: "Coroutine[Any, Any, Redis]" has no attribute "pipeline"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3871210Z backend/memory/cache.py:160: note: Maybe you forgot to use "await"?
+Code Linting	Run mypy	2026-05-18T00:05:20.3872147Z backend/memory/cache.py:169: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3873082Z backend/memory/cache.py:172: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3874296Z backend/memory/cache.py:189: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3875200Z backend/memory/cache.py:198: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3876158Z backend/memory/cache.py:224: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3877112Z backend/memory/cache.py:227: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3878102Z backend/memory/cache.py:249: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3879070Z backend/memory/cache.py:252: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3879985Z backend/memory/cache.py:257: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3881397Z backend/memory/cache.py:263: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3882346Z backend/memory/cache.py:268: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.3883283Z backend/memory/cache.py:270: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.5935558Z backend/utils/rate_limiter.py:69: error: logger? has no attribute "warning"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.5936777Z backend/utils/rate_limiter.py:83: error: logger? has no attribute "warning"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.5937902Z backend/utils/rate_limiter.py:92: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.5939013Z backend/utils/rate_limiter.py:113: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.5940009Z backend/utils/rate_limiter.py:128: error: Need type annotation for "_queue"  [var-annotated]
+Code Linting	Run mypy	2026-05-18T00:05:20.5941286Z backend/utils/rate_limiter.py:130: error: Need type annotation for "_active_tasks" (hint: "_active_tasks: set[<type>] = ...")  [var-annotated]
+Code Linting	Run mypy	2026-05-18T00:05:20.5942734Z backend/utils/rate_limiter.py:172: error: Item "None" of "Address | None" has no attribute "host"  [union-attr]
+Code Linting	Run mypy	2026-05-18T00:05:20.6003523Z backend/utils/error_tracking.py:42: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:20.6005381Z backend/utils/error_tracking.py:43: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:20.6006856Z backend/utils/error_tracking.py:78: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.6007959Z backend/utils/error_tracking.py:119: error: logger? has no attribute "critical"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.6095421Z backend/generator/llm.py:57: error: Need type annotation for "queue"  [var-annotated]
+Code Linting	Run mypy	2026-05-18T00:05:20.6096470Z backend/generator/llm.py:124: error: Need type annotation for "queue"  [var-annotated]
+Code Linting	Run mypy	2026-05-18T00:05:20.6097812Z backend/generator/llm.py:260: error: Incompatible return value type (got "list[list[float] | None]", expected "list[list[float]]")  [return-value]
+Code Linting	Run mypy	2026-05-18T00:05:20.6221135Z backend/api/ab_test.py:169: error: Missing positional argument "timestamp" in call to "ExperimentResult"  [call-arg]
+Code Linting	Run mypy	2026-05-18T00:05:20.6222533Z backend/api/ab_test.py:200: error: Missing positional argument "timestamp" in call to "ExperimentResult"  [call-arg]
+Code Linting	Run mypy	2026-05-18T00:05:20.6224396Z backend/api/ab_test.py:311: error: Argument "name" to "create_experiment" of "ABTestManager" has incompatible type "Sequence[Collection[str]]"; expected "str"  [arg-type]
+Code Linting	Run mypy	2026-05-18T00:05:20.6226371Z backend/api/ab_test.py:312: error: Argument "description" to "create_experiment" of "ABTestManager" has incompatible type "Sequence[Collection[str]]"; expected "str"  [arg-type]
+Code Linting	Run mypy	2026-05-18T00:05:20.6228221Z backend/api/ab_test.py:314: error: Argument "variants" to "create_experiment" of "ABTestManager" has incompatible type "Sequence[Collection[str]]"; expected "list[dict[str, Any]]"  [arg-type]
+Code Linting	Run mypy	2026-05-18T00:05:20.9174345Z backend/core/security.py:108: error: logger? has no attribute "warning"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:20.9175876Z backend/core/security.py:133: error: Incompatible types in assignment (expression has type "Any | None", variable has type "str")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:20.9177258Z backend/core/security.py:185: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.6935658Z backend/retrieval/vector_store.py:79: error: Value of type "list[list[str]] | None" is not indexable  [index]
+Code Linting	Run mypy	2026-05-18T00:05:32.6937087Z backend/retrieval/vector_store.py:82: error: Value of type "list[list[float]] | None" is not indexable  [index]
+Code Linting	Run mypy	2026-05-18T00:05:32.7069630Z backend/retrieval/hybrid_retriever.py:21: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7071151Z backend/retrieval/hybrid_retriever.py:28: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:32.7074266Z backend/retrieval/hybrid_retriever.py:29: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:32.7076244Z backend/retrieval/hybrid_retriever.py:30: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:32.7077619Z backend/retrieval/hybrid_retriever.py:46: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7078658Z backend/retrieval/hybrid_retriever.py:51: error: logger? has no attribute "warning"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7079786Z backend/retrieval/hybrid_retriever.py:69: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7080876Z backend/retrieval/hybrid_retriever.py:87: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7081987Z backend/retrieval/hybrid_retriever.py:126: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7083115Z backend/retrieval/hybrid_retriever.py:132: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7084864Z backend/retrieval/hybrid_retriever.py:253: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7086031Z backend/retrieval/hybrid_retriever.py:284: error: logger? has no attribute "warning"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7087179Z backend/retrieval/hybrid_retriever.py:298: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7088308Z backend/retrieval/hybrid_retriever.py:318: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7089434Z backend/retrieval/hybrid_retriever.py:326: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7211547Z backend/utils/health.py:47: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:32.7213566Z backend/utils/health.py:48: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:32.7215413Z backend/utils/health.py:50: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:32.7216929Z backend/utils/health.py:59: error: No overload variant of "execute" of "AsyncSession" matches argument type "str"  [call-overload]
+Code Linting	Run mypy	2026-05-18T00:05:32.7218012Z backend/utils/health.py:59: note: Possible overload variants:
+Code Linting	Run mypy	2026-05-18T00:05:32.7220254Z backend/utils/health.py:59: note:     def [_T: Any] execute(self, statement: TypedReturnsRows[_T], params: Sequence[Mapping[str, Any]] | Mapping[str, Any] | None = ..., *, execution_options: _OrmKnownExecutionOptions | Mapping[str, Any] = ..., bind_arguments: dict[str, Any] | None = ..., _parent_execute_state: Any | None = ..., _add_event: Any | None = ...) -> Coroutine[Any, Any, Result[_T]]
+Code Linting	Run mypy	2026-05-18T00:05:32.7224300Z backend/utils/health.py:59: note:     def execute(self, statement: Executable, params: Sequence[Mapping[str, Any]] | Mapping[str, Any] | None = ..., *, execution_options: _OrmKnownExecutionOptions | Mapping[str, Any] = ..., bind_arguments: dict[str, Any] | None = ..., _parent_execute_state: Any | None = ..., _add_event: Any | None = ...) -> Coroutine[Any, Any, Result[Any]]
+Code Linting	Run mypy	2026-05-18T00:05:32.7227058Z backend/utils/health.py:91: error: Incompatible types in "await" (actual type "Awaitable[bool] | bool", expected type "Awaitable[Any]")  [misc]
+Code Linting	Run mypy	2026-05-18T00:05:32.7228665Z backend/utils/health.py:188: error: Incompatible types in assignment (expression has type "float", target has type "int")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:32.7229978Z backend/utils/health.py:189: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7230949Z backend/utils/health.py:199: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7232889Z backend/utils/health.py:201: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7272682Z backend/utils/health.py:211: error: Incompatible types in assignment (expression has type "tuple[ComponentHealth, ComponentHealth, ComponentHealth, ComponentHealth]", variable has type "list[ComponentHealth]")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:32.7276032Z backend/utils/health.py:213: error: Incompatible return value type (got "tuple[ComponentHealth, ComponentHealth, ComponentHealth, ComponentHealth]", expected "list[ComponentHealth]")  [return-value]
+Code Linting	Run mypy	2026-05-18T00:05:32.7307080Z backend/data_loader/loader.py:74: error: Incompatible types in assignment (expression has type "Path", variable has type "str")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:32.7308359Z backend/data_loader/loader.py:77: error: "str" has no attribute "glob"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7465209Z backend/core/dify.py:57: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7466276Z backend/core/dify.py:238: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7467248Z backend/core/dify.py:250: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7468213Z backend/core/dify.py:262: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7469568Z backend/core/dify.py:280: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7470431Z backend/core/dify.py:292: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7471585Z backend/core/dify.py:321: error: Argument "json" to "post" has incompatible type "dict[str, Collection[str]]"; expected "JsonType"  [arg-type]
+Code Linting	Run mypy	2026-05-18T00:05:32.7473035Z backend/core/dify.py:328: error: Incompatible types in assignment (expression has type "str", variable has type "bytes")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:32.7474894Z backend/core/dify.py:329: error: Argument 1 to "startswith" of "bytes" has incompatible type "str"; expected "Buffer | tuple[Buffer, ...]"  [arg-type]
+Code Linting	Run mypy	2026-05-18T00:05:32.7476226Z backend/core/dify.py:338: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7477207Z backend/core/dify.py:381: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7524181Z backend/chain/rag_chain.py:31: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7525197Z backend/chain/rag_chain.py:42: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7526214Z backend/chain/rag_chain.py:47: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7527180Z backend/chain/rag_chain.py:58: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7528172Z backend/chain/rag_chain.py:208: error: "RAGChain" has no attribute "vector_store"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7600241Z backend/api/dify.py:107: error: Argument 2 to "configure" of "DifyIntegration" has incompatible type "str | None"; expected "str"  [arg-type]
+Code Linting	Run mypy	2026-05-18T00:05:32.7601959Z backend/api/dify.py:150: error: Argument 2 to "create_application" of "DifyIntegration" has incompatible type "str | None"; expected "str"  [arg-type]
+Code Linting	Run mypy	2026-05-18T00:05:32.7603843Z backend/api/dify.py:221: error: Argument 3 to "chat_completion" of "DifyIntegration" has incompatible type "str | None"; expected "str"  [arg-type]
+Code Linting	Run mypy	2026-05-18T00:05:32.7715466Z backend/utils/task_manager.py:98: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Code Linting	Run mypy	2026-05-18T00:05:32.7716866Z backend/utils/task_manager.py:154: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7717997Z backend/utils/task_manager.py:156: error: logger? has no attribute "warning"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7719548Z backend/utils/task_manager.py:157: error: Incompatible types in assignment (expression has type "MemoryTaskStorage", variable has type "RedisTaskStorage")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:32.7721345Z backend/utils/task_manager.py:159: error: Incompatible types in assignment (expression has type "MemoryTaskStorage", variable has type "RedisTaskStorage")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:32.7723563Z backend/utils/task_manager.py:160: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7724679Z backend/utils/task_manager.py:165: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7726041Z backend/utils/task_manager.py:173: error: Incompatible default for parameter "user_id" (default has type "None", parameter has type "str")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:32.7727755Z backend/utils/task_manager.py:173: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+Code Linting	Run mypy	2026-05-18T00:05:32.7729416Z backend/utils/task_manager.py:173: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+Code Linting	Run mypy	2026-05-18T00:05:32.7730751Z backend/utils/task_manager.py:210: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7732137Z backend/utils/task_manager.py:213: error: Incompatible default for parameter "user_id" (default has type "None", parameter has type "str")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:32.7734040Z backend/utils/task_manager.py:213: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+Code Linting	Run mypy	2026-05-18T00:05:32.7736172Z backend/utils/task_manager.py:213: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+Code Linting	Run mypy	2026-05-18T00:05:32.7737541Z backend/utils/task_manager.py:236: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7738580Z backend/utils/task_manager.py:265: error: logger? has no attribute "debug"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7739635Z backend/utils/task_manager.py:272: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7875551Z backend/api/chat.py:51: error: Incompatible default for parameter "detail" (default has type "None", parameter has type "str")  [assignment]
+Code Linting	Run mypy	2026-05-18T00:05:32.7877291Z backend/api/chat.py:51: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+Code Linting	Run mypy	2026-05-18T00:05:32.7878735Z backend/api/chat.py:51: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+Code Linting	Run mypy	2026-05-18T00:05:32.7879933Z backend/api/chat.py:83: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7880805Z backend/api/chat.py:157: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7881701Z backend/api/chat.py:233: error: logger? has no attribute "error"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7940278Z backend/main.py:36: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7941240Z backend/main.py:42: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7942164Z backend/main.py:44: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7943046Z backend/main.py:49: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7944355Z backend/main.py:60: error: logger? has no attribute "warning"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7945397Z backend/main.py:68: error: logger? has no attribute "warning"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.7945994Z backend/main.py:70: error: logger? has no attribute "info"  [attr-defined]
+Code Linting	Run mypy	2026-05-18T00:05:32.8319484Z Found 137 errors in 24 files (checked 38 source files)
+Code Linting	Post Set up Python	﻿2026-05-18T00:05:32.9736686Z Post job cleanup.
+Code Linting	Post Checkout code	﻿2026-05-18T00:05:33.2137392Z Post job cleanup.
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3283700Z [command]/usr/bin/git version
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3329901Z git version 2.54.0
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3377977Z Temporarily overriding HOME='/home/runner/work/_temp/62a000e9-6960-40f4-a0eb-aa771a532eb7' before making global git config changes
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3379419Z Adding repository directory to the temporary git global config as a safe directory
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3400543Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sushi_digital_human/sushi_digital_human
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3446548Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3486630Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3779568Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3811224Z http.https://github.com/.extraheader
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3827144Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Code Linting	Post Checkout code	2026-05-18T00:05:33.3867463Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Code Linting	Post Checkout code	2026-05-18T00:05:33.4138568Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Code Linting	Post Checkout code	2026-05-18T00:05:33.4177235Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Code Linting	Complete job	﻿2026-05-18T00:05:33.4567344Z Cleaning up orphan processes
+Code Linting	Complete job	2026-05-18T00:05:33.4887154Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4, actions/setup-python@v5. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Unit & Integration Tests	Set up job	﻿2026-05-18T00:00:06.7236445Z Current runner version: '2.334.0'
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7316891Z ##[group]Runner Image Provisioner
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7318262Z Hosted Compute Agent
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7319085Z Version: 20260213.493
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7320289Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7321275Z Build Date: 2026-02-13T00:28:41Z
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7322488Z Worker ID: {1e192aed-3502-4d56-ae94-d17a49011766}
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7323565Z Azure Region: eastus
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7324282Z ##[endgroup]
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7326621Z ##[group]Operating System
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7327980Z Ubuntu
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7329028Z 24.04.4
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7338469Z LTS
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7339185Z ##[endgroup]
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7340201Z ##[group]Runner Image
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7341294Z Image: ubuntu-24.04
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7342040Z Version: 20260513.135.3
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7343610Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260513.135/images/ubuntu/Ubuntu2404-Readme.md
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7346494Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260513.135
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7348606Z ##[endgroup]
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7370989Z ##[group]GITHUB_TOKEN Permissions
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7374060Z Contents: read
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7374852Z Metadata: read
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7375679Z Packages: read
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7376518Z ##[endgroup]
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7380113Z Secret source: Actions
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.7381502Z Prepare workflow directory
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.8616871Z Prepare all required actions
+Unit & Integration Tests	Set up job	2026-05-18T00:00:06.8671342Z Getting action download info
+Unit & Integration Tests	Set up job	2026-05-18T00:00:07.1308621Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+Unit & Integration Tests	Set up job	2026-05-18T00:00:07.2724975Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+Unit & Integration Tests	Set up job	2026-05-18T00:00:07.5077205Z Complete job name: Unit & Integration Tests
+Unit & Integration Tests	Initialize containers	﻿2026-05-18T00:00:07.5553726Z ##[group]Checking docker version
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.5566910Z ##[command]/usr/bin/docker version --format '{{.Server.APIVersion}}'
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.6339217Z '1.48'
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.6351508Z Docker daemon API version: '1.48'
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.6352261Z ##[command]/usr/bin/docker version --format '{{.Client.APIVersion}}'
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.6551907Z '1.48'
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.6555159Z Docker client API version: '1.48'
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.6561191Z ##[endgroup]
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.6566115Z ##[group]Clean up resources from previous jobs
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.6572800Z ##[command]/usr/bin/docker ps --all --quiet --no-trunc --filter "label=9ab1db"
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.6859855Z ##[command]/usr/bin/docker network prune --force --filter "label=9ab1db"
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.7057364Z ##[endgroup]
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.7058079Z ##[group]Create local container network
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.7071849Z ##[command]/usr/bin/docker network create --label 9ab1db github_network_921fbb442c614153a2b88f7ec76648f8
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.8048282Z bfdf42d262b18a26f694a910cb83a117824219aa17fa870da85f41f6be23a20d
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.8055271Z ##[endgroup]
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.8080408Z ##[group]Starting redis service container
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:07.8105152Z ##[command]/usr/bin/docker pull redis:7-alpine
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:08.7410485Z 7-alpine: Pulling from library/redis
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1713548Z 897d797d2723: Pulling fs layer
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1720734Z c14c7509f545: Pulling fs layer
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1721823Z f546396032e0: Pulling fs layer
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1722719Z a300455a02bb: Pulling fs layer
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1723885Z 941ebb020cf0: Pulling fs layer
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1724764Z 4f4fb700ef54: Pulling fs layer
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1725612Z 677c7c5aa821: Pulling fs layer
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1726691Z 941ebb020cf0: Waiting
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1727600Z 4f4fb700ef54: Waiting
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1728440Z 677c7c5aa821: Waiting
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.1729821Z a300455a02bb: Waiting
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.9258899Z c14c7509f545: Download complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.9598199Z f546396032e0: Verifying Checksum
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:09.9600074Z f546396032e0: Download complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:10.6241454Z 941ebb020cf0: Verifying Checksum
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:10.6271187Z 941ebb020cf0: Download complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:10.7624641Z a300455a02bb: Verifying Checksum
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:10.7625356Z a300455a02bb: Download complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:11.4288926Z 4f4fb700ef54: Verifying Checksum
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:11.4290415Z 4f4fb700ef54: Download complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:11.5426448Z 677c7c5aa821: Verifying Checksum
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:11.5429929Z 677c7c5aa821: Download complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:14.5911343Z 897d797d2723: Verifying Checksum
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:14.5912220Z 897d797d2723: Download complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:14.7176556Z 897d797d2723: Pull complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:14.7798388Z c14c7509f545: Pull complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.4260074Z f546396032e0: Pull complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.6785998Z a300455a02bb: Pull complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.6965549Z 941ebb020cf0: Pull complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.7084084Z 4f4fb700ef54: Pull complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.7216302Z 677c7c5aa821: Pull complete
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.7260813Z Digest: sha256:6ab0b6e7381779332f97b8ca76193e45b0756f38d4c0dcda72dbb3c32061ab99
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.7286255Z Status: Downloaded newer image for redis:7-alpine
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.7296067Z docker.io/library/redis:7-alpine
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.7341025Z ##[command]/usr/bin/docker create --name 127a49acb2944ffdbc7c9762f1978bf4_redis7alpine_494e3f --label 9ab1db --network github_network_921fbb442c614153a2b88f7ec76648f8 --network-alias redis -p 6379:6379 --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5 -e GITHUB_ACTIONS=true -e CI=true redis:7-alpine
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.7600534Z 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:16.7624561Z ##[command]/usr/bin/docker start 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.0957876Z 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.0987952Z ##[command]/usr/bin/docker ps --all --filter id=9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8 --filter status=running --no-trunc --format "{{.ID}} {{.Status}}"
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.1137780Z 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8 Up Less than a second (health: starting)
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.1160226Z ##[command]/usr/bin/docker port 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.1294262Z 6379/tcp -> 0.0.0.0:6379
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.1298801Z 6379/tcp -> [::]:6379
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.1342862Z ##[endgroup]
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.1352176Z ##[group]Waiting for all services to be ready
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.1365719Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.1590261Z starting
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:17.1612717Z redis service is starting, waiting 2 seconds before checking again.
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:19.1614106Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:19.1753260Z starting
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:19.1767367Z redis service is starting, waiting 4 seconds before checking again.
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:23.1961895Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:23.2098347Z starting
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:23.2115369Z redis service is starting, waiting 8 seconds before checking again.
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:31.5053088Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:31.5214212Z healthy
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:31.5234491Z redis service is healthy.
+Unit & Integration Tests	Initialize containers	2026-05-18T00:00:31.5235411Z ##[endgroup]
+Unit & Integration Tests	Checkout code	﻿2026-05-18T00:00:31.5498554Z ##[group]Run actions/checkout@v4
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5499960Z with:
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5500392Z   repository: huangsongliang/sushi_digital_human
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5500999Z   token: ***
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5501221Z   ssh-strict: true
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5501436Z   ssh-user: git
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5501644Z   persist-credentials: true
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5501878Z   clean: true
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5502090Z   sparse-checkout-cone-mode: true
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5502351Z   fetch-depth: 1
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5502542Z   fetch-tags: false
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5502738Z   show-progress: true
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5502944Z   lfs: false
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5503119Z   submodules: false
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5503328Z   set-safe-directory: true
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5503843Z env:
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5504019Z   PYTHON_VERSION: 3.11
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5504225Z   UV_VERSION: 0.2.0
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5504413Z   DOCKER_REGISTRY: ghcr.io
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.5504632Z ##[endgroup]
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6677192Z Syncing repository: huangsongliang/sushi_digital_human
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6679756Z ##[group]Getting Git version info
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6680497Z Working directory is '/home/runner/work/sushi_digital_human/sushi_digital_human'
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6681491Z [command]/usr/bin/git version
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6737570Z git version 2.54.0
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6766775Z ##[endgroup]
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6784224Z Temporarily overriding HOME='/home/runner/work/_temp/46623cfb-c09c-4c78-8152-5bd077ea0765' before making global git config changes
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6785836Z Adding repository directory to the temporary git global config as a safe directory
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6804209Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sushi_digital_human/sushi_digital_human
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6856604Z Deleting the contents of '/home/runner/work/sushi_digital_human/sushi_digital_human'
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6860848Z ##[group]Initializing the repository
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6866740Z [command]/usr/bin/git init /home/runner/work/sushi_digital_human/sushi_digital_human
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6943711Z hint: Using 'master' as the name for the initial branch. This default branch name
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6945531Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6946679Z hint: to use in all of your new repositories, which will suppress this warning,
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6947483Z hint: call:
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6947936Z hint:
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6948616Z hint: 	git config --global init.defaultBranch <name>
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6949437Z hint:
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6950248Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6951239Z hint: 'development'. The just-created branch can be renamed via this command:
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6952090Z hint:
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6952580Z hint: 	git branch -m <name>
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6953147Z hint:
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6953847Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6955144Z Initialized empty Git repository in /home/runner/work/sushi_digital_human/sushi_digital_human/.git/
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.6966313Z [command]/usr/bin/git remote add origin https://github.com/huangsongliang/sushi_digital_human
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7008978Z ##[endgroup]
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7010327Z ##[group]Disabling automatic garbage collection
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7013938Z [command]/usr/bin/git config --local gc.auto 0
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7046775Z ##[endgroup]
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7047709Z ##[group]Setting up auth
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7055756Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7093064Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7421259Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7455130Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7702525Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7737442Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.7999845Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.8039405Z ##[endgroup]
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.8040759Z ##[group]Fetching the repository
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:31.8049780Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d71050000b44e1ee8968e6b83cd52d7ed046d075:refs/remotes/origin/main
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.6751801Z From https://github.com/huangsongliang/sushi_digital_human
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.6753234Z  * [new ref]         d71050000b44e1ee8968e6b83cd52d7ed046d075 -> origin/main
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.6788399Z ##[endgroup]
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.6789196Z ##[group]Determining the checkout info
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.6790427Z ##[endgroup]
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.6797260Z [command]/usr/bin/git sparse-checkout disable
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.6851653Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.6989222Z ##[group]Checking out the ref
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.6990463Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.9589060Z Switched to a new branch 'main'
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.9598405Z branch 'main' set up to track 'origin/main'.
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.9610285Z ##[endgroup]
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.9655493Z [command]/usr/bin/git log -1 --format=%H
+Unit & Integration Tests	Checkout code	2026-05-18T00:00:32.9680444Z d71050000b44e1ee8968e6b83cd52d7ed046d075
+Unit & Integration Tests	Set up Python	﻿2026-05-18T00:00:32.9914700Z ##[group]Run actions/setup-python@v5
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9914978Z with:
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9915163Z   python-version: 3.11
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9915401Z   check-latest: false
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9915750Z   token: ***
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9915947Z   update-environment: true
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9916192Z   allow-prereleases: false
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9916416Z   freethreaded: false
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9916613Z env:
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9916796Z   PYTHON_VERSION: 3.11
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9917010Z   UV_VERSION: 0.2.0
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9917218Z   DOCKER_REGISTRY: ghcr.io
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:32.9917439Z ##[endgroup]
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:33.1856778Z ##[group]Installed versions
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:33.2233643Z Successfully set up CPython (3.11.15)
+Unit & Integration Tests	Set up Python	2026-05-18T00:00:33.2234672Z ##[endgroup]
+Unit & Integration Tests	Install uv	﻿2026-05-18T00:00:33.2365858Z ##[group]Run curl -LsSf https://astral.sh/uv/install.sh | sh
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2366384Z ^[[36;1mcurl -LsSf https://astral.sh/uv/install.sh | sh^[[0m
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2366757Z ^[[36;1mecho "$HOME/.cargo/bin" >> $GITHUB_PATH^[[0m
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2464179Z shell: /usr/bin/bash -e {0}
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2464444Z env:
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2464654Z   PYTHON_VERSION: 3.11
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2464870Z   UV_VERSION: 0.2.0
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2465089Z   DOCKER_REGISTRY: ghcr.io
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2465467Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2465931Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2466352Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2466727Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2467110Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2467481Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.2467828Z ##[endgroup]
+Unit & Integration Tests	Install uv	2026-05-18T00:00:33.4273092Z downloading uv 0.11.14 x86_64-unknown-linux-gnu
+Unit & Integration Tests	Install uv	2026-05-18T00:00:34.1392552Z installing to /home/runner/.local/bin
+Unit & Integration Tests	Install uv	2026-05-18T00:00:34.1461846Z   uv
+Unit & Integration Tests	Install uv	2026-05-18T00:00:34.1484285Z   uvx
+Unit & Integration Tests	Install uv	2026-05-18T00:00:34.1524863Z everything's installed!
+Unit & Integration Tests	Install dependencies	﻿2026-05-18T00:00:34.1650873Z ##[group]Run uv sync
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1651262Z ^[[36;1muv sync^[[0m
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1690382Z shell: /usr/bin/bash -e {0}
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1690640Z env:
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1690827Z   PYTHON_VERSION: 3.11
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1691048Z   UV_VERSION: 0.2.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1691250Z   DOCKER_REGISTRY: ghcr.io
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1691564Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1691990Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1692394Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1692763Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1693148Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1693547Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.1693862Z ##[endgroup]
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.7196813Z Using CPython 3.11.15 interpreter at: /opt/hostedtoolcache/Python/3.11.15/x64/bin/python3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.7198088Z Creating virtual environment at: .venv
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:34.7357856Z Resolved 174 packages in 0.88ms
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:37.4746248Z Downloading nvidia-curand (56.8MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2152223Z Downloading zstandard (5.3MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2153259Z Downloading asyncmy (5.1MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2153962Z Downloading hf-xet (4.3MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2154569Z Downloading uvloop (3.6MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2155852Z Downloading nvidia-cuda-runtime (2.1MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2157325Z Downloading pydantic-core (2.0MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2163288Z Downloading dashscope (1.3MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2164148Z Downloading pygments (1.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2180021Z Downloading nvidia-cufile (1.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2186354Z Downloading torch (507.5MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2187280Z Downloading nvidia-cublas (403.5MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2189816Z Downloading nvidia-cudnn-cu13 (349.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2198458Z Downloading nvidia-cufft (204.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2199370Z Downloading nvidia-nccl-cu13 (196.4MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2200226Z Downloading triton (192.1MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2200801Z Downloading nvidia-cusolver (191.6MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2201453Z Downloading nvidia-cusparselt-cu13 (162.3MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2202132Z Downloading nvidia-cusparse (139.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2202752Z Downloading nvidia-cuda-nvrtc (86.0MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2203467Z Downloading nvidia-nvshmem-cu13 (57.6MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2204104Z Downloading scipy (33.7MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2204758Z Downloading chromadb (22.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2205438Z Downloading nvidia-nvjitlink (38.8MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2230114Z Downloading onnxruntime (17.3MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2239441Z Downloading numpy (16.1MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2240563Z Downloading mypy (14.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2241126Z Downloading nvidia-cuda-cupti (10.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2241553Z Downloading transformers (10.1MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2241967Z Downloading scikit-learn (8.7MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2242409Z Downloading grpcio (6.5MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2242875Z Downloading cuda-bindings (6.0MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2243267Z Downloading sympy (6.0MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2243616Z Downloading cryptography (4.5MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2244005Z Downloading sqlalchemy (3.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2244381Z Downloading tokenizers (3.1MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2244767Z Downloading langchain-community (2.4MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2245189Z Downloading networkx (2.0MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2245547Z Downloading aiohttp (1.7MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2245911Z Downloading kubernetes (1.9MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2246282Z Downloading ast-serialize (1.2MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:38.2246662Z Downloading setuptools (1.0MiB)
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:43.5023261Z  Downloaded pygments
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:45.9954087Z  Downloaded nvidia-cufile
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:46.2883965Z  Downloaded ast-serialize
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:46.6590958Z  Downloaded aiohttp
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:46.8609382Z  Downloaded setuptools
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:46.9692583Z  Downloaded dashscope
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:48.3214069Z  Downloaded nvidia-cuda-runtime
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:48.9860629Z  Downloaded tokenizers
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:49.1739860Z  Downloaded networkx
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:49.4737162Z  Downloaded pydantic-core
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:49.8841993Z  Downloaded sqlalchemy
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:50.1821667Z  Downloaded kubernetes
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:51.2330689Z  Downloaded langchain-community
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:52.1868295Z  Downloaded cryptography
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:53.3304853Z  Downloaded hf-xet
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:55.2037757Z  Downloaded uvloop
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:57.5884687Z  Downloaded zstandard
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:57.5935696Z  Downloaded sympy
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:57.8586110Z  Downloaded asyncmy
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:58.5061106Z  Downloaded grpcio
+Unit & Integration Tests	Install dependencies	2026-05-18T00:00:59.3028752Z  Downloaded cuda-bindings
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:01.4274307Z  Downloaded scikit-learn
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:06.6543519Z  Downloaded nvidia-cuda-cupti
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:07.8244133Z  Downloaded transformers
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:15.3704270Z  Downloaded mypy
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:22.6537519Z  Downloaded onnxruntime
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:23.6961832Z  Downloaded numpy
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:41.5661464Z    Building jieba==0.42.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:52.7716329Z  Downloaded chromadb
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:53.5486878Z       Built jieba==0.42.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:01:58.2273497Z  Downloaded scipy
+Unit & Integration Tests	Install dependencies	2026-05-18T00:02:00.2592504Z  Downloaded nvidia-nvjitlink
+Unit & Integration Tests	Install dependencies	2026-05-18T00:02:31.7200391Z  Downloaded nvidia-curand
+Unit & Integration Tests	Install dependencies	2026-05-18T00:02:36.0692934Z  Downloaded nvidia-nvshmem-cu13
+Unit & Integration Tests	Install dependencies	2026-05-18T00:03:08.4922621Z  Downloaded nvidia-cuda-nvrtc
+Unit & Integration Tests	Install dependencies	2026-05-18T00:03:56.6207294Z  Downloaded nvidia-cusparse
+Unit & Integration Tests	Install dependencies	2026-05-18T00:04:24.7862578Z  Downloaded nvidia-cusparselt-cu13
+Unit & Integration Tests	Install dependencies	2026-05-18T00:04:51.4620387Z  Downloaded nvidia-nccl-cu13
+Unit & Integration Tests	Install dependencies	2026-05-18T00:04:51.6543210Z  Downloaded nvidia-cusolver
+Unit & Integration Tests	Install dependencies	2026-05-18T00:04:52.0337119Z  Downloaded triton
+Unit & Integration Tests	Install dependencies	2026-05-18T00:04:53.5147715Z  Downloaded nvidia-cufft
+Unit & Integration Tests	Install dependencies	2026-05-18T00:05:44.3138945Z  Downloaded nvidia-cudnn-cu13
+Unit & Integration Tests	Install dependencies	2026-05-18T00:05:55.8185337Z  Downloaded nvidia-cublas
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:17.4646132Z  Downloaded torch
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:17.4678999Z Prepared 169 packages in 5m 42s
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0589040Z Installed 169 packages in 590ms
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0596454Z  + aiohappyeyeballs==2.6.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0608172Z  + aiohttp==3.13.5
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0608693Z  + aiosignal==1.4.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0609277Z  + aiosqlite==0.22.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0610180Z  + alembic==1.18.4
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0610707Z  + annotated-doc==0.0.4
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0611234Z  + annotated-types==0.7.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0611733Z  + anyio==4.13.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0612188Z  + ast-serialize==0.4.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0612676Z  + asyncmy==0.2.11
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0613119Z  + attrs==26.1.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0613575Z  + bcrypt==5.0.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0614014Z  + build==1.5.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0614465Z  + certifi==2026.4.22
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0614942Z  + cffi==2.0.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0615426Z  + charset-normalizer==3.4.7
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0615940Z  + chromadb==1.5.9
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0616395Z  + click==8.4.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0616889Z  + coverage==7.14.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0617354Z  + cryptography==48.0.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0617850Z  + cuda-bindings==13.2.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0618362Z  + cuda-pathfinder==1.5.4
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0618859Z  + cuda-toolkit==13.0.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0619342Z  + dashscope==1.25.18
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0619987Z  + dataclasses-json==0.6.7
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0620502Z  + durationpy==0.10
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0620967Z  + fastapi==0.136.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0621406Z  + filelock==3.29.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0621857Z  + flake8==7.3.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0622320Z  + flatbuffers==25.12.19
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0622801Z  + frozenlist==1.8.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0623269Z  + fsspec==2026.4.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0623759Z  + googleapis-common-protos==1.75.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0624314Z  + greenlet==3.5.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0624766Z  + grpcio==1.80.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0625209Z  + h11==0.16.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0625635Z  + hf-xet==1.5.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0626076Z  + httpcore==1.0.9
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0627001Z  + httptools==0.7.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0627454Z  + httpx==0.28.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0627904Z  + httpx-sse==0.4.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0628396Z  + huggingface-hub==1.15.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0628886Z  + idna==3.15
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0629345Z  + importlib-metadata==8.7.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0630044Z  + importlib-resources==7.1.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0630564Z  + iniconfig==2.3.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0631013Z  + jieba==0.42.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0631443Z  + jinja2==3.1.6
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0631880Z  + joblib==1.5.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0632322Z  + jsonpatch==1.33
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0632783Z  + jsonpointer==3.1.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0633260Z  + jsonschema==4.26.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0633764Z  + jsonschema-specifications==2025.9.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0634355Z  + kubernetes==35.0.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0634836Z  + langchain==1.3.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0635310Z  + langchain-classic==1.0.7
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0635843Z  + langchain-community==0.4.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0636380Z  + langchain-core==1.4.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0636915Z  + langchain-protocol==0.0.15
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0637492Z  + langchain-text-splitters==1.1.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0638053Z  + langgraph==1.2.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0638547Z  + langgraph-checkpoint==4.1.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0639108Z  + langgraph-prebuilt==1.1.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0639765Z  + langgraph-sdk==0.3.14
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0640381Z  + langsmith==0.8.5
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0640845Z  + librt==0.11.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0641290Z  + loguru==0.7.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0641724Z  + mako==1.3.12
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0642189Z  + markdown-it-py==4.2.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0642794Z  + markupsafe==3.0.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0643407Z  + marshmallow==3.26.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0646238Z  + mccabe==0.7.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0646730Z  + mdurl==0.1.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0647172Z  + mmh3==5.2.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0647603Z  + mpmath==1.3.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0648064Z  + multidict==6.7.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0648578Z  + mypy==2.1.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0648873Z  + mypy-extensions==1.1.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0649212Z  + networkx==3.6.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0650046Z  + numpy==2.4.5
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0650407Z  + nvidia-cublas==13.1.1.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0650753Z  + nvidia-cuda-cupti==13.0.85
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0651102Z  + nvidia-cuda-nvrtc==13.0.88
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0651452Z  + nvidia-cuda-runtime==13.0.96
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0651810Z  + nvidia-cudnn-cu13==9.20.0.48
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0652303Z  + nvidia-cufft==12.0.0.61
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0652640Z  + nvidia-cufile==1.15.1.6
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0652951Z  + nvidia-curand==10.4.0.35
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0653286Z  + nvidia-cusolver==12.0.4.66
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0653631Z  + nvidia-cusparse==12.6.3.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0654116Z  + nvidia-cusparselt-cu13==0.8.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0654490Z  + nvidia-nccl-cu13==2.29.7
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0654818Z  + nvidia-nvjitlink==13.0.88
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0655161Z  + nvidia-nvshmem-cu13==3.4.5
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0655500Z  + nvidia-nvtx==13.0.85
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0655794Z  + oauthlib==3.3.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0656203Z  + onnxruntime==1.26.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0656514Z  + opentelemetry-api==1.41.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0656968Z  + opentelemetry-exporter-otlp-proto-common==1.41.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0657552Z  + opentelemetry-exporter-otlp-proto-grpc==1.41.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0658028Z  + opentelemetry-proto==1.41.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0658386Z  + opentelemetry-sdk==1.41.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0658992Z  + opentelemetry-semantic-conventions==0.62b1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0659610Z  + orjson==3.11.9
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0660008Z  + ormsgpack==1.12.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0660301Z  + overrides==7.7.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0660586Z  + packaging==26.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0660855Z  + pathspec==1.1.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0661252Z  + pluggy==1.6.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0661562Z  + prometheus-client==0.25.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0661895Z  + propcache==0.5.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0662090Z  + protobuf==6.33.6
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0662268Z  + pybase64==1.4.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0662457Z  + pycodestyle==2.14.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0662661Z  + pycparser==3.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0663378Z  + pydantic==2.13.4
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0663637Z  + pydantic-core==2.46.4
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0663859Z  + pydantic-settings==2.14.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0664074Z  + pyflakes==3.4.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0664255Z  + pygments==2.20.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0664571Z  + pypika==0.51.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0664857Z  + pyproject-hooks==1.2.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0665068Z  + pytest==9.0.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0665379Z  + pytest-cov==7.1.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0665671Z  + python-dateutil==2.9.0.post0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0666021Z  + python-dotenv==1.2.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0666241Z  + python-multipart==0.0.28
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0666452Z  + pyyaml==6.0.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0666625Z  + rank-bm25==0.2.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0666805Z  + redis==7.4.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0667143Z  + referencing==0.37.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0667418Z  + regex==2026.5.9
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0667603Z  + requests==2.34.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0667940Z  + requests-oauthlib==2.0.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0668259Z  + requests-toolbelt==1.0.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0668641Z  + rich==15.0.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0668890Z  + rpds-py==0.30.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0669152Z  + safetensors==0.7.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0669425Z  + scikit-learn==1.8.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0669888Z  + scipy==1.17.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0670160Z  + sentence-transformers==5.5.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0670497Z  + setuptools==81.0.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0670780Z  + shellingham==1.5.4
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0671038Z  + six==1.17.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0671293Z  + sqlalchemy==2.0.49
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0671554Z  + starlette==1.0.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0671817Z  + sympy==1.14.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0672073Z  + tenacity==9.1.4
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0672340Z  + threadpoolctl==3.6.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0672638Z  + tokenizers==0.22.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0672914Z  + torch==2.12.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0673163Z  + tqdm==4.67.3
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0673425Z  + transformers==5.8.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0673699Z  + triton==3.7.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0673945Z  + typer==0.25.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0674229Z  + typing-extensions==4.15.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0674575Z  + typing-inspect==0.9.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0674908Z  + typing-inspection==0.4.2
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0675214Z  + urllib3==2.7.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0675483Z  + uuid-utils==0.15.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0675763Z  + uvicorn==0.47.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0675960Z  + uvloop==0.22.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0676144Z  + watchfiles==1.1.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0676348Z  + websocket-client==1.9.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0676565Z  + websockets==16.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0676911Z  + xxhash==3.7.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0677170Z  + yarl==1.23.0
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0677434Z  + zipp==3.23.1
+Unit & Integration Tests	Install dependencies	2026-05-18T00:06:18.0677646Z  + zstandard==0.25.0
+Unit & Integration Tests	Install test dependencies	﻿2026-05-18T00:06:18.0911871Z ##[group]Run uv add --dev pytest pytest-cov
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0912238Z ^[[36;1muv add --dev pytest pytest-cov^[[0m
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0981401Z shell: /usr/bin/bash -e {0}
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0981653Z env:
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0981838Z   PYTHON_VERSION: 3.11
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0982054Z   UV_VERSION: 0.2.0
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0982268Z   DOCKER_REGISTRY: ghcr.io
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0982565Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0982987Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0983390Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0983749Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0984118Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0984481Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.0984783Z ##[endgroup]
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.2075879Z Resolved 174 packages in 3ms
+Unit & Integration Tests	Install test dependencies	2026-05-18T00:06:18.2213662Z Checked 169 packages in 3ms
+Unit & Integration Tests	Run unit tests	﻿2026-05-18T00:06:18.2300997Z ##[group]Run uv run pytest tests/unit/ -v --tb=short
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2301628Z ^[[36;1muv run pytest tests/unit/ -v --tb=short^[[0m
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2354657Z shell: /usr/bin/bash -e {0}
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2355025Z env:
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2355530Z   PYTHON_VERSION: 3.11
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2355849Z   UV_VERSION: 0.2.0
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2356144Z   DOCKER_REGISTRY: ghcr.io
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2356650Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2357315Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2357986Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2358589Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2359181Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2360030Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2360583Z   REDIS_URL: redis://localhost:6379
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2361198Z   DASHSCOPE_API_KEY: ***
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:18.2361557Z ##[endgroup]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.2481145Z ============================= test session starts ==============================
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.2482623Z platform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0 -- /home/runner/work/sushi_digital_human/sushi_digital_human/.venv/bin/python
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.2483990Z cachedir: .pytest_cache
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.2484777Z rootdir: /home/runner/work/sushi_digital_human/sushi_digital_human
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.2485530Z configfile: pyproject.toml
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.2486150Z plugins: langsmith-0.8.5, anyio-4.13.0, cov-7.1.0
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4691509Z collecting ... collected 26 items
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4692149Z 
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4702948Z tests/unit/test_ab_test.py::TestABTestManager::test_create_experiment PASSED [  3%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4712716Z tests/unit/test_ab_test.py::TestABTestManager::test_create_experiment_invalid_traffic PASSED [  7%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4724059Z tests/unit/test_ab_test.py::TestABTestManager::test_start_experiment PASSED [ 11%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4735748Z tests/unit/test_ab_test.py::TestABTestManager::test_assign_variant PASSED [ 15%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4746781Z tests/unit/test_ab_test.py::TestABTestManager::test_record_result PASSED [ 19%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4759352Z tests/unit/test_ab_test.py::TestABTestManager::test_get_experiment_results PASSED [ 23%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4771571Z tests/unit/test_ab_test.py::TestABTestManager::test_pause_and_complete_experiment PASSED [ 26%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4783761Z tests/unit/test_ab_test.py::TestABTestManager::test_get_all_experiments PASSED [ 30%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4791038Z tests/unit/test_logger.py::TestRequestTracking::test_set_get_request_id PASSED [ 34%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4797729Z tests/unit/test_logger.py::TestRequestTracking::test_set_get_session_id PASSED [ 38%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4804719Z tests/unit/test_logger.py::TestRequestTracking::test_request_context_manager PASSED [ 42%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4814638Z tests/unit/test_logger.py::TestStructuredLogger::test_logger_methods PASSED [ 46%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4823009Z tests/unit/test_logger.py::TestStructuredLogger::test_log_with_context PASSED [ 50%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4831166Z tests/unit/test_logger.py::TestJsonFormatter::test_json_formatter PASSED [ 53%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.4939284Z tests/unit/test_performance.py::TestTimer::test_timer_start_stop PASSED  [ 57%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5047266Z tests/unit/test_performance.py::TestTimer::test_timer_context_manager PASSED [ 61%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5155258Z tests/unit/test_performance.py::TestTimer::test_timer_reset PASSED       [ 65%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5162408Z tests/unit/test_performance.py::TestPerformanceMonitor::test_record_operation PASSED [ 69%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5169073Z tests/unit/test_performance.py::TestPerformanceMonitor::test_increment_request_count PASSED [ 73%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5175901Z tests/unit/test_performance.py::TestPerformanceMonitor::test_add_request_time PASSED [ 76%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5182820Z tests/unit/test_performance.py::TestPerformanceMonitor::test_get_metrics PASSED [ 80%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5189721Z tests/unit/test_performance.py::TestPerformanceMonitor::test_calculate_percentile PASSED [ 84%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5196310Z tests/unit/test_performance.py::TestPerformanceMonitor::test_reset PASSED [ 88%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5205304Z tests/unit/test_performance.py::TestPrometheusMetrics::test_generate_metrics PASSED [ 92%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.5213129Z tests/unit/test_performance.py::TestPrometheusMetrics::test_record_request PASSED [ 96%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.6001125Z tests/unit/test_performance.py::TestPrometheusMetrics::test_record_error PASSED [100%]
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.6002091Z 
+Unit & Integration Tests	Run unit tests	2026-05-18T00:06:21.6002722Z ============================== 26 passed in 0.28s ==============================
+Unit & Integration Tests	Run integration tests	﻿2026-05-18T00:06:21.7045808Z ##[group]Run uv run pytest tests/integration/ -v --tb=short
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7046480Z ^[[36;1muv run pytest tests/integration/ -v --tb=short^[[0m
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7101040Z shell: /usr/bin/bash -e {0}
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7101405Z env:
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7101681Z   PYTHON_VERSION: 3.11
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7102002Z   UV_VERSION: 0.2.0
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7102311Z   DOCKER_REGISTRY: ghcr.io
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7102785Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7103491Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7104170Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7104811Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7105416Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7106025Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7106580Z   REDIS_URL: redis://localhost:6379
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7107253Z   DASHSCOPE_API_KEY: ***
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:21.7107576Z ##[endgroup]
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:22.3244325Z ============================= test session starts ==============================
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:22.3245841Z platform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0 -- /home/runner/work/sushi_digital_human/sushi_digital_human/.venv/bin/python
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:22.3247138Z cachedir: .pytest_cache
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:22.3247959Z rootdir: /home/runner/work/sushi_digital_human/sushi_digital_human
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:22.3248742Z configfile: pyproject.toml
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:22.3249383Z plugins: langsmith-0.8.5, anyio-4.13.0, cov-7.1.0
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4192741Z collecting ... collected 0 items / 1 error
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4193382Z 
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4193818Z ==================================== ERRORS ====================================
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4194769Z ________________ ERROR collecting tests/integration/test_api.py ________________
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4195577Z tests/integration/test_api.py:7: in <module>
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4196229Z     from backend.main import app
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4196753Z backend/main.py:10: in <module>
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4197400Z     from backend.api import chat_router, ab_test_router, dify_router
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4198107Z backend/api/__init__.py:4: in <module>
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4198752Z     from backend.api.ab_test import router as ab_test_router
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4199695Z <frozen importlib._bootstrap>:1176: in _find_and_load
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4200345Z     ???
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4200885Z <frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4201520Z     ???
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4201984Z <frozen importlib._bootstrap>:690: in _load_unlocked
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4202570Z     ???
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4203212Z .venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4204011Z     exec(co, module.__dict__)
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4204528Z backend/api/ab_test.py:189: in <module>
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4205085Z     @router.post("/feedback")
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4205555Z      ^^^^^^^^^^^^^^^^^^^^^^^^
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4206191Z .venv/lib/python3.11/site-packages/fastapi/routing.py:1450: in decorator
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4206907Z     self.add_api_route(
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4207559Z .venv/lib/python3.11/site-packages/fastapi/routing.py:1386: in add_api_route
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4208311Z     route = route_class(
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4209691Z .venv/lib/python3.11/site-packages/fastapi/routing.py:949: in __init__
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4210430Z     self.dependant = get_dependant(
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4211209Z .venv/lib/python3.11/site-packages/fastapi/dependencies/utils.py:358: in get_dependant
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4212183Z     add_param_to_fields(field=param_details.field, dependant=dependant)
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4213178Z .venv/lib/python3.11/site-packages/fastapi/dependencies/utils.py:572: in add_param_to_fields
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4214129Z     assert field_info_in == params.ParamTypes.cookie, (
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4215280Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4219773Z E   AssertionError: non-body parameters must be in path, query, header or cookie: feedback
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4220912Z ------------------------------- Captured stdout --------------------------------
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4222760Z ^[[32m2026-05-18 00:06:24^[[0m | ^[[1mINFO    ^[[0m | ^[[36mbackend.retrieval.hybrid_retriever^[[0m:^[[36m<module>^[[0m:^[[36m21^[[0m | ^[[1mHugging Face 镜像源已设置为: https://hf-mirror.com^[[0m
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4224832Z ^[[32m2026-05-18 00:06:24^[[0m | ^[[1mINFO    ^[[0m | ^[[36mbackend.retrieval.hybrid_retriever^[[0m:^[[36mget_hybrid_retriever^[[0m:^[[36m318^[[0m | ^[[1m混合检索器已初始化^[[0m
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4226099Z =========================== short test summary info ============================
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4231534Z ERROR tests/integration/test_api.py - AssertionError: non-body parameters must be in path, query, header or cookie: feedback
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4232788Z !!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.4233576Z =============================== 1 error in 2.87s ===============================
+Unit & Integration Tests	Run integration tests	2026-05-18T00:06:25.6292277Z ##[error]Process completed with exit code 2.
+Unit & Integration Tests	Post Checkout code	﻿2026-05-18T00:06:25.6382373Z Post job cleanup.
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7415310Z [command]/usr/bin/git version
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7459265Z git version 2.54.0
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7505999Z Temporarily overriding HOME='/home/runner/work/_temp/78dcb00e-4d03-40f3-b301-018212a68ebf' before making global git config changes
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7507547Z Adding repository directory to the temporary git global config as a safe directory
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7524561Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sushi_digital_human/sushi_digital_human
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7564268Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7602795Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7884044Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7912351Z http.https://github.com/.extraheader
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7926471Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.7963106Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.8219116Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Unit & Integration Tests	Post Checkout code	2026-05-18T00:06:25.8255608Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Unit & Integration Tests	Stop containers	﻿2026-05-18T00:06:25.8727646Z Print service container logs: 127a49acb2944ffdbc7c9762f1978bf4_redis7alpine_494e3f
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8733021Z ##[command]/usr/bin/docker logs --details 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8871006Z  1:C 18 May 2026 00:00:17.103 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8874116Z  1:C 18 May 2026 00:00:17.103 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8875203Z  1:C 18 May 2026 00:00:17.103 * Redis version=7.4.9, bits=64, commit=00000000, modified=0, pid=1, just started
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8876830Z  1:C 18 May 2026 00:00:17.103 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8878150Z  1:M 18 May 2026 00:00:17.104 * monotonic clock: POSIX clock_gettime
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8878935Z  1:M 18 May 2026 00:00:17.104 * Running mode=standalone, port=6379.
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8879790Z  1:M 18 May 2026 00:00:17.105 * Server initialized
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8880517Z  1:M 18 May 2026 00:00:17.105 * Ready to accept connections tcp
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8893024Z Stop and remove container: 127a49acb2944ffdbc7c9762f1978bf4_redis7alpine_494e3f
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:25.8898048Z ##[command]/usr/bin/docker rm --force 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:26.4793587Z 9412c637099b5d7e4695782069cfe3ba038617a462e8a7758490880d7d96c6d8
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:26.4827423Z Remove container network: github_network_921fbb442c614153a2b88f7ec76648f8
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:26.4832730Z ##[command]/usr/bin/docker network rm github_network_921fbb442c614153a2b88f7ec76648f8
+Unit & Integration Tests	Stop containers	2026-05-18T00:06:26.5596942Z github_network_921fbb442c614153a2b88f7ec76648f8
+Unit & Integration Tests	Complete job	﻿2026-05-18T00:06:26.5663299Z Cleaning up orphan processes
+Unit & Integration Tests	Complete job	2026-05-18T00:06:26.5988608Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4, actions/setup-python@v5. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

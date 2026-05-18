@@ -8,6 +8,10 @@ from contextlib import contextmanager
 from datetime import datetime
 from collections import defaultdict
 
+from backend.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
 try:
     from prometheus_client import (
         Counter, Gauge, Histogram, Summary,
@@ -17,10 +21,6 @@ try:
 except ImportError:
     PROMETHEUS_AVAILABLE = False
     logger.warning("Prometheus client not installed, metrics will not be exposed")
-
-from backend.utils.logger import get_logger
-
-logger = get_logger(__name__)
 
 # Prometheus 指标注册器
 _registry = CollectorRegistry() if PROMETHEUS_AVAILABLE else None

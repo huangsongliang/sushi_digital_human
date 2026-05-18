@@ -3,6 +3,7 @@ import signal
 import time
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Response, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -149,9 +150,8 @@ async def health_check():
     elif report["status"] == "unhealthy":
         status_code = 503  # 不健康状态返回 503
     
-    return Response(
+    return JSONResponse(
         content=report,
-        media_type="application/json",
         status_code=status_code
     )
 
