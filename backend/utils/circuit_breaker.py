@@ -1,12 +1,7 @@
-"""熔断器模块 - 防止服务雪崩
-实现模式：
-1. Closed（关闭）：正常状态，允许请求通过
-2. Open（打开）：熔断器触发，拒绝所有请求
-3. Half-Open（半开）：尝试恢复，允许少量请求测试
-"""
+"""熔断器模块 - 防止服务雪崩"""
 import asyncio
 import time
-from typing import Callable, Any, Optional, Dict
+from typing import Callable, Any, Dict
 from enum import Enum
 from backend.utils.logger import get_logger
 
@@ -15,9 +10,9 @@ logger = get_logger(__name__)
 
 class CircuitBreakerState(Enum):
     """熔断器状态"""
-    CLOSED = "closed"      # 正常状态
-    OPEN = "open"          # 熔断状态
-    HALF_OPEN = "half_open"  # 尝试恢复状态
+    CLOSED = "closed"
+    OPEN = "open"
+    HALF_OPEN = "half_open"
 
 
 class CircuitBreakerError(Exception):
@@ -29,7 +24,7 @@ class CircuitBreakerError(Exception):
 
 class CircuitBreaker:
     """熔断器实现"""
-    
+
     def __init__(
         self,
         name: str,
@@ -51,33 +46,30 @@ class CircuitBreaker:
         self.success_threshold = success_threshold
         self.reset_timeout = reset_timeout
         self.max_concurrent_requests = max_concurrent_requests
-        
-        # 状态管理
+
         self._state = CircuitBreakerState.CLOSED
         self._failure_count = 0
         self._success_count = 0
         self._last_failure_time = 0
         self._concurrent_requests = 0
-        
-        # 统计信息
+
         self._total_requests = 0
         self._total_failures = 0
         self._total_successes = 0
         self._tripped_count = 0
-        
-        # 锁
+
         self._lock = asyncio.Lock()
-    
+
     @property
     def state(self) -> CircuitBreakerState:
         """获取当前状态（带自动恢复逻辑）"""
         if self._state == CircuitBreakerState.OPEN:
-            # 检查是否可以尝试恢复
             if time.time() - self._last_failure_time >= self.reset_timeout:
-                logger.info(f"Circuit breaker {self.name}: attempting recovery")
+                msg = f"Circuit breaker {self.name}: attempting recovery"
+                logger.info(msg)
                 self._state = CircuitBreakerState.HALF_OPEN
         return self._state
-    
+
     @property
     def stats(self) -> Dict[str, Any]:
         """获取统计信息"""
@@ -95,72 +87,67 @@ class CircuitBreaker:
             "tripped_count": self._tripped_count,
             "concurrent_requests": self._concurrent_requests
         }
-    
+
     async def _record_success(self):
         """记录成功"""
         async with self._lock:
             self._success_count += 1
             self._total_successes += 1
-            self._failure_count = 0  # 重置失败计数
-            
-            # 半开状态下检查是否恢复成功
+            self._failure_count = 0
+
             if self._state == CircuitBreakerState.HALF_OPEN:
                 if self._success_count >= self.success_threshold:
-                    logger.info(f"Circuit breaker {self.name}: recovered successfully")
+                    msg = f"Circuit breaker {self.name}: recovered"
+                    logger.info(msg)
                     self._state = CircuitBreakerState.CLOSED
                     self._success_count = 0
-    
+
     async def _record_failure(self):
         """记录失败"""
         async with self._lock:
             self._failure_count += 1
             self._total_failures += 1
-            self._success_count = 0  # 重置成功计数
+            self._success_count = 0
             self._last_failure_time = time.time()
-            
-            # 检查是否需要触发熔断
+
             if self._failure_count >= self.failure_threshold:
                 if self._state != CircuitBreakerState.OPEN:
                     logger.warning(f"Circuit breaker {self.name} tripped!")
                     self._tripped_count += 1
                 self._state = CircuitBreakerState.OPEN
-    
-    async def call(self, func: Callable[..., Any], *args, **kwargs) -> Any:
+
+    async def call(self, func: Callable[..., Any],
+                   *args, **kwargs) -> Any:
         """执行受保护的调用"""
-        # 检查状态
         current_state = self.state
-        
+
         if current_state == CircuitBreakerState.OPEN:
             raise CircuitBreakerError(
                 f"Circuit breaker {self.name} is open, request rejected",
                 self.name
             )
-        
-        # 检查并发限制
+
         if self._concurrent_requests >= self.max_concurrent_requests:
             raise CircuitBreakerError(
                 f"Circuit breaker {self.name} concurrent limit exceeded",
                 self.name
             )
-        
+
         self._total_requests += 1
-        
-        # 增加并发计数
         self._concurrent_requests += 1
-        
+
         try:
             result = await func(*args, **kwargs)
             await self._record_success()
             return result
         except CircuitBreakerError:
-            # 不要捕获熔断器自身的异常
             raise
-        except Exception as e:
+        except Exception:
             await self._record_failure()
             raise
         finally:
             self._concurrent_requests -= 1
-    
+
     def reset(self):
         """重置熔断器状态"""
         self._state = CircuitBreakerState.CLOSED
@@ -172,10 +159,10 @@ class CircuitBreaker:
 
 class CircuitBreakerManager:
     """熔断器管理器 - 管理多个熔断器"""
-    
+
     def __init__(self):
         self._breakers: Dict[str, CircuitBreaker] = {}
-    
+
     def get_breaker(
         self,
         name: str,
@@ -192,24 +179,22 @@ class CircuitBreakerManager:
                 reset_timeout=reset_timeout
             )
         return self._breakers[name]
-    
+
     def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
         """获取所有熔断器的统计信息"""
         return {
             name: breaker.stats
             for name, breaker in self._breakers.items()
         }
-    
+
     def reset_all(self):
         """重置所有熔断器"""
         for breaker in self._breakers.values():
             breaker.reset()
 
 
-# 全局熔断器管理器
 circuit_breaker_manager = CircuitBreakerManager()
 
-# 预定义的熔断器
 llm_breaker = CircuitBreaker(
     name="llm_api",
     failure_threshold=10,
