@@ -1,5 +1,4 @@
 """API聊天模块单元测试"""
-import pytest
 from backend.api.chat import (
     ChatRequest,
     ChatResponse,
