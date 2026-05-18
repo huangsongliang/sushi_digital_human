@@ -1,8 +1,4 @@
-"""
-配置模块测试
-"""
-
-import pytest
+"""配置模块测试"""
 from backend.core.config import Settings
 
 

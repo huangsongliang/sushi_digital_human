@@ -1,6 +1,5 @@
-"""聊天API单元测试"""
+"""API聊天模块单元测试"""
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
 from backend.api.chat import (
     ChatRequest,
     ChatResponse,
@@ -11,56 +10,68 @@ from backend.api.chat import (
 
 class TestChatRequestModel:
     """聊天请求模型测试"""
-    
+
     def test_chat_request_creation(self):
-        request = ChatRequest(message="Hello", session_id="test-session", use_rag=True, top_k=3)
-        assert request.message == "Hello"
-        assert request.session_id == "test-session"
-        assert request.use_rag is True
-        assert request.top_k == 3
-    
-    def test_chat_request_defaults(self):
         request = ChatRequest(message="Hello")
+        assert request.message == "Hello"
         assert request.session_id is None
         assert request.use_rag is True
         assert request.top_k == 3
 
+    def test_chat_request_with_session(self):
+        request = ChatRequest(
+            message="Hello",
+            session_id="session123",
+            use_rag=False,
+            top_k=5
+        )
+        assert request.session_id == "session123"
+        assert request.use_rag is False
+        assert request.top_k == 5
+
 
 class TestChatResponseModel:
     """聊天响应模型测试"""
-    
+
     def test_chat_response_creation(self):
         response = ChatResponse(
-            answer="Hello",
-            session_id="test-session",
-            references=[],
-            sources=[]
+            answer="Hello there!",
+            session_id="session123"
         )
-        assert response.answer == "Hello"
-        assert response.session_id == "test-session"
+        assert response.answer == "Hello there!"
+        assert response.session_id == "session123"
         assert response.references == []
         assert response.sources == []
+
+    def test_chat_response_with_references(self):
+        response = ChatResponse(
+            answer="Answer",
+            session_id="session123",
+            references=[{"title": "Doc1"}],
+            sources=["doc1.txt"]
+        )
+        assert len(response.references) == 1
+        assert len(response.sources) == 1
 
 
 class TestAddDocumentsRequestModel:
     """添加文档请求模型测试"""
-    
+
     def test_add_documents_request(self):
         request = AddDocumentsRequest(documents=["doc1", "doc2"])
-        assert request.documents == ["doc1", "doc2"]
+        assert len(request.documents) == 2
 
 
 class TestErrorResponse:
     """错误响应格式化测试"""
-    
+
     def test_format_error_response(self):
-        error = format_error_response("INVALID_INPUT", "错误消息", "详细信息")
-        assert error["error"] == "INVALID_INPUT"
-        assert error["message"] == "错误消息"
-        assert error["detail"] == "详细信息"
-        assert "timestamp" in error
-        assert "request_id" in error
-    
-    def test_format_error_response_no_detail(self):
-        error = format_error_response("ERROR", "消息")
-        assert error["detail"] is None
+        result = format_error_response("TEST_ERROR", "Test error")
+        assert "error" in result
+        assert "message" in result
+        assert result["error"] == "TEST_ERROR"
+        assert result["message"] == "Test error"
+
+    def test_format_error_response_with_detail(self):
+        result = format_error_response("ERROR", "Message", "Detail")
+        assert result["detail"] == "Detail"

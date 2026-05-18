@@ -1,24 +1,28 @@
 """安全模块单元测试"""
 import pytest
-from unittest.mock import MagicMock, patch
-from datetime import timedelta
 
 
 class TestSecurityModule:
     """安全模块测试"""
-    
+
     def test_security_module_import(self):
         try:
-            from backend.core.security import verify_password, get_password_hash
+            from backend.core.security import (
+                verify_password,
+                get_password_hash
+            )
             assert verify_password is not None
             assert get_password_hash is not None
         except ImportError:
             pytest.skip("Security dependencies not installed")
-    
+
     def test_password_hashing(self):
         try:
-            from backend.core.security import verify_password, get_password_hash
-            
+            from backend.core.security import (
+                verify_password,
+                get_password_hash
+            )
+
             password = "test_password_123"
             hashed = get_password_hash(password)
             assert hashed is not None
