@@ -79,13 +79,13 @@ jobs:
       - name: Run unit tests
         run: uv run pytest tests/unit/ -v --tb=short
         env:
-          REDIS_URL: redis://localhost:6379
+          REDIS_URL: redis://localhost:6379/0
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
 
       - name: Run integration tests
         run: uv run pytest tests/integration/ -v --tb=short
         env:
-          REDIS_URL: redis://localhost:6379
+          REDIS_URL: redis://localhost:6379/0
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
 
   build:
