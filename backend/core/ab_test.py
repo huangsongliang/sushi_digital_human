@@ -14,6 +14,7 @@ from enum import Enum
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
+assert logger is not None, "Logger cannot be None"
 
 
 class ExperimentType(Enum):

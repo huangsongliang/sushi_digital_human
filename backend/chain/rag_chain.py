@@ -204,8 +204,6 @@ class RAGChainBuilder:
         chain = RAGChain()
         if self._llm:
             chain.llm = self._llm
-        if self._vector_store:
-            chain.vector_store = self._vector_store
         return chain
 
 

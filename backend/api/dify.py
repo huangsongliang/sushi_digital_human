@@ -104,7 +104,7 @@ async def configure_dify(
         base_url: Dify API 基础地址
     """
     dify = get_dify_integration()
-    dify.configure(api_key, base_url)
+    dify.configure(api_key, base_url or "https://api.dify.ai/v1")
     
     return {"success": True, "message": "Dify 配置成功"}
 
@@ -147,7 +147,7 @@ async def create_application(
     if x_dify_api_key:
         dify.configure(x_dify_api_key)
     
-    result = dify.create_application(name, description)
+    result = dify.create_application(name, description or "")
     
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))
@@ -218,7 +218,7 @@ async def chat_with_dify(
     if x_dify_api_key:
         dify.configure(x_dify_api_key)
     
-    result = dify.chat_completion(app_id, message, user_id)
+    result = dify.chat_completion(app_id, message, user_id or "default")
     
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))

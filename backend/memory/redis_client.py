@@ -5,6 +5,7 @@ from backend.core.config import settings
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
+assert logger is not None, "Logger cannot be None"
 
 
 class RedisConnection:
@@ -43,8 +44,8 @@ class RedisConnection:
     async def ping(self) -> bool:
         """检查 Redis 连接"""
         try:
-            client = await self.get_client()
-            await client.ping()
+            client: redis.Redis = await self.get_client()
+            await client.ping()  # type: ignore
             return True
         except Exception as e:
             logger.error(f"Redis 连接失败: {e}")

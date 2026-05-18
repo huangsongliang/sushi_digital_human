@@ -1,5 +1,6 @@
 """限流模块 - 防止 API 滥用（性能优化版）"""
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, Optional, Set
+from asyncio import Queue, Task
 from datetime import datetime, timedelta
 from fastapi import HTTPException, Request, status
 from backend.memory.redis_client import redis_conn
@@ -125,9 +126,9 @@ class RequestQueue:
         self.max_concurrent = max_concurrent
         self.current_concurrent = 0
         self._semaphore = asyncio.Semaphore(max_concurrent)
-        self._queue = asyncio.Queue(maxsize=max_concurrent * 2)
+        self._queue: Queue = asyncio.Queue(maxsize=max_concurrent * 2)
         self._task_count = 0
-        self._active_tasks = set()
+        self._active_tasks: Set[Task] = set()
     
     async def acquire(self) -> bool:
         """获取处理槽位"""
@@ -169,7 +170,8 @@ request_queue = RequestQueue(max_concurrent=20)
 
 async def rate_limit_middleware(request: Request, call_next):
     """FastAPI 限流中间件"""
-    client_ip = request.headers.get("X-Forwarded-For", request.client.host)
+    client_host = request.client.host if request.client else "unknown"
+    client_ip = request.headers.get("X-Forwarded-For", client_host)
     endpoint = request.url.path
     
     allowed = await rate_limiter.check(client_ip, endpoint)

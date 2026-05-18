@@ -76,12 +76,19 @@ class VectorStore:
         """简化的相似性搜索，返回文档列表"""
         results = self.query(query, n_results=k)
         docs = []
-        for i, doc in enumerate(results['documents'][0]):
-            docs.append({
-                "content": doc,
-                "distance": results['distances'][0][i],
-                "metadata": results['metadatas'][0][i] if results['metadatas'] else None
-            })
+        documents = results.get('documents', [[]])
+        distances = results.get('distances', [[]])
+        metadatas = results.get('metadatas', [[]])
+        
+        if documents and documents[0]:
+            for i, doc in enumerate(documents[0]):
+                distance = distances[0][i] if distances and distances[0] else None
+                metadata = metadatas[0][i] if metadatas and metadatas[0] else None
+                docs.append({
+                    "content": doc,
+                    "distance": distance,
+                    "metadata": metadata
+                })
         return docs
 
     def count(self) -> int:

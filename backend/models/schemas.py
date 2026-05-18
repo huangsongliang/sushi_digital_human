@@ -255,7 +255,7 @@ class Document(BaseModel):
                     "author": "admin",
                     "created_at": "2024-01-01"
                 },
-                "embedding": [0.123, -0.456, ...]
+                "embedding": [0.123, -0.456, 0.789]
             }
         }
     )

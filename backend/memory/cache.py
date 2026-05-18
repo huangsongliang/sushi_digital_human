@@ -13,6 +13,7 @@ from backend.memory.redis_client import redis_conn
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
+assert logger is not None, "Logger cannot be None"
 
 
 class CacheManager:
@@ -157,13 +158,14 @@ class CacheManager:
     async def set_embeddings_batch(self, items: Dict[str, List[float]]) -> int:
         """批量设置嵌入缓存"""
         try:
-            pipe = await redis_conn.get_client().pipeline()
+            client = await redis_conn.get_client()
+            pipe = client.pipeline()  # type: ignore
             
             for text, embedding in items.items():
                 key = f"{self.EMBEDDING_KEY_PREFIX}{self.generate_embedding_key(text)}"
                 pipe.setex(key, self.EMBEDDING_TTL, json.dumps(embedding))
             
-            results = await pipe.execute()
+            results = await pipe.execute()  # type: ignore
             success_count = sum(1 for r in results if r)
             
             logger.info(f"批量嵌入缓存完成: {success_count}/{len(items)}")

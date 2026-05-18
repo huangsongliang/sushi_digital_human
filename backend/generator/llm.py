@@ -8,6 +8,7 @@ import os
 from functools import lru_cache
 from typing import Annotated, List, Any, AsyncGenerator
 import asyncio
+from asyncio import Queue
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
@@ -54,7 +55,7 @@ class AsyncLLM:
     async def stream(self, prompt: str, **kwargs) -> AsyncGenerator[str, None]:
         """异步流式调用"""
         loop = asyncio.get_event_loop()
-        queue = asyncio.Queue(maxsize=10)
+        queue: Queue = asyncio.Queue(maxsize=10)
         
         def _worker():
             """在单独线程中运行的工作函数"""
@@ -121,7 +122,7 @@ class SimpleLLM:
     async def stream(self, prompt: str, **kwargs) -> AsyncGenerator[str, None]:
         """异步流式调用"""
         loop = asyncio.get_event_loop()
-        queue = asyncio.Queue(maxsize=10)
+        queue: Queue = asyncio.Queue(maxsize=10)
         
         def _worker():
             """在单独线程中运行的工作函数"""
@@ -244,10 +245,11 @@ class CachedEmbeddings:
                 
                 await cache_manager.set_embeddings_batch(embeddings_dict)
             
-            result = []
+            result: List[List[float]] = []
             for text in texts:
-                if cached_results[text] is not None:
-                    result.append(cached_results[text])
+                cached = cached_results[text]
+                if cached is not None:
+                    result.append(cached)
                 else:
                     loop = asyncio.get_event_loop()
                     embedding = await loop.run_in_executor(

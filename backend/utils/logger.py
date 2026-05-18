@@ -20,6 +20,7 @@ from contextvars import ContextVar
 from contextlib import contextmanager
 
 from loguru import logger
+from typing import Any, Callable, Optional, Type
 
 # 日志目录配置
 LOG_DIR = Path(__file__).parent.parent.parent / "logs"
@@ -190,7 +191,7 @@ def setup_logger(
         )
 
 
-def get_logger(name: Optional[str] = None) -> logger:
+def get_logger(name: Optional[str] = None) -> Any:
     """
     获取日志记录器实例
 

@@ -1,5 +1,5 @@
 """数据库会话管理"""
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -28,7 +28,7 @@ class DatabaseSessionManager:
                 autoflush=False
             )
     
-    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(self) -> AsyncGenerator[Optional[AsyncSession], None]:
         """获取数据库会话"""
         if not self._session_factory:
             yield None

@@ -305,7 +305,7 @@ class DifyIntegration:
             聊天响应
         """
         url = f"{self._base_url}/chat-messages"
-        payload = {
+        payload: Dict[str, Any] = {
             "app_id": app_id,
             "user_id": user_id,
             "inputs": {},
@@ -325,10 +325,10 @@ class DifyIntegration:
             results = []
             for line in response.iter_lines():
                 if line:
-                    line = line.decode("utf-8")
-                    if line.startswith("data: "):
+                    line_str = line.decode("utf-8")
+                    if line_str.startswith("data: "):
                         try:
-                            data = json.loads(line[5:])
+                            data = json.loads(line_str[5:])
                             results.append(data)
                         except json.JSONDecodeError:
                             pass

@@ -2,7 +2,7 @@
 A/B 测试 API 接口
 """
 
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, HTTPException, Header, Query
 from pydantic import BaseModel, Field
 
@@ -166,9 +166,11 @@ async def record_result(request: RecordResultRequest):
     """记录实验结果"""
     manager = get_ab_test_manager()
     
+    from datetime import datetime
     result = ExperimentResult(
         experiment_id=request.experiment_id,
         variant_id=request.variant_id,
+        timestamp=datetime.now(),
         session_id=request.session_id,
         user_id=request.user_id,
         query=request.query,
@@ -197,9 +199,11 @@ async def submit_feedback(
     """提交用户反馈"""
     manager = get_ab_test_manager()
     
+    from datetime import datetime
     result = ExperimentResult(
         experiment_id=experiment_id,
         variant_id=variant_id,
+        timestamp=datetime.now(),
         session_id=session_id,
         user_id=x_user_id,
         feedback=feedback
@@ -214,7 +218,7 @@ async def submit_feedback(
 
 
 # 预设的 A/B 测试配置
-PRESET_EXPERIMENTS = {
+PRESET_EXPERIMENTS: Dict[str, Dict[str, Any]] = {
     "retrieval_comparison": {
         "name": "检索策略对比测试",
         "description": "对比 BM25、向量检索和混合检索的效果",

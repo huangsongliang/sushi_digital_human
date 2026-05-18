@@ -25,9 +25,9 @@ class Settings(BaseSettings):
     从环境变量读取配置，支持默认值和类型验证
     """
 
-    # DashScope API 配置（必需）
+    # DashScope API 配置
     dashscope_api_key: str = Field(
-        ...,
+        default="",
         description="DashScope API 密钥"
     )
 

@@ -48,7 +48,7 @@ class AddDocumentsRequest(BaseModel):
     documents: List[str] = Field(..., min_length=1, max_length=100, description="文档列表")
 
 
-def format_error_response(error_type: str, message: str, detail: str = None) -> dict:
+def format_error_response(error_type: str, message: str, detail: Optional[str] = None) -> dict:
     """格式化错误响应"""
     return {
         "error": error_type,

@@ -130,7 +130,7 @@ def get_current_user_id(
 
     try:
         payload = verify_token(credentials.credentials)
-        user_id: str = payload.get("sub")
+        user_id: Optional[str] = payload.get("sub")
         if user_id is None:
             return None
         return user_id

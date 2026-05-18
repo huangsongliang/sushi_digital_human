@@ -6,6 +6,7 @@ from backend.memory.redis_client import redis_conn
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
+assert logger is not None, "Logger cannot be None"
 
 
 class Message:
@@ -49,13 +50,13 @@ class ConversationMemory:
         try:
             client = await redis_conn.get_client()
             message = Message(role=role, content=content)
-            await client.rpush(self._key, json.dumps(message.to_dict()))
+            await client.rpush(self._key, json.dumps(message.to_dict()))  # type: ignore
             
             # 限制历史长度
-            await client.ltrim(self._key, -self.MAX_HISTORY, -1)
+            await client.ltrim(self._key, -self.MAX_HISTORY, -1)  # type: ignore
             
             # 设置过期时间
-            await client.expire(self._key, self.DEFAULT_TTL)
+            await client.expire(self._key, self.DEFAULT_TTL)  # type: ignore
             
             logger.info(f"消息已保存: session={self.session_id}, role={role}")
             return True
@@ -67,7 +68,7 @@ class ConversationMemory:
         """获取对话历史"""
         try:
             client = await redis_conn.get_client()
-            messages_raw = await client.lrange(self._key, -limit, -1)
+            messages_raw = await client.lrange(self._key, -limit, -1)  # type: ignore
             
             messages = []
             for msg_str in messages_raw:

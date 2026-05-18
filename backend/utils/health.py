@@ -9,7 +9,8 @@
 
 import asyncio
 import time
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Tuple
+from sqlalchemy import text
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
@@ -47,7 +48,7 @@ class HealthChecker:
         self._checks: List[ComponentHealth] = []
         self._last_check_time: Optional[datetime] = None
         self._auto_recovery_enabled = True
-        self._recovery_attempts: Dict[str, int] = {}
+        self._recovery_attempts: Dict[str, float] = {}
         self._recovery_cooldown = 60
 
     async def check_database(self) -> ComponentHealth:
@@ -56,7 +57,7 @@ class HealthChecker:
         try:
             async for session in db_manager.get_session():
                 if session:
-                    await session.execute("SELECT 1")
+                    await session.execute(text("SELECT 1"))
                     latency_ms = (time.time() - start_time) * 1000
                     return ComponentHealth(
                         name="database",
@@ -88,7 +89,7 @@ class HealthChecker:
         start_time = time.time()
         try:
             redis = aioredis.from_url(settings.redis_url)
-            await redis.ping()
+            await redis.ping()  # type: ignore
             await redis.close()
             latency_ms = (time.time() - start_time) * 1000
             return ComponentHealth(
@@ -202,12 +203,13 @@ class HealthChecker:
 
     async def run_all_checks(self) -> List[ComponentHealth]:
         """运行所有健康检查"""
-        checks = await asyncio.gather(
+        checks_tuple = await asyncio.gather(
             self.check_database(),
             self.check_redis(),
             self.check_retriever(),
             self.check_llm()
         )
+        checks = list(checks_tuple)
         self._checks = checks
         self._last_check_time = datetime.now()
         return checks

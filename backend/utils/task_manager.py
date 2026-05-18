@@ -9,7 +9,7 @@ import uuid
 import time
 import json
 from concurrent.futures import ThreadPoolExecutor
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional, Callable, Union
 from dataclasses import dataclass, field
 from enum import Enum
 import os
@@ -145,6 +145,7 @@ class TaskManager:
         self.task_lock = threading.RLock()
         self.functions: Dict[str, Callable] = {}
         self._running = True
+        self.storage: Union[RedisTaskStorage, MemoryTaskStorage]
         
         # 选择存储方式
         use_redis = os.getenv('USE_REDIS_STORAGE', 'false').lower() == 'true'
@@ -170,7 +171,7 @@ class TaskManager:
         from backend.memory import ConversationMemory
         import asyncio
         
-        async def async_process_chat(query: str, session_id: str, top_k: int = 3, user_id: str = None) -> dict:
+        async def async_process_chat(query: str, session_id: str, top_k: int = 3, user_id: Optional[str] = None) -> dict:
             """处理聊天请求（异步版本）"""
             try:
                 # 获取对话记忆
@@ -210,7 +211,7 @@ class TaskManager:
                 logger.error(f"async_process_chat 失败: {e}")
                 raise
         
-        def process_chat(query: str, session_id: str, top_k: int = 3, user_id: str = None) -> dict:
+        def process_chat(query: str, session_id: str, top_k: int = 3, user_id: Optional[str] = None) -> dict:
             """处理聊天请求（同步包装）"""
             return asyncio.run(async_process_chat(query, session_id, top_k, user_id))
         

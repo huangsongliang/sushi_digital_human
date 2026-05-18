@@ -71,10 +71,10 @@ class DocumentLoader:
 
     def load_from_directory(self, dir_path: str, pattern: str = "*.txt") -> List[str]:
         """从目录批量加载文件"""
-        dir_path = Path(dir_path)
+        path_obj = Path(dir_path)
         documents = []
         
-        for file_path in dir_path.glob(pattern):
+        for file_path in path_obj.glob(pattern):
             try:
                 docs = self.load_from_file(str(file_path))
                 documents.extend(docs)
