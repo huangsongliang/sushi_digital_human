@@ -1,4 +1,3 @@
-
 # 全局配置
 global:
   nameOverride: ""
@@ -7,163 +6,166 @@ global:
 # 后端服务配置
 backend:
   # 副本数
-  replicaCount: 2
-  
+  replicaCount: 3
+
   # 镜像配置
   image:
     repository: ghcr.io/huang-song-liang/sushi-digital-human
     tag: latest
     pullPolicy: Always
-  
+    pullSecrets: []
+
   # 资源配置
   resources:
     requests:
-      cpu: "100m"
-      memory: "512Mi"
+      cpu: "200m"
+      memory: "1Gi"
     limits:
       cpu: "2"
       memory: "4Gi"
-  
+
   # 环境变量
   env:
     # DashScope API Key（建议通过 Secret 管理）
     DASHSCOPE_API_KEY: ""
-    
+
     # 模型配置
-    EMBEDDING_MODEL: "text_embedding_v2"
+    EMBEDDING_MODEL: "text-embedding-v2"
     LLM_MODEL: "qwen-max"
-    
-    # 数据库配置（如果使用外部数据库）
-    MYSQL_HOST: ""
-    MYSQL_PORT: "3306"
-    MYSQL_USER: "root"
-    MYSQL_PASSWORD: "7531188"
-    MYSQL_DATABASE: "sushi"
-    
-    # Redis 配置（如果使用外部 Redis）
+
+    # Redis 配置
     REDIS_URL: ""
-    
+
     # 应用配置
     DEBUG: "false"
     LOG_LEVEL: "INFO"
-  
+    PROMETHEUS_ENABLED: "true"
+
+    # 性能配置
+    MAX_REQUESTS_PER_MINUTE: "1000"
+    CACHE_TTL_SECONDS: "3600"
+
   # 健康检查配置
   livenessProbe:
     enabled: true
     path: /health/liveness
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
-  
+    initialDelaySeconds: 60
+    periodSeconds: 15
+    timeoutSeconds: 10
+    failureThreshold: 3
+
   readinessProbe:
     enabled: true
     path: /health/readiness
-    initialDelaySeconds: 30
+    initialDelaySeconds: 60
     periodSeconds: 10
     timeoutSeconds: 5
-  
+    failureThreshold: 3
+
   # 服务配置
   service:
     type: ClusterIP
     port: 8000
-    annotations: {}
-  
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8000"
+      prometheus.io/path: "/metrics"
+
   # 自动扩缩容配置
   autoscaling:
-    enabled: false
-    minReplicas: 2
+    enabled: true
+    minReplicas: 3
     maxReplicas: 10
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
 
-# Redis 配置（内置）
+  # Pod 中断预算
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 2
+
+  # 更新策略
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+# Redis 配置（使用 Bitnami Redis）
 redis:
   enabled: true
   architecture: standalone
-  
+
   master:
     resources:
       requests:
         cpu: "100m"
-        memory: "256Mi"
-      limits:
-        cpu: "500m"
-        memory: "1Gi"
-  
-  auth:
-    enabled: true
-    password: ""
-  
-  persistence:
-    enabled: true
-    size: 10Gi
-
-# MySQL 配置（内置）
-mysql:
-  enabled: false
-  
-  auth:
-    rootPassword: ""
-    database: "sushi"
-    username: "sushi"
-    password: ""
-  
-  primary:
-    resources:
-      requests:
-        cpu: "200m"
         memory: "512Mi"
       limits:
         cpu: "1"
         memory: "2Gi"
-  
+
+  auth:
+    enabled: true
+    password: ""
+
   persistence:
     enabled: true
     size: 20Gi
 
+  metrics:
+    enabled: true
+
 # Nginx Ingress 配置
 ingress:
-  enabled: false
-  className: ""
-  
+  enabled: true
+  className: "nginx"
+
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
-  
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
   hosts:
     - host: sushi.example.com
       paths:
         - path: /
           pathType: Prefix
-  
-  tls: []
-    # - secretName: sushi-tls
-    #   hosts:
-    #     - sushi.example.com
+
+  tls:
+    - secretName: sushi-tls
+      hosts:
+        - sushi.example.com
 
 # 监控配置
 monitoring:
-  enabled: false
-  
+  enabled: true
+
   # Prometheus ServiceMonitor
   serviceMonitor:
-    enabled: false
+    enabled: true
     interval: 30s
     scrapeTimeout: 10s
-  
+
   # Grafana Dashboard
   grafana:
-    enabled: false
+    enabled: true
     dashboard:
-      enabled: false
+      enabled: true
+      annotations:
+        kubernetes.io/part-of: sushi-digital-human
 
 # 日志配置
 logging:
   enabled: true
   level: INFO
   format: json
+  loki:
+    enabled: true
+    url: ""
 
 # 安全配置
 security:
@@ -172,25 +174,62 @@ security:
     runAsNonRoot: true
     runAsUser: 1000
     runAsGroup: 1000
-  
+    fsGroup: 1000
+
   # 容器安全上下文
   containerSecurityContext:
     allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - ALL
 
-# 网络策略
-networkPolicy:
-  enabled: false
-  allowExternal: true
+  # Network Policy
+  networkPolicy:
+    enabled: true
+    allowExternal: true
 
 # 节点选择器
 nodeSelector: {}
 
 # 容忍度
-tolerations: []
+tolerations:
+  - key: "node.kubernetes.io/unavailable"
+    operator: "Exists"
+    effect: "NoExecute"
+    tolerationSeconds: 300
 
 # 亲和性配置
-affinity: {}
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - sushi-digital-human
+          topologyKey: kubernetes.io/hostname
+
+# 部署标签
+labels:
+  app.kubernetes.io/name: sushi-digital-human
+  app.kubernetes.io/instance: sushi
+  app.kubernetes.io/version: "1.0.0"
+  app.kubernetes.io/managed-by: Helm
+
+# Sidecar 容器配置
+sidecars:
+  # 日志采集 sidecar
+  logging:
+    enabled: true
+    image: grafana/promtail:latest
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "200m"
+        memory: "256Mi"

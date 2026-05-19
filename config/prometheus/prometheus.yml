@@ -1,129 +1,51 @@
 # Prometheus 配置文件
-
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
-  external_labels:
-    cluster: 'sushi-digital-human'
-    environment: 'production'
 
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets: []
-
-rule_files: []
+rule_files:
+  - /etc/prometheus/rules/*.yml
 
 scrape_configs:
-  # ==================== Prometheus 自身 ====================
+  # 监控 Prometheus 自身
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
-        labels:
-          service: 'prometheus'
 
-  # ==================== API 服务 (多实例) ====================
+  # 监控 API 服务
   - job_name: 'sushi-api'
     scrape_interval: 10s
-    scrape_timeout: 5s
-    metrics_path: '/metrics'
-    static_configs:
-      - targets:
-          - 'api-1:8000'
-          - 'api-2:8000'
-          - 'api-3:8000'
-          - 'api-4:8000'
-        labels:
-          service: 'sushi-api'
-          environment: 'production'
+    dns_sd_configs:
+      - names: ['tasks.api']
+        type: 'A'
+        port: 8000
+    metrics_path: /metrics
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
-        regex: '([^:]+):.*'
-        replacement: '${1}'
 
-  # ==================== Nginx ====================
-  - job_name: 'nginx'
-    scrape_interval: 30s
-    static_configs:
-      - targets: ['nginx:80']
-        labels:
-          service: 'nginx'
-
-  # ==================== Redis ====================
+  # 监控 Redis
   - job_name: 'redis'
-    scrape_interval: 30s
     static_configs:
       - targets: ['redis:6379']
-        labels:
-          service: 'redis'
 
-  # ==================== Celery Workers ====================
-  - job_name: 'celery-workers'
-    scrape_interval: 30s
+  # 监控 Nginx
+  - job_name: 'nginx'
     static_configs:
-      - targets:
-          - 'celery-worker-1:8000'
-          - 'celery-worker-2:8000'
-        labels:
-          service: 'celery'
+      - targets: ['nginx:80']
+    metrics_path: /nginx_status
 
-  # ==================== 系统指标 ====================
-  - job_name: 'node-exporter'
-    scrape_interval: 30s
+  # 监控 Grafana
+  - job_name: 'grafana'
     static_configs:
-      - targets: ['node-exporter:9100']
-        labels:
-          service: 'node-exporter'
+      - targets: ['grafana:3000']
+    metrics_path: /metrics
 
-# ==================== 告警规则 ====================
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-            - 'alertmanager:9093'
+          # - alertmanager:9093
 
-alert_rules:
-  groups:
-    - name: sushi_api_alerts
-      interval: 30s
-      rules:
-        # API 响应时间告警
-        - alert: APIHighResponseTime
-          expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 5
-          for: 5m
-          labels:
-            severity: warning
-          annotations:
-            summary: "API 响应时间过高"
-            description: "API P95 响应时间超过 5 秒，当前值: {{ $value }}"
-
-        # API 错误率告警
-        - alert: APIHighErrorRate
-          expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.01
-          for: 5m
-          labels:
-            severity: critical
-          annotations:
-            summary: "API 错误率过高"
-            description: "API 错误率超过 1%，当前值: {{ $value }}"
-
-        # Redis 连接数告警
-        - alert: RedisHighConnections
-          expr: redis_connected_clients > 5000
-          for: 5m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Redis 连接数过高"
-            description: "Redis 连接数超过 5000，当前值: {{ $value }}"
-
-        # Celery 队列积压告警
-        - alert: CeleryQueueBacklog
-          expr: celery_queue_length > 1000
-          for: 10m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Celery 队列积压"
-            description: "Celery 队列积压超过 1000，当前值: {{ $value }}"
+remote_write: []
+remote_read: []
