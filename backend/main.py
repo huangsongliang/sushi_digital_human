@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-from backend.api import chat_router, ab_test_router, dify_router, documents_router, auth_router
+from backend.api import chat_router, ab_test_router, dify_router, documents_router, alerts_router, auth_router
 from backend.core.config import settings
 from backend.database.session import async_initialize_database
 from backend.utils.rate_limiter import (
@@ -23,6 +23,7 @@ from backend.utils.performance import (
 from backend.utils.error_tracking import setup_exception_handlers
 from backend.utils.logger import get_logger
 from backend.utils.health import perform_health_check, shutdown_manager, health_checker
+from backend.utils.alerting import start_alerting, stop_alerting
 
 logger = get_logger(__name__)
 
@@ -58,10 +59,20 @@ async def lifespan(app: FastAPI):
     await initialize_default_roles_and_permissions()
     logger.info("角色和权限初始化完成")
 
+    # 启动告警系统
+    logger.info("启动告警系统...")
+    await start_alerting()
+    logger.info("告警系统启动完成")
+
     yield
 
     # 关闭时清理
     logger.info("关闭应用...")
+
+    # 停止告警系统
+    logger.info("停止告警系统...")
+    await stop_alerting()
+    logger.info("告警系统已停止")
 
     # 等待所有请求完成
     await shutdown_manager.wait_for_requests_to_complete()
@@ -90,7 +101,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="苏轼文化数字人问答系统 API",
+    description="企业级智能文档问答平台 API - 基于 RAG 的企业级知识库问答系统",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
@@ -144,6 +155,7 @@ app.include_router(ab_test_router)
 app.include_router(dify_router)
 app.include_router(documents_router)
 app.include_router(auth_router)
+app.include_router(alerts_router)
 
 # 设置全局异常处理器
 setup_exception_handlers(app)
@@ -153,7 +165,7 @@ setup_exception_handlers(app)
 async def root():
     """根路径"""
     return {
-        "message": "苏轼文化数字人问答系统",
+        "message": "企业级智能文档问答平台",
         "version": settings.app_version,
         "docs": "/docs",
         "redoc": "/redoc",
