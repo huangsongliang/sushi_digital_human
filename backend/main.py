@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-from backend.api import chat_router, ab_test_router, dify_router, documents_router
+from backend.api import chat_router, ab_test_router, dify_router, documents_router, auth_router
 from backend.core.config import settings
 from backend.database.session import async_initialize_database
 from backend.utils.rate_limiter import (
@@ -51,6 +51,12 @@ async def lifespan(app: FastAPI):
     logger.info("初始化数据库...")
     await async_initialize_database()
     logger.info("数据库初始化完成")
+
+    # 初始化默认角色和权限
+    logger.info("初始化默认角色和权限...")
+    from backend.core.auth_manager import initialize_default_roles_and_permissions
+    await initialize_default_roles_and_permissions()
+    logger.info("角色和权限初始化完成")
 
     yield
 
@@ -137,6 +143,7 @@ app.include_router(chat_router)
 app.include_router(ab_test_router)
 app.include_router(dify_router)
 app.include_router(documents_router)
+app.include_router(auth_router)
 
 # 设置全局异常处理器
 setup_exception_handlers(app)

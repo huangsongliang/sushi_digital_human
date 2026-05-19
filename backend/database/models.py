@@ -173,6 +173,70 @@ class ApiKey(Base):
         return f"<ApiKey(id={self.id}, name={self.name})>"
 
 
+class Role(Base):
+    """角色模型"""
+
+    __tablename__ = "roles"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(50), unique=True, nullable=False)
+    description = Column(String(255))
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+    def __repr__(self):
+        return f"<Role(id={self.id}, name={self.name})>"
+
+
+class Permission(Base):
+    """权限模型"""
+
+    __tablename__ = "permissions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), unique=True, nullable=False)
+    description = Column(String(255))
+    resource = Column(String(100))
+    action = Column(String(50))
+    created_at = Column(DateTime, default=datetime.now)
+
+    def __repr__(self):
+        return f"<Permission(id={self.id}, name={self.name})>"
+
+
+class UserRole(Base):
+    """用户-角色关联表"""
+
+    __tablename__ = "user_roles"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    role_id = Column(Integer, ForeignKey("roles.id"), primary_key=True)
+    created_at = Column(DateTime, default=datetime.now)
+
+    user = relationship("User", backref="user_roles")
+    role = relationship("Role", backref="user_roles")
+
+    def __repr__(self):
+        return f"<UserRole(user_id={self.user_id}, role_id={self.role_id})>"
+
+
+class RolePermission(Base):
+    """角色-权限关联表"""
+
+    __tablename__ = "role_permissions"
+
+    role_id = Column(Integer, ForeignKey("roles.id"), primary_key=True)
+    permission_id = Column(Integer, ForeignKey("permissions.id"), primary_key=True)
+    created_at = Column(DateTime, default=datetime.now)
+
+    role = relationship("Role", backref="role_permissions")
+    permission = relationship("Permission", backref="role_permissions")
+
+    def __repr__(self):
+        return f"<RolePermission(role_id={self.role_id}, permission_id={self.permission_id})>"
+
+
 class UsageLog(Base):
     """使用日志模型"""
 
