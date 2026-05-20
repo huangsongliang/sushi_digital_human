@@ -255,12 +255,13 @@ class AlertManager:
 
             async def send_dingtalk():
                 timestamp = str(round(time.time() * 1000))
+                url = webhook_url
                 
                 # 判断是否需要签名（URL中包含access_token但不包含secret）
-                if "secret" in webhook_url.lower():
+                if "secret" in url.lower():
                     # 解析 secret
                     import urllib.parse
-                    parsed = urllib.parse.urlparse(webhook_url)
+                    parsed = urllib.parse.urlparse(url)
                     query = urllib.parse.parse_qs(parsed.query)
                     secret = query.get("secret", [""])[0]
                     
@@ -272,7 +273,7 @@ class AlertManager:
                     sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
                     
                     # 构建带签名的URL
-                    webhook_url = webhook_url + f"&timestamp={timestamp}&sign={sign}"
+                    url = url + f"&timestamp={timestamp}&sign={sign}"
 
                 async with aiohttp.ClientSession() as session:
                     severity_icon = {
@@ -291,7 +292,7 @@ class AlertManager:
                                         f"📋 详情: {json.dumps(alert.details, ensure_ascii=False)[:500]}..."
                         }
                     }
-                    async with session.post(webhook_url, json=payload) as response:
+                    async with session.post(url, json=payload) as response:
                         result = await response.json()
                         return result.get("errcode") == 0
 

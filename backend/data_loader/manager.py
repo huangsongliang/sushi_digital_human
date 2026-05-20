@@ -281,7 +281,7 @@ class DocumentManager:
             stmt = select(DocumentLibrary)
 
             if not include_inactive:
-                stmt = stmt.where(DocumentLibrary.is_active == True)
+                stmt = stmt.where(DocumentLibrary.is_active)
 
             stmt = stmt.order_by(DocumentLibrary.updated_at.desc())
             stmt = stmt.offset(skip).limit(limit)

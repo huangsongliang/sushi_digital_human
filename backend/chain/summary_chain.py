@@ -281,7 +281,7 @@ async def summarize_text(content: str, summary_type: str = "brief") -> Dict[str,
         "token_count": result.token_count,
         "source_count": result.source_count,
         "confidence": result.confidence,
-        "created_at": result.created_at.isoformat()
+        "created_at": result.created_at.isoformat() if result.created_at else None
     }
 
 
@@ -300,7 +300,7 @@ async def summarize_documents(documents: List[Dict[str, Any]], summary_type: str
         "token_count": result.token_count,
         "source_count": result.source_count,
         "confidence": result.confidence,
-        "created_at": result.created_at.isoformat()
+        "created_at": result.created_at.isoformat() if result.created_at else None
     }
 
 
@@ -314,7 +314,7 @@ async def summarize_conversation(messages: List[Dict[str, Any]]) -> Dict[str, An
         "token_count": result.token_count,
         "source_count": result.source_count,
         "confidence": result.confidence,
-        "created_at": result.created_at.isoformat()
+        "created_at": result.created_at.isoformat() if result.created_at else None
     }
 
 

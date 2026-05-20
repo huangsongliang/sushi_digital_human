@@ -339,7 +339,8 @@ async def github_callback(code: str):
                 "code": code,
                 "redirect_uri": settings.github_redirect_uri
             },
-            headers={"Accept": "application/json"}
+            headers={"Accept": "application/json"},
+            verify=False
         )
         token_data = token_response.json()
         
@@ -352,13 +353,16 @@ async def github_callback(code: str):
         
         user_response = requests.get(
             "https://api.github.com/user",
-            headers={"Authorization": f"token {access_token}"}
+            headers={"Authorization": f"token {access_token}"},
+            verify=False
         )
         user_data = user_response.json()
         
+        # 获取用户邮箱
         email_response = requests.get(
             "https://api.github.com/user/emails",
-            headers={"Authorization": f"token {access_token}"}
+            headers={"Authorization": f"token {access_token}"},
+            verify=False
         )
         emails = email_response.json()
         email = next((e["email"] for e in emails if e["primary"]), None) or user_data.get("email")

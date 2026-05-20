@@ -8,6 +8,7 @@ from backend.chain.rag_chain import get_rag_chain
 from backend.generator import get_llm
 from backend.memory.conversation import ConversationMemory as RedisConversationMemory
 from backend.utils.logger import get_logger
+from backend.chain.summary_chain import SummaryType
 
 logger = get_logger(__name__)
 
@@ -58,10 +59,7 @@ class SummaryTool:
         """总结文本"""
         logger.info(f"总结工具处理: {text[:30]}...")
         from backend.chain.summary_chain import summary_chain
-        result = summary_chain.summarize_text(text, summary_type="concise")
-        import asyncio
-        if asyncio.iscoroutine(result):
-            result = asyncio.get_event_loop().run_until_complete(result)
+        result = summary_chain.summarize_text(text, summary_type=SummaryType.CONCISE)
         return result.content
 
 
@@ -150,10 +148,6 @@ class AgentManager:
                 if tool.name == tool_name:
                     logger.info(f"调用工具: {tool_name}, 参数: {tool_args}")
                     tool_result = tool.func(**tool_args)
-                    
-                    import asyncio
-                    if asyncio.iscoroutine(tool_result):
-                        tool_result = await tool_result
                     
                     if session_id:
                         await redis_memory.save_message("assistant", f"工具[{tool_name}]: {str(tool_result)}")
