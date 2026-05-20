@@ -6,7 +6,7 @@ from backend.memory.redis_client import redis_conn
 __all__ = [
     "ConversationMemory",
     "Message",
-    "CacheManager", 
+    "CacheManager",
     "cache_manager",
-    "redis_conn"
+    "redis_conn",
 ]

@@ -14,7 +14,7 @@ from backend.generator.llm import (
     LLMDep,
     AsyncLLMDep,
     EmbeddingsDep,
-    CachedEmbeddingsDep
+    CachedEmbeddingsDep,
 )
 
 __all__ = [
@@ -29,5 +29,5 @@ __all__ = [
     "LLMDep",
     "AsyncLLMDep",
     "EmbeddingsDep",
-    "CachedEmbeddingsDep"
+    "CachedEmbeddingsDep",
 ]

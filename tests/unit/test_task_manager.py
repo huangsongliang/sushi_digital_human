@@ -1,10 +1,11 @@
 """任务管理器模块单元测试"""
+
 from backend.utils.task_manager import (
     Task,
     TaskStatus,
     MemoryTaskStorage,
     TaskManager,
-    get_task_manager
+    get_task_manager,
 )
 
 
@@ -12,34 +13,23 @@ class TestTask:
     """任务模型测试"""
 
     def test_task_creation(self):
-        task = Task(
-            task_id="task123",
-            func_name="test_func"
-        )
+        task = Task(task_id="task123", func_name="test_func")
         assert task.task_id == "task123"
         assert task.status == TaskStatus.PENDING
 
     def test_task_duration(self):
-        task = Task(
-            task_id="task123",
-            func_name="test_func"
-        )
+        task = Task(task_id="task123", func_name="test_func")
         duration = task.duration
         assert duration >= 0
 
     def test_task_is_complete(self):
         task = Task(
-            task_id="task123",
-            func_name="test_func",
-            status=TaskStatus.COMPLETED
+            task_id="task123", func_name="test_func", status=TaskStatus.COMPLETED
         )
         assert task.is_complete is True
 
     def test_task_to_dict(self):
-        task = Task(
-            task_id="task123",
-            func_name="test_func"
-        )
+        task = Task(task_id="task123", func_name="test_func")
         result = task.to_dict()
         assert result["task_id"] == "task123"
 
@@ -49,10 +39,7 @@ class TestMemoryTaskStorage:
 
     def test_storage_set_and_get(self):
         storage = MemoryTaskStorage()
-        task = Task(
-            task_id="task123",
-            func_name="test_func"
-        )
+        task = Task(task_id="task123", func_name="test_func")
         storage.set(task)
         retrieved = storage.get("task123")
         assert retrieved is not None
@@ -65,10 +52,7 @@ class TestMemoryTaskStorage:
 
     def test_storage_delete(self):
         storage = MemoryTaskStorage()
-        task = Task(
-            task_id="task123",
-            func_name="test_func"
-        )
+        task = Task(task_id="task123", func_name="test_func")
         storage.set(task)
         storage.delete("task123")
         assert storage.get("task123") is None

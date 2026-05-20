@@ -5,14 +5,14 @@
       <span class="reference-count">{{ references.length }} 篇文档</span>
       <span class="collapse-icon">{{ isCollapsed ? '▶' : '▼' }}</span>
     </div>
-    
+
     <div v-show="!isCollapsed" class="panel-content">
       <div v-if="references.length === 0" class="empty-references">
         <div class="empty-icon">书</div>
         <p>暂无参考资料</p>
         <p class="text-muted text-small">发送问题后将显示相关文档</p>
       </div>
-      
+
       <div v-else class="reference-list">
         <div
           v-for="(ref, index) in references"
@@ -38,7 +38,7 @@
             </div>
             <span class="expand-icon">{{ expandedIndex === index ? '▼' : '▶' }}</span>
           </div>
-          
+
           <div class="reference-body">
             <p class="reference-content">{{ ref.content }}</p>
             <div v-if="ref.metadata" class="reference-metadata">
@@ -47,7 +47,7 @@
               </span>
             </div>
           </div>
-          
+
           <div v-if="expandedIndex === index" class="reference-expanded">
             <div class="expanded-header">
               <span class="expanded-title">完整内容</span>

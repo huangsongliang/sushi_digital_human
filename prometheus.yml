@@ -1,0 +1,40 @@
+# Prometheus配置文件
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'backend'
+    scrape_interval: 5s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8000']
+    extra_metrics:
+      - http_requests_total
+      - http_request_duration_seconds
+      - api_latency_ms
+      - total_api_calls
+      - error_rate
+      - cache_hit_rate
+      - redis_cache_hits
+      - redis_cache_misses
+
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['host.docker.internal:3307']
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['host.docker.internal:6379']
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+rule_files:
+  - '/etc/prometheus/alerts.yml'

@@ -1,11 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "sushi-digital-human"
-version = "0.1.0"
-description = "苏轼文化数字人问答系统"
+name = "enterprise-document-qa"
+version = "1.0.0"
+description = "企业级智能文档问答平台 - 基于 RAG 的企业知识库问答系统"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.30.0",
+    "gunicorn>=22.0.0",
     "pydantic>=2.7.0",
     "pydantic-settings>=2.4.0",
     "python-dotenv>=1.0.0",
@@ -30,6 +35,8 @@ dependencies = [
     "asyncmy>=0.2.11",
     "alembic>=1.18.4",
     "aiosqlite>=0.22.1",
+    "cachetools>=5.3.0",
+    "pybreaker>=1.0.0",
 ]
 
 [dependency-groups]
@@ -39,7 +46,12 @@ dev = [
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
     "pytest-asyncio>=0.23.0",
+    "black>=26.5.0",
+    "pre-commit>=4.6.0",
 ]
+
+[tool.setuptools]
+packages = ["backend"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

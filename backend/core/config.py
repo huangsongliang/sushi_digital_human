@@ -101,6 +101,21 @@ class Settings(BaseSettings):
     llm_timeout: int = Field(default=60, ge=10, description="LLM 调用超时时间（秒）")
     llm_max_retries: int = Field(default=3, ge=0, description="LLM 调用最大重试次数")
 
+    # 阿里云配置
+    aliyun_access_key_id: str = Field(default="", description="阿里云 AccessKey ID")
+    aliyun_access_key_secret: str = Field(default="", description="阿里云 AccessKey Secret")
+
+    # 短信服务配置
+    sms_use_real_service: bool = Field(default=False, description="是否使用真实短信服务")
+    sms_region_id: str = Field(default="cn-hangzhou", description="短信服务区域")
+    sms_sign_name: str = Field(default="", description="短信签名名称")
+    sms_template_code: str = Field(default="", description="短信模板CODE")
+
+    # GitHub OAuth 配置
+    github_client_id: str = Field(default="", description="GitHub OAuth Client ID")
+    github_client_secret: str = Field(default="", description="GitHub OAuth Client Secret")
+    github_redirect_uri: str = Field(default="http://localhost:8000/api/auth/github/callback", description="GitHub 回调地址")
+
     @field_validator("log_level")
     @classmethod
     def validate_log_level(cls, v: str) -> str:
@@ -140,7 +155,7 @@ class Settings(BaseSettings):
         # 如果没有配置 MySQL，使用 SQLite 作为备选
         data_dir = Path(__file__).parent.parent.parent / "data"
         data_dir.mkdir(parents=True, exist_ok=True)
-        return f"sqlite+aiosqlite:///{data_dir / 'sushi.db'}"
+        return f"sqlite+aiosqlite:///{data_dir / 'enterprise_doc_qa.db'}"
 
     model_config = SettingsModelConfig(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"

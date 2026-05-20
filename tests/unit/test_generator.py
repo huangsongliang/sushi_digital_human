@@ -1,4 +1,5 @@
 """LLM生成器模块单元测试"""
+
 from backend.generator.llm import (
     AsyncLLM,
     SimpleLLM,
@@ -7,7 +8,7 @@ from backend.generator.llm import (
     get_llm,
     get_async_llm,
     get_embeddings,
-    get_cached_embeddings
+    get_cached_embeddings,
 )
 
 

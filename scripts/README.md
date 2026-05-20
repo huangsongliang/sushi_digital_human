@@ -19,7 +19,7 @@ uv run python scripts/local_ci_check.py
 
 **功能：**
 - ✅ Flake8 代码风格检查
-- ✅ Mypy 类型检查  
+- ✅ Mypy 类型检查
 - ✅ 单元测试
 - 🎨 彩色输出，友好的界面
 

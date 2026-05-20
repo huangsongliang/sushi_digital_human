@@ -13,10 +13,10 @@ class TestRAGChain:
     def test_rag_chain_creation(self):
         chain = RAGChain()
         assert chain is not None
-        assert hasattr(chain, 'llm')
-        assert hasattr(chain, 'async_llm')
-        assert hasattr(chain, 'hybrid_retriever')
-        assert hasattr(chain, 'use_reranking')
+        assert hasattr(chain, "llm")
+        assert hasattr(chain, "async_llm")
+        assert hasattr(chain, "hybrid_retriever")
+        assert hasattr(chain, "use_reranking")
 
     def test_build_context_empty(self):
         chain = RAGChain()
@@ -27,7 +27,7 @@ class TestRAGChain:
         chain = RAGChain()
         documents = [
             {"content": "苏轼是北宋文学家", "score": 0.9},
-            {"content": "苏轼号东坡居士", "score": 0.8}
+            {"content": "苏轼号东坡居士", "score": 0.8},
         ]
         context = chain.build_context(documents)
         assert "苏轼是北宋文学家" in context
@@ -45,7 +45,7 @@ class TestRAGChain:
     def test_generate(self, mock_get_llm):
         mock_llm = MagicMock()
         mock_llm.invoke.return_value = MagicMock(
-            output={'choices': [{'message': {'content': 'test answer'}}]}
+            output={"choices": [{"message": {"content": "test answer"}}]}
         )
         mock_get_llm.return_value = mock_llm
 
@@ -61,7 +61,7 @@ class TestRAGChain:
     async def test_async_generate(self, mock_get_async_llm):
         mock_llm = AsyncMock()
         mock_llm.invoke.return_value = MagicMock(
-            output={'choices': [{'message': {'content': 'async answer'}}]}
+            output={"choices": [{"message": {"content": "async answer"}}]}
         )
         mock_get_async_llm.return_value = mock_llm
 
@@ -74,9 +74,7 @@ class TestRAGChain:
     @patch("backend.chain.rag_chain.get_hybrid_retriever")
     def test_retrieve(self, mock_get_retriever):
         mock_retriever = MagicMock()
-        mock_retriever.search.return_value = [
-            {"content": "doc1", "score": 0.9}
-        ]
+        mock_retriever.search.return_value = [{"content": "doc1", "score": 0.9}]
         mock_get_retriever.return_value = mock_retriever
 
         chain = RAGChain()
@@ -135,9 +133,9 @@ class TestRAGChainBuilder:
     def test_builder_creation(self):
         builder = RAGChainBuilder()
         assert builder is not None
-        assert hasattr(builder, 'with_llm')
-        assert hasattr(builder, 'with_top_k')
-        assert hasattr(builder, 'build')
+        assert hasattr(builder, "with_llm")
+        assert hasattr(builder, "with_top_k")
+        assert hasattr(builder, "build")
 
     def test_builder_methods(self):
         builder = RAGChainBuilder()

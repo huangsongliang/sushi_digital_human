@@ -1,6 +1,8 @@
 """测试向量存储"""
+
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from backend.retrieval import get_vector_store
@@ -22,7 +24,7 @@ def main():
         "苏轼的代表作包括《水调歌头·明月几时有》、《念奴娇·赤壁怀古》。",
         "苏轼，字子瞻，号东坡居士，四川眉山人。",
         "苏轼在诗词、散文、书法、绘画等方面都有很高的成就。",
-        "苏轼一生仕途坎坷，但他的文学成就影响深远。"
+        "苏轼一生仕途坎坷，但他的文学成就影响深远。",
     ]
 
     metadatas = [
@@ -30,7 +32,7 @@ def main():
         {"category": "作品", "author": "admin"},
         {"category": "简介", "author": "admin"},
         {"category": "成就", "author": "admin"},
-        {"category": "生平", "author": "admin"}
+        {"category": "生平", "author": "admin"},
     ]
 
     vs.add_documents(docs, metadatas=metadatas)
@@ -45,7 +47,7 @@ def main():
         print(f"\n结果 {i}:")
         print(f"内容: {doc['content']}")
         print(f"距离: {doc['distance']:.4f}")
-        if doc.get('metadata'):
+        if doc.get("metadata"):
             print(f"元数据: {doc['metadata']}")
 
     print(f"\n总文档数: {vs.count()}")

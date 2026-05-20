@@ -1,6 +1,7 @@
 """
 添加测试文档到知识库
 """
+
 import httpx
 
 BASE_URL = "http://localhost:8001"
@@ -11,16 +12,14 @@ documents = [
     """乌台诗案是北宋著名的文字狱，发生于元丰二年（1079年）。苏轼因被弹劾所作诗文讥讽朝政而被捕入狱，经多方营救才得以免死，被贬为黄州团练副使。这一事件对苏轼影响深远，是他人生的重要转折点。在黄州期间，苏轼写下了《赤壁赋》《念奴娇·赤壁怀古》等千古名篇。""",
 ]
 
-print("="*50)
+print("=" * 50)
 print("  添加测试文档到知识库")
-print("="*50)
+print("=" * 50)
 print(f"\n文档数量: {len(documents)}")
 
 try:
     resp = httpx.post(
-        f"{BASE_URL}/api/docs/add",
-        json={"documents": documents},
-        timeout=30
+        f"{BASE_URL}/api/docs/add", json={"documents": documents}, timeout=30
     )
     print(f"\n状态码: {resp.status_code}")
     if resp.status_code == 200:
@@ -32,4 +31,5 @@ try:
 except Exception as e:
     print(f"\n❌ 出错: {e}")
     import traceback
+
     traceback.print_exc()

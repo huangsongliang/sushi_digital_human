@@ -7,7 +7,7 @@ from backend.retrieval.hybrid_retriever import (
     VectorRetriever,
     Reranker,
     get_hybrid_retriever,
-    reload_hybrid_retriever
+    reload_hybrid_retriever,
 )
 
 __all__ = [
@@ -18,5 +18,5 @@ __all__ = [
     "VectorRetriever",
     "Reranker",
     "get_hybrid_retriever",
-    "reload_hybrid_retriever"
+    "reload_hybrid_retriever",
 ]

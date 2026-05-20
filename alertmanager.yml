@@ -1,0 +1,32 @@
+# Alertmanager配置文件
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'default-receiver'
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 1h
+
+receivers:
+  - name: 'default-receiver'
+    email_configs:
+      - to: 'admin@example.com'
+        from: 'alert@example.com'
+        smarthost: 'smtp.example.com:587'
+        auth_username: 'your-email@example.com'
+        auth_password: 'your-email-password'
+        send_resolved: true
+
+  - name: 'slack-notifications'
+    webhook_configs:
+      - url: 'https://hooks.slack.com/services/YOUR/WEBHOOK/URL'
+        send_resolved: true
+
+inhibit_rules:
+  - source_match:
+      severity: critical
+    target_match:
+      severity: warning
+    equal: ['alertname', 'dev', 'instance']

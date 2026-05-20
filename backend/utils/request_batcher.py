@@ -1,4 +1,5 @@
 """请求批处理模块 - 优化 API 调用效率"""
+
 import asyncio
 import hashlib
 import json
@@ -25,10 +26,7 @@ class RequestBatcher:
     """请求批处理器"""
 
     def __init__(
-        self,
-        batch_size: int = 10,
-        timeout_ms: int = 500,
-        max_batch_wait_ms: int = 2000
+        self, batch_size: int = 10, timeout_ms: int = 500, max_batch_wait_ms: int = 2000
     ):
         """
         Args:
@@ -49,17 +47,15 @@ class RequestBatcher:
 
     def _generate_key(self, func: Callable, args: tuple, kwargs: dict) -> str:
         """生成请求的唯一标识（用于去重）"""
-        func_name = getattr(func, '__name__', str(func))
-        data = json.dumps({
-            "func": func_name,
-            "args": args,
-            "kwargs": kwargs
-        }, sort_keys=True)
+        func_name = getattr(func, "__name__", str(func))
+        data = json.dumps(
+            {"func": func_name, "args": args, "kwargs": kwargs}, sort_keys=True
+        )
         return hashlib.md5(data.encode()).hexdigest()
 
     def _generate_group_key(self, func: Callable) -> str:
         """生成批处理组的标识"""
-        return getattr(func, '__name__', str(func))
+        return getattr(func, "__name__", str(func))
 
     async def _process_batch(self, group_key: str):
         """处理一批请求"""
@@ -86,7 +82,7 @@ class RequestBatcher:
                 return
 
             try:
-                if hasattr(requests[0].func, 'batch_handler'):
+                if hasattr(requests[0].func, "batch_handler"):
                     results = await requests[0].func.batch_handler(requests)
 
                     for req, result in zip(requests, results):
@@ -96,11 +92,8 @@ class RequestBatcher:
                             req.future.set_result(result)
                             self._update_dedupe_cache(req.id, result)
                 else:
-                    tasks = [req.func(*req.args, **req.kwargs)
-                             for req in requests]
-                    results = await asyncio.gather(
-                        *tasks, return_exceptions=True
-                    )
+                    tasks = [req.func(*req.args, **req.kwargs) for req in requests]
+                    results = await asyncio.gather(*tasks, return_exceptions=True)
 
                     for req, result in zip(requests, results):
                         if isinstance(result, Exception):
@@ -132,11 +125,7 @@ class RequestBatcher:
         self._dedupe_cache[key] = value
 
     async def submit(
-        self,
-        func: Callable[..., Any],
-        *args,
-        dedupe: bool = True,
-        **kwargs
+        self, func: Callable[..., Any], *args, dedupe: bool = True, **kwargs
     ) -> Any:
         """提交请求到批处理器"""
         request_key = self._generate_key(func, args, kwargs)
@@ -145,12 +134,7 @@ class RequestBatcher:
         if dedupe and request_key in self._dedupe_cache:
             return self._dedupe_cache[request_key]
 
-        request = BatchRequest(
-            id=request_key,
-            func=func,
-            args=args,
-            kwargs=kwargs
-        )
+        request = BatchRequest(id=request_key, func=func, args=args, kwargs=kwargs)
 
         async with self._lock:
             if group_key not in self._pending_requests:
@@ -165,6 +149,7 @@ class RequestBatcher:
                 should_start = True
 
         if should_start:
+
             async def delayed_process():
                 await asyncio.sleep(self.timeout_ms / 1000)
 
@@ -184,15 +169,13 @@ class RequestBatcher:
 
     def get_stats(self) -> Dict[str, Any]:
         """获取批处理统计信息"""
-        pending_count = sum(
-            len(reqs) for reqs in self._pending_requests.values()
-        )
+        pending_count = sum(len(reqs) for reqs in self._pending_requests.values())
         return {
             "pending_requests": pending_count,
             "active_batches": len(self._active_batches),
             "dedupe_cache_size": len(self._dedupe_cache),
             "batch_size": self.batch_size,
-            "timeout_ms": self.timeout_ms
+            "timeout_ms": self.timeout_ms,
         }
 
 
@@ -223,17 +206,12 @@ class SimilarQueryDeduplicator:
 
         return intersection / union
 
-    async def check_and_dedupe(
-        self,
-        query: str,
-        handler: Callable[[str], Any]
-    ) -> Any:
+    async def check_and_dedupe(self, query: str, handler: Callable[[str], Any]) -> Any:
         """检查是否有相似查询，并返回结果"""
         now = datetime.now()
 
         self._recent_queries = [
-            q for q in self._recent_queries
-            if (now - q[2]).total_seconds() < 300
+            q for q in self._recent_queries if (now - q[2]).total_seconds() < 300
         ]
 
         for stored_query, result, _ in self._recent_queries:

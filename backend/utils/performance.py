@@ -1,6 +1,7 @@
 """性能监控模块
 支持 Prometheus 指标暴露和自定义指标注册
 """
+
 import time
 import asyncio
 from typing import Dict, List, Any, Callable
@@ -12,86 +13,122 @@ logger = get_logger(__name__)
 
 try:
     from prometheus_client import (
-        Counter, Gauge, Histogram, Summary,
-        generate_latest, CONTENT_TYPE_LATEST, CollectorRegistry
+        Counter,
+        Gauge,
+        Histogram,
+        Summary,
+        generate_latest,
+        CONTENT_TYPE_LATEST,
+        CollectorRegistry,
     )
+
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False
-    logger.warning(
-        "Prometheus client not installed, metrics will not be exposed"
-    )
+    logger.warning("Prometheus client not installed, metrics will not be exposed")
 
 _registry = CollectorRegistry() if PROMETHEUS_AVAILABLE else None
 
-REQUEST_COUNTER = Counter(
-    'sushi_requests_total',
-    'Total number of requests',
-    ['endpoint', 'method', 'status'],
-    registry=_registry
-) if PROMETHEUS_AVAILABLE else None
+REQUEST_COUNTER = (
+    Counter(
+        "sushi_requests_total",
+        "Total number of requests",
+        ["endpoint", "method", "status"],
+        registry=_registry,
+    )
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
-REQUEST_DURATION = Histogram(
-    'sushi_request_duration_seconds',
-    'Request duration in seconds',
-    ['endpoint', 'method'],
-    registry=_registry,
-    buckets=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 60.0]
-) if PROMETHEUS_AVAILABLE else None
+REQUEST_DURATION = (
+    Histogram(
+        "sushi_request_duration_seconds",
+        "Request duration in seconds",
+        ["endpoint", "method"],
+        registry=_registry,
+        buckets=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 60.0],
+    )
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
-LLM_CALL_COUNTER = Counter(
-    'sushi_llm_calls_total',
-    'Total number of LLM calls',
-    ['model', 'success'],
-    registry=_registry
-) if PROMETHEUS_AVAILABLE else None
+LLM_CALL_COUNTER = (
+    Counter(
+        "sushi_llm_calls_total",
+        "Total number of LLM calls",
+        ["model", "success"],
+        registry=_registry,
+    )
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
-LLM_TOKEN_USAGE = Summary(
-    'sushi_llm_token_usage',
-    'LLM token usage',
-    ['model', 'type'],
-    registry=_registry
-) if PROMETHEUS_AVAILABLE else None
+LLM_TOKEN_USAGE = (
+    Summary(
+        "sushi_llm_token_usage",
+        "LLM token usage",
+        ["model", "type"],
+        registry=_registry,
+    )
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
-RETRIEVAL_DURATION = Histogram(
-    'sushi_retrieval_duration_seconds',
-    'Retrieval duration in seconds',
-    ['method'],
-    registry=_registry,
-    buckets=[0.05, 0.1, 0.2, 0.5, 1.0, 2.0]
-) if PROMETHEUS_AVAILABLE else None
+RETRIEVAL_DURATION = (
+    Histogram(
+        "sushi_retrieval_duration_seconds",
+        "Retrieval duration in seconds",
+        ["method"],
+        registry=_registry,
+        buckets=[0.05, 0.1, 0.2, 0.5, 1.0, 2.0],
+    )
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
-RETRIEVAL_DOCUMENTS = Summary(
-    'sushi_retrieval_documents_found',
-    'Number of documents found in retrieval',
-    registry=_registry
-) if PROMETHEUS_AVAILABLE else None
+RETRIEVAL_DOCUMENTS = (
+    Summary(
+        "sushi_retrieval_documents_found",
+        "Number of documents found in retrieval",
+        registry=_registry,
+    )
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
-MEMORY_OPS_COUNTER = Counter(
-    'sushi_memory_operations_total',
-    'Total number of memory operations',
-    ['operation', 'success'],
-    registry=_registry
-) if PROMETHEUS_AVAILABLE else None
+MEMORY_OPS_COUNTER = (
+    Counter(
+        "sushi_memory_operations_total",
+        "Total number of memory operations",
+        ["operation", "success"],
+        registry=_registry,
+    )
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
-APP_UPTIME = Gauge(
-    'sushi_uptime_seconds',
-    'Application uptime in seconds',
-    registry=_registry
-) if PROMETHEUS_AVAILABLE else None
+APP_UPTIME = (
+    Gauge("sushi_uptime_seconds", "Application uptime in seconds", registry=_registry)
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
-ACTIVE_SESSIONS = Gauge(
-    'sushi_active_sessions',
-    'Number of active sessions',
-    registry=_registry
-) if PROMETHEUS_AVAILABLE else None
+ACTIVE_SESSIONS = (
+    Gauge("sushi_active_sessions", "Number of active sessions", registry=_registry)
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
-ERROR_COUNTER = Counter(
-    'sushi_errors_total',
-    'Total number of errors',
-    ['type', 'endpoint'],
-    registry=_registry
-) if PROMETHEUS_AVAILABLE else None
+ERROR_COUNTER = (
+    Counter(
+        "sushi_errors_total",
+        "Total number of errors",
+        ["type", "endpoint"],
+        registry=_registry,
+    )
+    if PROMETHEUS_AVAILABLE
+    else None
+)
 
 
 class Timer:
@@ -162,7 +199,7 @@ class PerformanceMonitor:
                     "max": max(durations),
                     "avg": sum(durations) / len(durations),
                     "p95": self._calculate_percentile(durations, 95),
-                    "p99": self._calculate_percentile(durations, 99)
+                    "p99": self._calculate_percentile(durations, 99),
                 }
 
         uptime = time.time() - self._start_time
@@ -170,15 +207,11 @@ class PerformanceMonitor:
         return {
             "uptime": uptime,
             "request_count": self._request_count,
-            "avg_request_time": (
-                self._total_time / max(self._request_count, 1)
-            ),
-            "operations": metrics
+            "avg_request_time": (self._total_time / max(self._request_count, 1)),
+            "operations": metrics,
         }
 
-    def _calculate_percentile(
-        self, values: List[float], percentile: int
-    ) -> float:
+    def _calculate_percentile(self, values: List[float], percentile: int) -> float:
         """计算百分位数"""
         if not values:
             return 0.0
@@ -241,9 +274,31 @@ def log_performance_summary():
 
 
 async def periodic_performance_log(interval: int = 60):
-    """定期输出性能日志"""
+    """定期输出性能日志并记录告警指标"""
     while True:
         log_performance_summary()
+        
+        # 记录告警指标
+        metrics = performance_monitor.get_metrics()
+        try:
+            from backend.utils.alerting import record_alert_metric
+            
+            # 记录平均延迟
+            record_alert_metric("avg_latency", metrics.get("avg_request_time", 0.0))
+            
+            # 计算并记录错误率（基于请求计数）
+            if ERROR_COUNTER is not None:
+                error_count = ERROR_COUNTER._metrics.get("exception", {}).get("unknown", 0)
+                total_requests = metrics.get("request_count", 1)
+                error_rate = error_count / total_requests if total_requests > 0 else 0.0
+                record_alert_metric("error_rate", error_rate)
+            
+            # 记录并发数估计
+            record_alert_metric("concurrency", min(metrics.get("request_count", 0) // 10, 100))
+            
+        except ImportError:
+            pass
+        
         await asyncio.sleep(interval)
 
 
@@ -257,9 +312,7 @@ def generate_prometheus_metrics() -> bytes:
             APP_UPTIME.set(time.time() - performance_monitor._start_time)
 
         if ACTIVE_SESSIONS is not None:
-            ACTIVE_SESSIONS.set(
-                min(performance_monitor._request_count // 10, 100)
-            )
+            ACTIVE_SESSIONS.set(min(performance_monitor._request_count // 10, 100))
 
         return generate_latest(_registry)
     except Exception:
@@ -274,6 +327,7 @@ def get_prometheus_content_type() -> str:
 
 def track_request(endpoint: str, method: str = "POST"):
     """装饰器：追踪请求"""
+
     def decorator(func: Callable) -> Callable:
         async def async_wrapper(*args, **kwargs):
             start_time = time.time()
@@ -285,9 +339,7 @@ def track_request(endpoint: str, method: str = "POST"):
             except Exception:
                 status = "error"
                 if ERROR_COUNTER is not None:
-                    ERROR_COUNTER.labels(
-                        type="exception", endpoint=endpoint
-                    ).inc()
+                    ERROR_COUNTER.labels(type="exception", endpoint=endpoint).inc()
                 raise
             finally:
                 duration = time.time() - start_time
@@ -296,9 +348,9 @@ def track_request(endpoint: str, method: str = "POST"):
                         endpoint=endpoint, method=method, status=status
                     ).inc()
                 if REQUEST_DURATION is not None:
-                    REQUEST_DURATION.labels(
-                        endpoint=endpoint, method=method
-                    ).observe(duration)
+                    REQUEST_DURATION.labels(endpoint=endpoint, method=method).observe(
+                        duration
+                    )
 
         def sync_wrapper(*args, **kwargs):
             start_time = time.time()
@@ -310,9 +362,7 @@ def track_request(endpoint: str, method: str = "POST"):
             except Exception:
                 status = "error"
                 if ERROR_COUNTER is not None:
-                    ERROR_COUNTER.labels(
-                        type="exception", endpoint=endpoint
-                    ).inc()
+                    ERROR_COUNTER.labels(type="exception", endpoint=endpoint).inc()
                 raise
             finally:
                 duration = time.time() - start_time
@@ -321,18 +371,20 @@ def track_request(endpoint: str, method: str = "POST"):
                         endpoint=endpoint, method=method, status=status
                     ).inc()
                 if REQUEST_DURATION is not None:
-                    REQUEST_DURATION.labels(
-                        endpoint=endpoint, method=method
-                    ).observe(duration)
+                    REQUEST_DURATION.labels(endpoint=endpoint, method=method).observe(
+                        duration
+                    )
 
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
         return sync_wrapper
+
     return decorator
 
 
 def track_llm_call(model: str):
     """装饰器：追踪 LLM 调用"""
+
     def decorator(func: Callable) -> Callable:
         async def async_wrapper(*args, **kwargs):
             success = "true"
@@ -361,11 +413,13 @@ def track_llm_call(model: str):
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
         return sync_wrapper
+
     return decorator
 
 
 def track_retrieval(method: str = "hybrid"):
     """装饰器：追踪检索操作"""
+
     def decorator(func: Callable) -> Callable:
         async def async_wrapper(*args, **kwargs):
             start_time = time.time()
@@ -396,11 +450,13 @@ def track_retrieval(method: str = "hybrid"):
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
         return sync_wrapper
+
     return decorator
 
 
 def track_memory_operation(operation: str):
     """装饰器：追踪内存操作"""
+
     def decorator(func: Callable) -> Callable:
         async def async_wrapper(*args, **kwargs):
             success = "true"
@@ -433,43 +489,32 @@ def track_memory_operation(operation: str):
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
         return sync_wrapper
+
     return decorator
 
 
 def record_request(endpoint: str, method: str, status: str, duration: float):
     """记录请求指标"""
     if REQUEST_COUNTER is not None:
-        REQUEST_COUNTER.labels(
-            endpoint=endpoint,
-            method=method,
-            status=status
-        ).inc()
+        REQUEST_COUNTER.labels(endpoint=endpoint, method=method, status=status).inc()
     if REQUEST_DURATION is not None:
-        REQUEST_DURATION.labels(
-            endpoint=endpoint, method=method
-        ).observe(duration)
+        REQUEST_DURATION.labels(endpoint=endpoint, method=method).observe(duration)
 
 
 def record_llm_call(
-    model: str,
-    success: bool,
-    prompt_tokens: int = 0,
-    completion_tokens: int = 0
+    model: str, success: bool, prompt_tokens: int = 0, completion_tokens: int = 0
 ):
     """记录 LLM 调用指标"""
     if LLM_CALL_COUNTER is not None:
         LLM_CALL_COUNTER.labels(
-            model=model,
-            success="true" if success else "false"
+            model=model, success="true" if success else "false"
         ).inc()
     if LLM_TOKEN_USAGE is not None and prompt_tokens > 0:
-        LLM_TOKEN_USAGE.labels(
-            model=model, type="prompt"
-        ).observe(prompt_tokens)
+        LLM_TOKEN_USAGE.labels(model=model, type="prompt").observe(prompt_tokens)
     if LLM_TOKEN_USAGE is not None and completion_tokens > 0:
-        LLM_TOKEN_USAGE.labels(
-            model=model, type="completion"
-        ).observe(completion_tokens)
+        LLM_TOKEN_USAGE.labels(model=model, type="completion").observe(
+            completion_tokens
+        )
 
 
 def record_error(error_type: str, endpoint: str = "unknown"):

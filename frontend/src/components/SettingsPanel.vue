@@ -1,7 +1,7 @@
 <template>
   <div class="settings-panel" :class="{ visible: isVisible }">
     <div class="panel-overlay" @click="close"></div>
-    
+
     <div class="panel-content">
       <div class="panel-header">
         <h2 class="title-chinese">设置</h2>
@@ -9,10 +9,10 @@
           <span>×</span>
         </button>
       </div>
-      
+
       <div class="settings-section">
         <h3 class="section-title">检索设置</h3>
-        
+
         <div class="setting-item">
           <label class="setting-label">
             <input
@@ -24,7 +24,7 @@
           </label>
           <p class="setting-desc">启用后，回答将基于知识库文档</p>
         </div>
-        
+
         <div class="setting-item">
           <label class="setting-label">检索数量</label>
           <input
@@ -39,10 +39,10 @@
           <p class="setting-desc">每次检索返回的文档数量</p>
         </div>
       </div>
-      
+
       <div class="settings-section">
         <h3 class="section-title">模型设置</h3>
-        
+
         <div class="setting-item">
           <label class="setting-label">温度参数</label>
           <input
@@ -58,16 +58,16 @@
           <p class="setting-desc">控制回答的随机性，值越大越随机</p>
         </div>
       </div>
-      
+
       <div class="settings-section">
         <h3 class="section-title">关于</h3>
         <div class="about-info">
-          <p><strong>版本:</strong> 0.1.0</p>
-          <p><strong>主题:</strong> 苏轼文化数字人</p>
-          <p><strong>描述:</strong> 基于RAG技术的苏轼诗词问答系统</p>
-        </div>
+                <p><strong>版本:</strong> 1.0.0</p>
+                <p><strong>主题:</strong> 企业级智能文档问答平台</p>
+                <p><strong>描述:</strong> 基于RAG技术的企业知识库问答系统</p>
+            </div>
       </div>
-      
+
       <div class="panel-footer">
         <button class="classic-btn" @click="resetSettings">
           重置设置

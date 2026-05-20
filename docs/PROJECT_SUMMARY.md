@@ -23,8 +23,8 @@
 
 ## 项目概述
 
-**项目名称**：苏轼文化数字人问答系统  
-**项目目标**：构建一个基于苏东坡文化的智能问答系统，支持多轮对话、流式输出、混合检索增强  
+**项目名称**：苏轼文化数字人问答系统
+**项目目标**：构建一个基于苏东坡文化的智能问答系统，支持多轮对话、流式输出、混合检索增强
 **核心功能**：RAG（检索增强生成）+ 多轮对话记忆 + 实时流式响应
 
 ---
@@ -123,7 +123,7 @@ class SimpleLLM:
     def __init__(self):
         self.client = Generation()
         self.model = settings.llm_model  # qwen-max
-        
+
 class SimpleEmbeddings:
     def __init__(self):
         self.model = settings.embedding_model  # text-embedding-v2
@@ -264,15 +264,15 @@ class RAGChain:
         self.retriever = get_hybrid_retriever()
         self.llm = get_llm()
         self.prompt = ChatPromptTemplate.from_template(TEMPLATE)
-    
+
     async def stream(self, query: str, conversation_id: str):
         # 1. 检索相关文档
         docs = self.retriever.search(query, top_k=5)
-        
+
         # 2. 组装提示词
         context = "\n".join([doc['content'] for doc in docs])
         prompt = self.prompt.format(context=context, question=query)
-        
+
         # 3. 流式生成
         async for chunk in self.llm.stream(prompt):
             yield chunk
@@ -345,13 +345,13 @@ TEMPLATE = """基于以下参考资料回答用户问题。
 # backend/memory/redis_client.py
 class RedisClient:
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._connection = None
         return cls._instance
-    
+
     def get_connection(self):
         if self._connection is None:
             self._connection = redis.from_url(
@@ -382,13 +382,13 @@ REDIS_MAX_CONNECTIONS=50
 class ConversationMemory:
     def __init__(self):
         self.redis = get_redis_client()
-    
+
     def add_message(self, conversation_id: str, role: str, content: str):
         key = f"conversation:{conversation_id}"
         message = json.dumps({"role": role, "content": content})
         self.redis.rpush(key, message)
         self.redis.expire(key, 3600)  # 1小时过期
-    
+
     def get_history(self, conversation_id: str, limit: int = 10):
         key = f"conversation:{conversation_id}"
         messages = self.redis.lrange(key, -limit, -1)
@@ -419,7 +419,7 @@ async def chat_stream(request: ChatRequest):
         async for chunk in rag_chain.stream(request.query, request.conversation_id):
             # SSE 格式：data: {...}\n\n
             yield f"data: {json.dumps({'content': chunk})}\n\n"
-    
+
     return StreamingResponse(
         generate(),
         media_type="text/event-stream"
@@ -440,17 +440,17 @@ async function sendMessage(content: string) {
     body: JSON.stringify({ query: content, conversation_id }),
     headers: { 'Content-Type': 'application/json' }
   });
-  
+
   const reader = response.body?.getReader();
   const decoder = new TextDecoder();
-  
+
   while (true) {
     const { done, value } = await reader?.read();
     if (done) break;
-    
+
     const chunk = decoder.decode(value);
     const lines = chunk.split('\n');
-    
+
     for (const line of lines) {
       if (line.startsWith('data: ')) {
         const data = JSON.parse(line.slice(6));
@@ -474,7 +474,7 @@ async function sendMessage(content: string) {
 
 **混合检索流程**：
 ```
-用户查询 
+用户查询
   ↓
 BM25 关键词检索 ──┐
                  ├→ RRF 融合 → BGE-reranker 重排序 → 最终结果
@@ -492,17 +492,17 @@ class BM25Retriever:
     def __init__(self):
         self.documents: List[str] = []
         self.bm25 = None
-    
+
     def add_documents(self, texts: List[str], ids: List[str]):
         self.documents = texts
         self.tokenized_docs = [list(jieba.cut(doc)) for doc in texts]
         self.bm25 = BM25Okapi(self.tokenized_docs)
-    
+
     def search(self, query: str, top_k: int = 5) -> List[Dict]:
         query_tokens = list(jieba.cut(query))
         scores = self.bm25.get_scores(query_tokens)
         top_indices = np.argsort(scores)[::-1][:top_k]
-        
+
         return [{
             "content": self.documents[idx],
             "id": self.doc_ids[idx],
@@ -524,20 +524,20 @@ $$RRF(d) = \sum_{i=1}^{n} \frac{1}{k + rank_i(d)}$$
 ```python
 def _rrf_fusion(self, results_list: List[List[Dict]], k: int = 60) -> List[Dict]:
     doc_scores = {}
-    
+
     for results in results_list:
         for rank, result in enumerate(results, 1):
             doc_id = result.get('id', result['content'])
-            
+
             if doc_id not in doc_scores:
                 doc_scores[doc_id] = {
                     "content": result['content'],
                     "rrf_score": 0
                 }
-            
+
             rrf_score = 1 / (k + rank)
             doc_scores[doc_id]['rrf_score'] += rrf_score
-    
+
     return sorted(doc_scores.values(), key=lambda x: x['rrf_score'], reverse=True)
 ```
 
@@ -549,18 +549,18 @@ class Reranker:
     def __init__(self, model_name: str = "BAAI/bge-reranker-base"):
         self.model_name = model_name
         self.model = None
-    
+
     def _initialize(self):
         if not self._initialized:
             from sentence_transformers import CrossEncoder
             self.model = CrossEncoder(self.model_name, max_length=512)
-    
+
     def rerank(self, query: str, documents: List[str], top_k: int = 5) -> List[Dict]:
         pairs = [[query, doc] for doc in documents]
         scores = self.model.predict(pairs)
-        
+
         doc_with_scores = sorted(zip(documents, scores), key=lambda x: x[1], reverse=True)
-        
+
         return [{
             "content": doc,
             "rerank_score": float(score)
@@ -751,7 +751,7 @@ sushi_digital_human/
 
 ---
 
-**文档版本**: v2.0  
-**创建日期**: 2026-05-15  
-**更新日期**: 2026-05-15  
+**文档版本**: v2.0
+**创建日期**: 2026-05-15
+**更新日期**: 2026-05-15
 **作者**: 开发团队

@@ -34,24 +34,26 @@ TEST_QUERIES = [
     "苏轼在文学史上的地位如何？",
 ]
 
+
 # ==================== 数据模型 ====================
 @dataclass
 class TaskResult:
     """任务结果"""
+
     task_id: str
     submit_time: float
     complete_time: float = 0
     status: str = "pending"
     answer: str = ""
     error: str = ""
-    
+
     @property
     def wait_time(self) -> float:
         """等待时间（从提交到完成）"""
         if self.complete_time > 0:
             return self.complete_time - self.submit_time
         return time.time() - self.submit_time
-    
+
     @property
     def is_completed(self) -> bool:
         return self.status in ["completed", "failed"]
@@ -60,12 +62,13 @@ class TaskResult:
 @dataclass
 class TestStats:
     """测试统计"""
+
     total_submitted: int = 0
     total_completed: int = 0
     total_failed: int = 0
     total_timeout: int = 0
     wait_times: List[float] = field(default_factory=list)
-    
+
     @property
     def completion_rate(self) -> float:
         if self.total_submitted == 0:
@@ -76,13 +79,15 @@ class TestStats:
 # ==================== 测试客户端 ====================
 class AsyncAPITester:
     """异步 API 测试器"""
-    
+
     def __init__(self):
         self.tasks: Dict[str, TaskResult] = {}
         self.stats = TestStats()
         self.running = False
-    
-    async def submit_task(self, client: httpx.AsyncClient, query: str, session_id: str) -> str:
+
+    async def submit_task(
+        self, client: httpx.AsyncClient, query: str, session_id: str
+    ) -> str:
         """提交异步任务"""
         try:
             response = await client.post(
@@ -91,60 +96,59 @@ class AsyncAPITester:
                     "message": query,
                     "session_id": session_id,
                     "use_rag": True,
-                    "top_k": 3
+                    "top_k": 3,
                 },
-                timeout=10.0
+                timeout=10.0,
             )
-            
+
             if response.status_code == 200:
                 data = response.json()
                 task_id = data.get("task_id")
-                
+
                 task = TaskResult(
-                    task_id=task_id,
-                    submit_time=time.time(),
-                    status="pending"
+                    task_id=task_id, submit_time=time.time(), status="pending"
                 )
                 self.tasks[task_id] = task
                 self.stats.total_submitted += 1
-                
+
                 return task_id
             else:
                 print(f"  提交失败: HTTP {response.status_code}")
                 return None
-                
+
         except Exception as e:
             print(f"  提交异常: {str(e)}")
             return None
-    
-    async def poll_result(self, client: httpx.AsyncClient, task_id: str) -> Dict[str, Any]:
+
+    async def poll_result(
+        self, client: httpx.AsyncClient, task_id: str
+    ) -> Dict[str, Any]:
         """轮询任务结果"""
         try:
             response = await client.get(
-                f"{BASE_URL}/api/chat/async/{task_id}",
-                timeout=10.0
+                f"{BASE_URL}/api/chat/async/{task_id}", timeout=10.0
             )
-            
+
             if response.status_code == 200:
                 return response.json()
             else:
                 return {"status": "error", "error": f"HTTP {response.status_code}"}
-                
+
         except Exception as e:
             return {"status": "error", "error": str(e)}
-    
+
     async def check_completed_tasks(self, client: httpx.AsyncClient):
         """检查已完成的任务"""
         completed = []
-        
+
         for task_id, task in self.tasks.items():
             if task.is_completed:
                 completed.append(task_id)
                 continue
-            
+
             # 轮询结果
             result = await self.poll_result(client, task_id)
-            
+
             if result.get("status") == "completed":
                 task.status = "completed"
                 task.complete_time = time.time()
@@ -152,60 +156,60 @@ class AsyncAPITester:
                 self.stats.total_completed += 1
                 self.stats.wait_times.append(task.wait_time)
                 completed.append(task_id)
-                
+
             elif result.get("status") == "failed":
                 task.status = "failed"
                 task.complete_time = time.time()
                 task.error = result.get("error", "Unknown error")
                 self.stats.total_failed += 1
                 completed.append(task_id)
-            
+
             elif task.wait_time > POLL_TIMEOUT:
                 task.status = "timeout"
                 self.stats.total_timeout += 1
                 completed.append(task_id)
-        
+
         # 清理已完成的任务（只保留未完成的）
         for task_id in completed:
             if task_id in self.tasks:
                 del self.tasks[task_id]
-    
+
     async def run_submitter(self, client: httpx.AsyncClient, submit_count: int):
         """提交任务"""
         for i in range(submit_count):
             if not self.running:
                 break
-            
+
             query = random.choice(TEST_QUERIES)
             session_id = f"async_test_{int(time.time())}_{i}"
-            
+
             await self.submit_task(client, query, session_id)
-            
+
             # 随机等待
             await asyncio.sleep(random.uniform(0.1, 0.5))
-    
+
     async def run_poller(self, client: httpx.AsyncClient):
         """轮询任务结果"""
         while self.running or self.tasks:
             await self.check_completed_tasks(client)
-            
+
             if not self.running and not self.tasks:
                 break
-            
+
             await asyncio.sleep(POLL_INTERVAL)
-    
+
     async def run_test(self) -> Dict[str, Any]:
         """运行异步 API 测试"""
         print(f"\n{'='*80}")
         print(f"异步队列 API 测试")
         print(f"{'='*80}\n")
-        
+
         print(f"测试配置:")
         print(f"  - 并发提交数: {CONCURRENT_SUBMITTERS}")
         print(f"  - 测试时长: {TEST_DURATION}秒")
         print(f"  - 轮询间隔: {POLL_INTERVAL}秒")
         print(f"  - 轮询超时: {POLL_TIMEOUT}秒\n")
-        
+
         # 检查服务
         print("检查服务状态...")
         try:
@@ -218,48 +222,48 @@ class AsyncAPITester:
         except Exception as e:
             print(f"❌ 无法连接服务: {e}\n")
             return {}
-        
+
         self.running = True
         test_start = time.time()
-        
+
         # 创建共享客户端
         client = httpx.AsyncClient(timeout=30.0)
-        
+
         # 提交任务
         print(f"[阶段1] 提交任务...")
         submit_tasks = []
         for i in range(CONCURRENT_SUBMITTERS):
             submit_count = max(1, TEST_DURATION // 10)  # 每个提交者提交的数量
             submit_tasks.append(self.run_submitter(client, submit_count))
-        
+
         # 同时轮询结果
         poller = asyncio.create_task(self.run_poller(client))
         submitters = asyncio.gather(*submit_tasks)
-        
+
         # 等待提交完成
         await submitters
-        
+
         # 继续轮询直到所有任务完成或超时
         print(f"[阶段2] 等待任务完成...")
         self.running = False
-        
+
         # 等待一段时间让任务完成
         wait_start = time.time()
         while self.tasks and (time.time() - wait_start) < POLL_TIMEOUT:
             await asyncio.sleep(POLL_INTERVAL)
             if not self.tasks:
                 break
-        
+
         # 清理
         self.running = False
         await poller
         await client.aclose()
-        
+
         test_duration = time.time() - test_start
-        
+
         # 统计结果
         return self.generate_report(test_duration)
-    
+
     def generate_report(self, test_duration: float) -> Dict[str, Any]:
         """生成测试报告"""
         report = f"""
@@ -282,7 +286,7 @@ class AsyncAPITester:
 
 2. 等待时间统计
 """
-        
+
         if self.stats.wait_times:
             wait_times = sorted(self.stats.wait_times)
             report += f"""   - 平均等待: {statistics.mean(wait_times):.2f}秒
@@ -293,10 +297,12 @@ class AsyncAPITester:
 """
         else:
             report += "   - 无等待时间数据\n"
-        
+
         # 吞吐量计算
-        throughput = self.stats.total_completed / test_duration if test_duration > 0 else 0
-        
+        throughput = (
+            self.stats.total_completed / test_duration if test_duration > 0 else 0
+        )
+
         report += f"""
 3. 吞吐量
    - 完成吞吐量: {throughput:.2f} 任务/秒
@@ -322,7 +328,7 @@ class AsyncAPITester:
 三、测试结论
 ================================================================================
 """
-        
+
         if self.stats.completion_rate > 0.8:
             report += f"""   🎉 异步 API 测试通过！
    - 任务完成率: {self.stats.completion_rate * 100:.2f}%
@@ -332,53 +338,58 @@ class AsyncAPITester:
             report += f"""   ⚠️ 任务完成率较低: {self.stats.completion_rate * 100:.2f}%
    - 可能原因：Celery Worker 未运行或 LLM API 响应慢
 """
-        
+
         report += f"""
 {'='*80}
 """
-        
+
         print(report)
-        
+
         return {
             "total_submitted": self.stats.total_submitted,
             "total_completed": self.stats.total_completed,
             "total_failed": self.stats.total_failed,
             "completion_rate": self.stats.completion_rate,
-            "avg_wait_time": statistics.mean(self.stats.wait_times) if self.stats.wait_times else 0,
+            "avg_wait_time": (
+                statistics.mean(self.stats.wait_times) if self.stats.wait_times else 0
+            ),
             "throughput": throughput,
-            "report": report
+            "report": report,
         }
 
 
 # ==================== 主函数 ====================
 async def main():
     """主函数"""
-    print("="*80)
+    print("=" * 80)
     print("        苏轼文化数字人 - 异步队列 API 测试")
-    print("="*80)
-    
+    print("=" * 80)
+
     tester = AsyncAPITester()
-    
+
     try:
         result = await tester.run_test()
-        
+
         # 保存报告
         if result:
-            report_file = f"tests/async_api_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-            with open(report_file, 'w', encoding='utf-8') as f:
-                f.write(result.get('report', ''))
+            report_file = (
+                f"tests/async_api_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+            )
+            with open(report_file, "w", encoding="utf-8") as f:
+                f.write(result.get("report", ""))
             print(f"\n📄 报告已保存: {report_file}")
-        
+
     except KeyboardInterrupt:
         print("\n测试被中断")
     except Exception as e:
         print(f"\n测试出错: {e}")
         import traceback
+
         traceback.print_exc()
 
 
 if __name__ == "__main__":
     print("\n注意: 异步 API 需要 Celery Worker 运行才能完整测试")
     print("      如果 Worker 未运行，任务将保持 pending 状态\n")
-    
+
     asyncio.run(main())

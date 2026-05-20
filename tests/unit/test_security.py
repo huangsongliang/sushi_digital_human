@@ -1,4 +1,5 @@
 """安全模块单元测试"""
+
 import pytest
 
 
@@ -7,10 +8,8 @@ class TestSecurityModule:
 
     def test_security_module_import(self):
         try:
-            from backend.core.security import (
-                verify_password,
-                get_password_hash
-            )
+            from backend.core.security import verify_password, get_password_hash
+
             assert verify_password is not None
             assert get_password_hash is not None
         except ImportError:
@@ -18,10 +17,7 @@ class TestSecurityModule:
 
     def test_password_hashing(self):
         try:
-            from backend.core.security import (
-                verify_password,
-                get_password_hash
-            )
+            from backend.core.security import verify_password, get_password_hash
 
             password = "test_password_123"
             hashed = get_password_hash(password)

@@ -1,26 +1,45 @@
 <template>
   <aside class="sidebar">
     <div class="sidebar-header">
-      <h1 class="title-chinese">苏轼文化数字人</h1>
-      <p class="subtitle">东坡居士 · 诗词问答</p>
+      <h1 class="title-chinese">企业级智能文档问答平台</h1>
+      <p class="subtitle">智能文档 · 精准问答</p>
     </div>
-    
+
     <div class="new-chat-btn">
       <button class="classic-btn classic-btn-primary" @click="createNewChat">
         <span>+</span> 新对话
       </button>
     </div>
-    
+
+    <div class="nav-menu">
+      <button 
+        class="nav-item" 
+        :class="{ active: currentRoute === '/' }"
+        @click="navigate('/')"
+      >
+        <span class="nav-icon">💬</span>
+        <span>对话</span>
+      </button>
+      <button 
+        class="nav-item" 
+        :class="{ active: currentRoute === '/documents' }"
+        @click="navigate('/documents')"
+      >
+        <span class="nav-icon">📁</span>
+        <span>文档管理</span>
+      </button>
+    </div>
+
     <div class="chat-list">
       <div
-        v-for="session in sortedSessions"
+        v-for="session in store.sortedSessions"
         :key="session.id"
         class="chat-item"
-        :class="{ active: session.id === currentSessionId }"
+        :class="{ active: session.id === store.currentSessionId && currentRoute === '/' }"
         @click="selectSession(session.id)"
       >
         <div class="chat-icon">
-          <span class="icon-text">苏</span>
+          <span class="icon-text">知</span>
         </div>
         <div class="chat-info">
           <h3 class="chat-title">{{ session.title }}</h3>
@@ -30,16 +49,28 @@
           <span>×</span>
         </button>
       </div>
-      
-      <div v-if="sortedSessions.length === 0" class="empty-state">
+
+      <div v-if="store.sortedSessions.length === 0" class="empty-state">
         <div class="empty-icon">📜</div>
         <p>暂无对话</p>
         <p class="text-muted text-small">点击上方按钮开始新对话</p>
       </div>
     </div>
-    
+
     <div class="sidebar-footer">
-      <button class="settings-toggle" @click="toggleSettings">
+      <div class="user-info" v-if="authStore.user">
+        <div class="user-avatar">
+          <span>{{ authStore.user.username?.charAt(0) || '用' }}</span>
+        </div>
+        <div class="user-details">
+          <p class="user-name">{{ authStore.user.username }}</p>
+          <p class="user-role">{{ authStore.user.roles?.includes('admin') ? '管理员' : '用户' }}</p>
+        </div>
+        <button class="logout-btn" @click="handleLogout">
+          <span>🚪</span>
+        </button>
+      </div>
+      <button class="settings-toggle" v-if="currentRoute === '/'" @click="toggleSettings">
         <span>⚙️</span> 设置
       </button>
     </div>
@@ -47,18 +78,51 @@
 </template>
 
 <script setup lang="ts">
+import { watch, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useChatStore } from '@/stores/chat'
+import { useAuthStore } from '@/stores/auth'
 
 const store = useChatStore()
-const { sortedSessions, currentSessionId, createSession, selectSession, deleteSession } = store
+const authStore = useAuthStore()
+const router = useRouter()
 
-const emit = defineEmits<{
-  toggleSettings: []
-}>()
+const currentRoute = computed(() => router.currentRoute.value.path)
+
+console.log('[ChatSidebar] Mounted, sortedSessions:', store.sortedSessions.length)
+console.log('[ChatSidebar] currentSessionId:', store.currentSessionId)
+
+watch(() => store.sortedSessions, (newVal) => {
+  console.log('[ChatSidebar] sortedSessions changed:', newVal.length)
+}, { deep: true })
 
 function createNewChat() {
-  createSession()
+  store.createSession()
 }
+
+function selectSession(sessionId: string) {
+  if (currentRoute.value !== '/') {
+    router.push('/')
+  }
+  store.selectSession(sessionId)
+}
+
+function deleteSession(sessionId: string) {
+  store.deleteSession(sessionId)
+}
+
+function navigate(path: string) {
+  router.push(path)
+}
+
+function handleLogout() {
+  authStore.logout()
+  router.push('/login')
+}
+
+const emit = defineEmits<{
+  toggleSettings?: []
+}>()
 
 function formatTime(date: Date): string {
   const now = new Date()
@@ -75,7 +139,9 @@ function formatTime(date: Date): string {
 }
 
 function toggleSettings() {
-  emit('toggleSettings')
+  if (emit) {
+    emit('toggleSettings')
+  }
 }
 </script>
 
@@ -225,9 +291,106 @@ function toggleSettings() {
   margin-bottom: 4px;
 }
 
+.nav-menu {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.nav-item {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-ink-light);
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background: rgba(139, 115, 85, 0.08);
+}
+
+.nav-item.active {
+  background: rgba(139, 115, 85, 0.15);
+  color: var(--color-accent);
+}
+
+.nav-icon {
+  font-size: 18px;
+}
+
 .sidebar-footer {
   padding-top: 16px;
   border-top: 1px solid rgba(139, 115, 85, 0.15);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(139, 115, 85, 0.05);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ink-black);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 11px;
+  color: var(--color-ink-faint);
+  margin: 0;
+}
+
+.logout-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(181, 71, 71, 0.1);
 }
 
 .settings-toggle {

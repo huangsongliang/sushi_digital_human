@@ -24,6 +24,7 @@ logger = get_logger(__name__)
 @dataclass
 class ErrorInfo:
     """错误信息数据类"""
+
     error_id: str
     error_type: str
     message: str
@@ -61,15 +62,13 @@ class ErrorTracker:
         endpoint = kwargs.get("endpoint", "unknown")
         method = kwargs.get("method", "GET")
 
-        stack_trace = traceback.format_exc() if kwargs.get(
-            "include_stack", True
-        ) else ""
+        stack_trace = (
+            traceback.format_exc() if kwargs.get("include_stack", True) else ""
+        )
 
         record_error(error_type, endpoint)
 
-        self._error_counts[error_type] = self._error_counts.get(
-            error_type, 0
-        ) + 1
+        self._error_counts[error_type] = self._error_counts.get(error_type, 0) + 1
         self._last_error_time[error_type] = time.time()
 
         self._check_alert(error_type)
@@ -83,8 +82,8 @@ class ErrorTracker:
                 "endpoint": endpoint,
                 "method": method,
                 "stack_trace": stack_trace,
-                "additional_info": kwargs
-            }
+                "additional_info": kwargs,
+            },
         )
 
         return error_id
@@ -112,9 +111,7 @@ class ErrorTracker:
             error_type: 错误类型
             count: 错误数量
         """
-        alert_message = (
-            f"告警：错误类型 '{error_type}' 在最近一分钟内发生 {count} 次"
-        )
+        alert_message = f"告警：错误类型 '{error_type}' 在最近一分钟内发生 {count} 次"
         logger.critical(alert_message)
 
     def get_error_stats(self) -> Dict[str, Any]:
@@ -127,7 +124,7 @@ class ErrorTracker:
         return {
             "error_counts": self._error_counts.copy(),
             "total_errors": sum(self._error_counts.values()),
-            "error_types": list(self._error_counts.keys())
+            "error_types": list(self._error_counts.keys()),
         }
 
     def reset_stats(self):
@@ -155,13 +152,11 @@ def capture_exception(error: Exception, **kwargs) -> str:
         error_type=type(error).__name__,
         message=str(error),
         include_stack=True,
-        **kwargs
+        **kwargs,
     )
 
 
-def capture_message(
-    message: str, error_type: str = "CustomError", **kwargs
-) -> str:
+def capture_message(message: str, error_type: str = "CustomError", **kwargs) -> str:
     """
     捕获自定义错误消息
 
@@ -174,10 +169,7 @@ def capture_message(
         错误 ID
     """
     return error_tracker.track_error(
-        error_type=error_type,
-        message=message,
-        include_stack=False,
-        **kwargs
+        error_type=error_type, message=message, include_stack=False, **kwargs
     )
 
 
@@ -194,6 +186,7 @@ def error_handler_middleware(func: Callable) -> Callable:
     import asyncio
 
     if asyncio.iscoroutinefunction(func):
+
         async def async_wrapper(*args, **kwargs):
             request_id = set_request_id()
 
@@ -204,11 +197,13 @@ def error_handler_middleware(func: Callable) -> Callable:
                     e,
                     request_id=request_id,
                     endpoint=kwargs.get("endpoint", "unknown"),
-                    method=kwargs.get("method", "GET")
+                    method=kwargs.get("method", "GET"),
                 )
                 raise
+
         return async_wrapper
     else:
+
         def sync_wrapper(*args, **kwargs):
             request_id = set_request_id()
 
@@ -219,9 +214,10 @@ def error_handler_middleware(func: Callable) -> Callable:
                     e,
                     request_id=request_id,
                     endpoint=kwargs.get("endpoint", "unknown"),
-                    method=kwargs.get("method", "GET")
+                    method=kwargs.get("method", "GET"),
                 )
                 raise
+
         return sync_wrapper
 
 
@@ -261,7 +257,7 @@ def setup_exception_handlers(app):
             exc,
             request_id=request_id,
             endpoint=str(request.url.path),
-            method=request.method
+            method=request.method,
         )
 
         return JSONResponse(
@@ -271,8 +267,8 @@ def setup_exception_handlers(app):
                 "message": "服务器内部错误",
                 "error_id": str(uuid4()),
                 "request_id": request_id,
-                "timestamp": datetime.now().isoformat()
-            }
+                "timestamp": datetime.now().isoformat(),
+            },
         )
 
     @app.exception_handler(HTTPException)
@@ -286,7 +282,7 @@ def setup_exception_handlers(app):
                 exc,
                 request_id=request_id,
                 endpoint=str(request.url.path),
-                method=request.method
+                method=request.method,
             )
 
         if isinstance(exc.detail, dict):
@@ -305,6 +301,6 @@ def setup_exception_handlers(app):
                 "message": message,
                 "detail": detail,
                 "request_id": request_id,
-                "timestamp": datetime.now().isoformat()
-            }
+                "timestamp": datetime.now().isoformat(),
+            },
         )

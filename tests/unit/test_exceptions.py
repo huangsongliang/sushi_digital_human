@@ -1,4 +1,5 @@
 """异常模型单元测试"""
+
 from backend.models.exceptions import (
     AppException,
     LLMException,
@@ -7,7 +8,7 @@ from backend.models.exceptions import (
     RetrievalException,
     VectorStoreException,
     EmptyRetrievalResultException,
-    MemoryException
+    MemoryException,
 )
 
 
@@ -53,10 +54,7 @@ class TestLLMConnectionException:
     """LLM连接异常测试"""
 
     def test_connection_exception(self):
-        exc = LLMConnectionException(
-            reason="network error",
-            model="test-model"
-        )
+        exc = LLMConnectionException(reason="network error", model="test-model")
         assert exc.error_code == "LLM_CONNECTION_ERROR"
 
 
@@ -73,10 +71,7 @@ class TestVectorStoreException:
     """向量存储异常测试"""
 
     def test_vector_store_exception(self):
-        exc = VectorStoreException(
-            "store error",
-            collection="test-collection"
-        )
+        exc = VectorStoreException("store error", collection="test-collection")
         assert exc.collection == "test-collection"
         assert exc.error_code == "VECTOR_STORE_ERROR"
 

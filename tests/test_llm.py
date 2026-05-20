@@ -1,10 +1,13 @@
 """测试 LLM 配置"""
+
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from backend.generator import get_llm, get_embeddings
 from backend.core.config import settings
+
 
 def main():
     print("=== LLM 配置测试 ===")
@@ -23,7 +26,7 @@ def main():
     print("\n测试 LLM 调用...")
     response = llm.invoke("用一句话介绍苏轼")
     if response.status_code == 200:
-        content = response.output['choices'][0]['message']['content']
+        content = response.output["choices"][0]["message"]["content"]
         print(f"[OK] LLM 响应: {content[:50]}...")
     else:
         print(f"[FAIL] LLM 调用失败: {response.message}")
@@ -34,6 +37,7 @@ def main():
     print(f"[OK] 嵌入向量维度: {len(vector)}")
 
     print("\n所有测试通过!")
+
 
 if __name__ == "__main__":
     main()

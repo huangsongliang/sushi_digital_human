@@ -3,14 +3,14 @@
     <div v-if="!store.currentSession" class="welcome-screen">
       <div class="welcome-content">
         <div class="welcome-icon">
-          <span class="poem-icon">诗</span>
+          <span class="poem-icon">知</span>
         </div>
-        <h1 class="title-chinese">苏轼文化数字人</h1>
-        <p class="welcome-desc">探索东坡居士的诗词世界</p>
+        <h1 class="title-chinese">企业级智能文档问答平台</h1>
+        <p class="welcome-desc">智能管理企业知识库，精准回答问题</p>
         <div class="feature-list">
-          <div class="feature-item">📚 诗词问答</div>
-          <div class="feature-item">📖 生平介绍</div>
-          <div class="feature-item">🎨 作品赏析</div>
+          <div class="feature-item">📚 智能问答</div>
+          <div class="feature-item">📖 文档管理</div>
+          <div class="feature-item">🎨 智能检索</div>
         </div>
         <button class="classic-btn classic-btn-primary" @click="startChat">
           开始对话
@@ -38,8 +38,8 @@
         >
           <div class="message-bubble">
             <div class="message-avatar">
-              <span v-if="message.role === 'user'">汝</span>
-              <span v-else>苏</span>
+              <span v-if="message.role === 'user'">你</span>
+              <span v-else>智</span>
             </div>
             <div class="message-content">
               <p class="message-text">{{ message.content }}</p>
@@ -61,7 +61,7 @@
             <span></span>
             <span></span>
           </div>
-          <span class="typing-text">苏轼正在思考...</span>
+          <span class="typing-text">正在思考...</span>
         </div>
       </div>
 
@@ -109,19 +109,28 @@ const store = useChatStore()
 const inputMessage = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
 
+console.log('[ChatArea] Current session:', store.currentSession)
+console.log('[ChatArea] Current session ID:', store.currentSession?.id)
+console.log('[ChatArea] Messages count:', store.currentSession?.messages.length)
+
 function startChat() {
+  console.log('[ChatArea] startChat called')
   store.createSession()
+  console.log('[ChatArea] After createSession, current session:', store.currentSession)
 }
 
 function handleSend() {
   if (!inputMessage.value.trim() || store.isStreaming) return
-  
+
   const message = inputMessage.value.trim()
   inputMessage.value = ''
-  
+
+  console.log('[ChatArea] Sending message:', message)
+  console.log('[ChatArea] Current session before send:', store.currentSession?.id)
+
   // 默认使用异步模式
   store.sendMessageAsync(message)
-  
+
   nextTick(() => {
     scrollToBottom()
   })

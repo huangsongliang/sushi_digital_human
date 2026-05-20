@@ -18,12 +18,12 @@ class DocumentLoader:
     def load_from_file(self, file_path: str) -> List[str]:
         """从文件加载文档"""
         path = Path(file_path)
-        
+
         if not path.exists():
             raise FileNotFoundError(f"文件不存在: {file_path}")
 
         ext = path.suffix.lower()
-        
+
         if ext == ".txt":
             return self._load_txt(path)
         elif ext == ".md":
@@ -37,22 +37,23 @@ class DocumentLoader:
 
     def _load_txt(self, path: Path) -> List[str]:
         """加载 TXT 文件"""
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, "r", encoding="utf-8") as f:
             content = f.read()
         return [content]
 
     def _load_markdown(self, path: Path) -> List[str]:
         """加载 Markdown 文件"""
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, "r", encoding="utf-8") as f:
             content = f.read()
         return [content]
 
     def _load_json(self, path: Path) -> List[str]:
         """加载 JSON 文件"""
         import json
-        with open(path, 'r', encoding='utf-8') as f:
+
+        with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        
+
         if isinstance(data, list):
             return [str(item) for item in data]
         elif isinstance(data, dict):
@@ -62,8 +63,9 @@ class DocumentLoader:
     def _load_csv(self, path: Path) -> List[str]:
         """加载 CSV 文件"""
         import csv
+
         rows = []
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 rows.append(str(row))
@@ -73,7 +75,7 @@ class DocumentLoader:
         """从目录批量加载文件"""
         path_obj = Path(dir_path)
         documents = []
-        
+
         for file_path in path_obj.glob(pattern):
             try:
                 docs = self.load_from_file(str(file_path))
@@ -81,41 +83,41 @@ class DocumentLoader:
                 print(f"[OK] 加载文件: {file_path}")
             except Exception as e:
                 print(f"[FAIL] 加载文件 {file_path} 失败: {str(e)}")
-        
+
         return documents
 
     def load_url(self, url: str) -> List[str]:
         """从 URL 加载网页内容"""
         import requests
         from bs4 import BeautifulSoup
-        
+
         try:
             response = requests.get(url, timeout=30)
-            response.encoding = 'utf-8'
-            
-            soup = BeautifulSoup(response.text, 'html.parser')
+            response.encoding = "utf-8"
+
+            soup = BeautifulSoup(response.text, "html.parser")
             text = soup.get_text(strip=True)
-            
+
             # 按段落分割
-            paragraphs = [p.strip() for p in text.split('\n') if p.strip() and len(p.strip()) > 20]
+            paragraphs = [
+                p.strip() for p in text.split("\n") if p.strip() and len(p.strip()) > 20
+            ]
             return paragraphs
         except Exception as e:
             print(f"加载 URL 失败: {str(e)}")
             return []
 
     def load_to_vector_store(
-        self,
-        documents: List[str],
-        metadatas: Optional[List[Dict[str, Any]]] = None
+        self, documents: List[str], metadatas: Optional[List[Dict[str, Any]]] = None
     ) -> List[str]:
         """加载文档到向量库"""
         if not documents:
             print("没有文档可加载")
             return []
-        
+
         if metadatas is None:
             metadatas = [{"source": "manual"}] * len(documents)
-        
+
         ids = self.vector_store.add_documents(documents, metadatas=metadatas)
         print(f"成功加载 {len(documents)} 个文档到向量库")
         return ids
@@ -123,7 +125,7 @@ class DocumentLoader:
     def load_from_jsonl(self, file_path: str) -> List[str]:
         """加载 JSONL 文件"""
         documents = []
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if line:

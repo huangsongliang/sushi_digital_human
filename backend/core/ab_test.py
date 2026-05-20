@@ -19,6 +19,7 @@ assert logger is not None, "Logger cannot be None"
 
 class ExperimentType(Enum):
     """实验类型"""
+
     RETRIEVAL_STRATEGY = "retrieval_strategy"
     PROMPT_TEMPLATE = "prompt_template"
     MODEL_PARAMS = "model_params"
@@ -28,6 +29,7 @@ class ExperimentType(Enum):
 
 class ExperimentStatus(Enum):
     """实验状态"""
+
     DRAFT = "draft"
     RUNNING = "running"
     PAUSED = "paused"
@@ -37,6 +39,7 @@ class ExperimentStatus(Enum):
 @dataclass
 class ExperimentVariant:
     """实验变体（对照组/实验组）"""
+
     variant_id: str
     name: str
     description: str
@@ -48,6 +51,7 @@ class ExperimentVariant:
 @dataclass
 class Experiment:
     """A/B 测试实验"""
+
     experiment_id: str
     name: str
     description: str
@@ -70,6 +74,7 @@ class Experiment:
 @dataclass
 class ExperimentResult:
     """实验结果"""
+
     experiment_id: str
     variant_id: str
     timestamp: datetime
@@ -97,15 +102,13 @@ class ABTestManager:
         experiment_type: ExperimentType,
         variants: List[Dict[str, Any]],
         target_metric: str = "user_satisfaction",
-        minimum_sample_size: int = 100
+        minimum_sample_size: int = 100,
     ) -> Experiment:
         """创建 A/B 测试实验"""
         experiment_id = self._generate_experiment_id(name)
         total_traffic = sum(v.get("traffic_percentage", 0) for v in variants)
         if abs(total_traffic - 100.0) > 0.01:
-            raise ValueError(
-                f"变体流量分配总和必须为 100%，当前为 {total_traffic}%"
-            )
+            raise ValueError(f"变体流量分配总和必须为 100%，当前为 {total_traffic}%")
 
         experiment_variants = [
             ExperimentVariant(
@@ -113,7 +116,7 @@ class ABTestManager:
                 name=v["name"],
                 description=v.get("description", ""),
                 config=v.get("config", {}),
-                traffic_percentage=v.get("traffic_percentage", 0)
+                traffic_percentage=v.get("traffic_percentage", 0),
             )
             for i, v in enumerate(variants)
         ]
@@ -126,7 +129,7 @@ class ABTestManager:
             variants=experiment_variants,
             status=ExperimentStatus.DRAFT,
             target_metric=target_metric,
-            minimum_sample_size=minimum_sample_size
+            minimum_sample_size=minimum_sample_size,
         )
 
         self._experiments[experiment_id] = experiment
@@ -175,7 +178,7 @@ class ABTestManager:
         self,
         experiment_id: str,
         user_id: Optional[str] = None,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
     ) -> Optional[ExperimentVariant]:
         """为用户分配实验变体"""
         if experiment_id not in self._experiments:
@@ -220,9 +223,7 @@ class ABTestManager:
         return True
 
     def _update_variant_metrics(
-        self,
-        variant: ExperimentVariant,
-        result: ExperimentResult
+        self, variant: ExperimentVariant, result: ExperimentResult
     ):
         """更新变体指标"""
         if "total_count" not in variant.metrics:
@@ -235,22 +236,16 @@ class ABTestManager:
         if result.feedback is not None:
             variant.metrics["total_score"] += result.feedback
             variant.metrics["avg_score"] = (
-                variant.metrics["total_score"]
-                / variant.metrics["total_count"]
+                variant.metrics["total_score"] / variant.metrics["total_count"]
             )
 
         if "response_times" not in variant.metrics:
             variant.metrics["response_times"] = []
 
         if "response_time" in result.metrics:
-            variant.metrics["response_times"].append(
-                result.metrics["response_time"]
-            )
+            variant.metrics["response_times"].append(result.metrics["response_time"])
 
-    def get_experiment_results(
-        self,
-        experiment_id: str
-    ) -> Dict[str, Any]:
+    def get_experiment_results(self, experiment_id: str) -> Dict[str, Any]:
         """获取实验结果分析"""
         if experiment_id not in self._experiments:
             return {}
@@ -260,32 +255,26 @@ class ABTestManager:
 
         variant_stats = {}
         for variant in experiment.variants:
-            variant_results = [
-                r for r in results if r.variant_id == variant.variant_id
-            ]
+            variant_results = [r for r in results if r.variant_id == variant.variant_id]
 
             total_count = len(variant_results)
-            avg_score = sum(
-                r.feedback or 0 for r in variant_results
-            ) / max(total_count, 1)
+            avg_score = sum(r.feedback or 0 for r in variant_results) / max(
+                total_count, 1
+            )
 
             response_times = [
                 r.metrics.get("response_time", 0)
                 for r in variant_results
                 if "response_time" in r.metrics
             ]
-            avg_response_time = sum(response_times) / max(
-                len(response_times), 1
-            )
+            avg_response_time = sum(response_times) / max(len(response_times), 1)
 
             variant_stats[variant.variant_id] = {
                 "variant_name": variant.name,
                 "total_count": total_count,
                 "avg_score": round(avg_score, 2),
                 "avg_response_time": round(avg_response_time, 2),
-                "sample_size_met": (
-                    total_count >= experiment.minimum_sample_size
-                )
+                "sample_size_met": (total_count >= experiment.minimum_sample_size),
             }
 
         significance = self._calculate_significance(experiment, variant_stats)
@@ -300,21 +289,17 @@ class ABTestManager:
             "significance": significance,
             "recommendation": self._generate_recommendation(
                 variant_stats, significance
-            )
+            ),
         }
 
     def _calculate_significance(
-        self,
-        experiment: Experiment,
-        variant_stats: Dict[str, Any]
+        self, experiment: Experiment, variant_stats: Dict[str, Any]
     ) -> Dict[str, Any]:
         """计算统计显著性"""
         if len(experiment.variants) < 2:
             return {"is_significant": False, "confidence_level": 0}
 
-        control_variant = max(
-            experiment.variants, key=lambda v: v.traffic_percentage
-        )
+        control_variant = max(experiment.variants, key=lambda v: v.traffic_percentage)
         control_stats = variant_stats.get(control_variant.variant_id, {})
 
         if not control_stats.get("sample_size_met"):
@@ -333,14 +318,14 @@ class ABTestManager:
             variant_score = variant_stat.get("avg_score", 0)
 
             if control_score > 0:
-                improvement = (
-                    (variant_score - control_score) / control_score
-                ) * 100
-                improvements.append({
-                    "variant_id": variant.variant_id,
-                    "variant_name": variant.name,
-                    "improvement_percent": round(improvement, 2)
-                })
+                improvement = ((variant_score - control_score) / control_score) * 100
+                improvements.append(
+                    {
+                        "variant_id": variant.variant_id,
+                        "variant_name": variant.name,
+                        "improvement_percent": round(improvement, 2),
+                    }
+                )
 
         max_improvement = max(
             (i["improvement_percent"] for i in improvements), default=0
@@ -350,13 +335,11 @@ class ABTestManager:
         return {
             "is_significant": is_significant,
             "confidence_level": min(95, 50 + abs(max_improvement) * 2),
-            "improvements": improvements
+            "improvements": improvements,
         }
 
     def _generate_recommendation(
-        self,
-        variant_stats: Dict[str, Any],
-        significance: Dict[str, Any]
+        self, variant_stats: Dict[str, Any], significance: Dict[str, Any]
     ) -> str:
         """生成推荐建议"""
         if not significance.get("is_significant"):
@@ -374,9 +357,7 @@ class ABTestManager:
 
     def _calculate_traffic_hash(self, key: str) -> float:
         """根据哈希分配流量"""
-        hash_value = hashlib.md5(
-            f"{key}{time.time()}".encode()
-        ).hexdigest()
+        hash_value = hashlib.md5(f"{key}{time.time()}".encode()).hexdigest()
         return (int(hash_value[:8], 16) % 10000) / 100.0
 
     def _generate_experiment_id(self, name: str) -> str:
@@ -398,9 +379,7 @@ class ABTestManager:
                 "type": exp.experiment_type.value,
                 "status": exp.status.value,
                 "variant_count": len(exp.variants),
-                "sample_count": len(
-                    self._results.get(exp.experiment_id, [])
-                )
+                "sample_count": len(self._results.get(exp.experiment_id, [])),
             }
             for exp in self._experiments.values()
         ]

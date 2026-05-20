@@ -1,11 +1,12 @@
 """健康检查模块单元测试"""
+
 from backend.utils.health import (
     HealthStatus,
     ComponentHealth,
     HealthChecker,
     GracefulShutdownManager,
     health_checker,
-    shutdown_manager
+    shutdown_manager,
 )
 
 
@@ -22,11 +23,7 @@ class TestComponentHealth:
     """组件健康状态测试"""
 
     def test_component_health_creation(self):
-        health = ComponentHealth(
-            name="test",
-            status=HealthStatus.HEALTHY,
-            message="OK"
-        )
+        health = ComponentHealth(name="test", status=HealthStatus.HEALTHY, message="OK")
         assert health.name == "test"
         assert health.status == HealthStatus.HEALTHY
 
@@ -35,7 +32,7 @@ class TestComponentHealth:
             name="test",
             status=HealthStatus.DEGRADED,
             message="Warning",
-            latency_ms=100.0
+            latency_ms=100.0,
         )
         assert health.latency_ms == 100.0
 

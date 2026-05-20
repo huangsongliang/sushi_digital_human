@@ -37,7 +37,7 @@ export const useChatStore = defineStore('chat', () => {
   })
 
   const sortedSessions = computed(() => {
-    return [...sessions.value].sort((a, b) => 
+    return [...sessions.value].sort((a, b) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
   })
@@ -49,8 +49,12 @@ export const useChatStore = defineStore('chat', () => {
       messages: [],
       createdAt: new Date()
     }
+    console.log('[ChatStore] Creating session:', session)
     sessions.value.push(session)
+    console.log('[ChatStore] Sessions after push:', sessions.value.length, 'sessions')
+    console.log('[ChatStore] Sorted sessions:', sortedSessions.value.length, 'sorted sessions')
     currentSessionId.value = session.id
+    console.log('[ChatStore] Current session ID:', currentSessionId.value)
     return session
   }
 
@@ -69,7 +73,9 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   async function sendMessage(content: string): Promise<void> {
+    console.log('[ChatStore] sendMessage called with:', content)
     if (!currentSession.value) {
+      console.log('[ChatStore] No current session, creating new one')
       createSession()
     }
 
@@ -180,21 +186,21 @@ export const useChatStore = defineStore('chat', () => {
         if (done) break
 
         buffer += decoder.decode(value, { stream: true })
-        
+
         const lines = buffer.split('\n')
         buffer = lines.pop() || ''
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(6)
-            
+
             if (data === '[DONE]') {
               break
             }
-            
+
             try {
               const parsed = JSON.parse(data)
-              
+
               if (parsed.type === 'references') {
                 assistantMessage.references = parsed.data
               } else {
@@ -282,12 +288,12 @@ export const useChatStore = defineStore('chat', () => {
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const dataStr = line.slice(6)
-            
+
             if (!dataStr.trim()) continue
 
             try {
               const data = JSON.parse(dataStr)
-              
+
               if (data.type === 'references') {
                 assistantMessage.references = data.data || []
               } else if (data.type === 'chunk') {
@@ -303,7 +309,7 @@ export const useChatStore = defineStore('chat', () => {
             } catch (e) {
               assistantMessage.content += dataStr
             }
-            
+
             currentSession.value!.messages = [...currentSession.value!.messages]
           }
         }

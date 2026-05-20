@@ -18,8 +18,18 @@ from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-# 密码哈希配置
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# 密码哈希配置 - 使用 Argon2id（2015年密码哈希大赛冠军，OWASP推荐）
+# 参数配置遵循 OWASP 推荐标准：
+# - memory_cost: 至少 65536 (64MB)
+# - time_cost: 至少 3 次迭代
+# - parallelism: 至少 4 线程
+pwd_context = CryptContext(
+    schemes=["argon2"],
+    deprecated="auto",
+    argon2__memory_cost=65536,
+    argon2__time_cost=3,
+    argon2__parallelism=4,
+)
 
 # Bearer Token 安全方案
 security = HTTPBearer(auto_error=False)
@@ -41,7 +51,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     """
-    对密码进行哈希
+    对密码进行哈希（使用 Argon2id 算法）
 
     Args:
         password: 明文密码
@@ -53,8 +63,7 @@ def get_password_hash(password: str) -> str:
 
 
 def create_access_token(
-    data: Dict[str, Any],
-    expires_delta: Optional[timedelta] = None
+    data: Dict[str, Any], expires_delta: Optional[timedelta] = None
 ) -> str:
     """
     创建访问令牌（JWT）
@@ -76,11 +85,7 @@ def create_access_token(
         )
 
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(
-        to_encode,
-        settings.secret_key,
-        algorithm="HS256"
-    )
+    encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm="HS256")
     return encoded_jwt
 
 
@@ -98,11 +103,7 @@ def verify_token(token: str) -> Dict[str, Any]:
         HTTPException: 令牌无效或已过期
     """
     try:
-        payload = jwt.decode(
-            token,
-            settings.secret_key,
-            algorithms=["HS256"]
-        )
+        payload = jwt.decode(token, settings.secret_key, algorithms=["HS256"])
         return payload
     except JWTError as e:
         logger.warning(f"JWT 验证失败: {str(e)}")
@@ -114,7 +115,7 @@ def verify_token(token: str) -> Dict[str, Any]:
 
 
 def get_current_user_id(
-    credentials: Optional[HTTPAuthorizationCredentials]
+    credentials: Optional[HTTPAuthorizationCredentials],
 ) -> Optional[str]:
     """
     从令牌中获取当前用户 ID
@@ -157,13 +158,11 @@ def sanitize_input(text: str, max_length: int = 10000) -> str:
 
     # 移除潜在的 HTML 标签
     import re
-    text = re.sub(r'<[^>]+>', '', text)
+
+    text = re.sub(r"<[^>]+>", "", text)
 
     # 移除控制字符
-    text = ''.join(
-        char for char in text
-        if ord(char) >= 32 or char in '\n\r\t'
-    )
+    text = "".join(char for char in text if ord(char) >= 32 or char in "\n\r\t")
 
     return text.strip()
 
@@ -204,7 +203,6 @@ class OptionalBearerAuth(HTTPBearer):
     """
 
     async def __call__(
-        self,
-        request: Request
+        self, request: Request
     ) -> Optional[HTTPAuthorizationCredentials]:
         return await super().__call__(request)

@@ -1,9 +1,10 @@
 """API聊天模块单元测试"""
+
 from backend.api.chat import (
     ChatRequest,
     ChatResponse,
     AddDocumentsRequest,
-    format_error_response
+    format_error_response,
 )
 
 
@@ -19,10 +20,7 @@ class TestChatRequestModel:
 
     def test_chat_request_with_session(self):
         request = ChatRequest(
-            message="Hello",
-            session_id="session123",
-            use_rag=False,
-            top_k=5
+            message="Hello", session_id="session123", use_rag=False, top_k=5
         )
         assert request.session_id == "session123"
         assert request.use_rag is False
@@ -33,10 +31,7 @@ class TestChatResponseModel:
     """聊天响应模型测试"""
 
     def test_chat_response_creation(self):
-        response = ChatResponse(
-            answer="Hello there!",
-            session_id="session123"
-        )
+        response = ChatResponse(answer="Hello there!", session_id="session123")
         assert response.answer == "Hello there!"
         assert response.session_id == "session123"
         assert response.references == []
@@ -47,7 +42,7 @@ class TestChatResponseModel:
             answer="Answer",
             session_id="session123",
             references=[{"title": "Doc1"}],
-            sources=["doc1.txt"]
+            sources=["doc1.txt"],
         )
         assert len(response.references) == 1
         assert len(response.sources) == 1

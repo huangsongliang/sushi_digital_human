@@ -1,7 +1,7 @@
 # 苏轼文化数字人 - 万人并发部署指南
 
-**文档版本**: 1.0  
-**创建日期**: 2026-05-16  
+**文档版本**: 1.0
+**创建日期**: 2026-05-16
 **适用场景**: 万人并发生产环境部署
 
 ---
@@ -139,7 +139,7 @@ EMBEDDING_MODEL=text-embedding-v2
 
 ### 4.2 Nginx 配置
 
-主配置：`config/nginx/nginx.conf`  
+主配置：`config/nginx/nginx.conf`
 负载均衡：`config/nginx/conf.d/upstream.conf`
 
 ### 4.3 Redis 配置

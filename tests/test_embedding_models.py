@@ -1,4 +1,5 @@
 """测试 DashScope 嵌入模型"""
+
 import dashscope
 
 dashscope.api_key = "your-dashscope-api-key"
@@ -14,12 +15,12 @@ models = [
 for model in models:
     try:
         from dashscope import TextEmbedding
-        response = TextEmbedding.call(
-            model=model,
-            input="测试文本"
-        )
+
+        response = TextEmbedding.call(model=model, input="测试文本")
         if response.status_code == 200:
-            print(f"[OK] {model}: 成功，维度: {len(response.output['embeddings'][0]['embedding'])}")
+            print(
+                f"[OK] {model}: 成功，维度: {len(response.output['embeddings'][0]['embedding'])}"
+            )
         else:
             print(f"[FAIL] {model}: {response.message}")
     except Exception as e:

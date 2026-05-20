@@ -1,7 +1,7 @@
 """主应用模块单元测试"""
+
 from fastapi.testclient import TestClient
 from backend.main import app
-
 
 client = TestClient(app)
 

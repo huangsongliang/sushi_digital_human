@@ -1,4 +1,5 @@
 """多级缓存模块 - L1 本地内存 + L2 Redis"""
+
 import json
 import hashlib
 from typing import Any, Optional, Dict
@@ -77,7 +78,7 @@ class LRUCache:
             "total_requests": total,
             "hit_rate": round(hit_rate, 2),
             "current_size": len(self.cache),
-            "max_size": self.maxsize
+            "max_size": self.maxsize,
         }
 
 
@@ -100,8 +101,9 @@ class MultiLevelCache:
         data = json.dumps({"args": args, "kwargs": kwargs}, sort_keys=True)
         return hashlib.md5(data.encode()).hexdigest()
 
-    async def get(self, key: str, use_l1: bool = True,
-                  use_l2: bool = True) -> Optional[Any]:
+    async def get(
+        self, key: str, use_l1: bool = True, use_l2: bool = True
+    ) -> Optional[Any]:
         """获取缓存值（多级查询）"""
         full_key = self.key_prefix + key
 
@@ -122,8 +124,14 @@ class MultiLevelCache:
         logger.debug(f"Cache miss: {key}")
         return None
 
-    async def set(self, key: str, value: Any, ttl_seconds: int = 3600,
-                  write_l1: bool = True, write_l2: bool = True):
+    async def set(
+        self,
+        key: str,
+        value: Any,
+        ttl_seconds: int = 3600,
+        write_l1: bool = True,
+        write_l2: bool = True,
+    ):
         """设置缓存值"""
         full_key = self.key_prefix + key
 
@@ -146,19 +154,11 @@ class MultiLevelCache:
     def get_stats(self) -> Dict[str, Any]:
         """获取缓存统计"""
         l1_stats = self.l1_cache.stats
-        return {
-            "l1": l1_stats,
-            "total_hit_rate": l1_stats["hit_rate"]
-        }
+        return {"l1": l1_stats, "total_hit_rate": l1_stats["hit_rate"]}
 
-    def add_warmup_item(self, key: str, value: Any,
-                        ttl_seconds: int = 86400):
+    def add_warmup_item(self, key: str, value: Any, ttl_seconds: int = 86400):
         """添加预热项"""
-        self._warmup_items.append({
-            "key": key,
-            "value": value,
-            "ttl": ttl_seconds
-        })
+        self._warmup_items.append({"key": key, "value": value, "ttl": ttl_seconds})
 
     async def warmup(self):
         """执行缓存预热"""
@@ -172,9 +172,7 @@ class MultiLevelCache:
         for item in self._warmup_items:
             try:
                 await self.set(
-                    key=item["key"],
-                    value=item["value"],
-                    ttl_seconds=item["ttl"]
+                    key=item["key"], value=item["value"], ttl_seconds=item["ttl"]
                 )
             except Exception as e:
                 logger.error(f"Failed to warmup {item['key']}: {e}")

@@ -10,6 +10,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from backend.api import chat_router, ab_test_router, dify_router, documents_router, alerts_router, auth_router
+from backend.api.agent import router as agent_router
 from backend.core.config import settings
 from backend.database.session import async_initialize_database
 from backend.utils.rate_limiter import (
@@ -156,6 +157,7 @@ app.include_router(dify_router)
 app.include_router(documents_router)
 app.include_router(auth_router)
 app.include_router(alerts_router)
+app.include_router(agent_router)
 
 # 设置全局异常处理器
 setup_exception_handlers(app)

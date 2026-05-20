@@ -2,8 +2,4 @@
 
 from backend.prompt.templates import PromptTemplate, PromptManager, default_prompts
 
-__all__ = [
-    "PromptTemplate",
-    "PromptManager",
-    "default_prompts"
-]
+__all__ = ["PromptTemplate", "PromptManager", "default_prompts"]

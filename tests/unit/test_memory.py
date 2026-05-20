@@ -1,4 +1,5 @@
 """对话记忆模块单元测试"""
+
 from datetime import datetime
 from backend.memory.conversation import Message, ConversationMemory
 from backend.memory.redis_client import redis_conn
@@ -8,19 +9,13 @@ class TestMessage:
     """消息模型测试"""
 
     def test_message_creation(self):
-        message = Message(
-            role="user",
-            content="Hello"
-        )
+        message = Message(role="user", content="Hello")
         assert message.role == "user"
         assert message.content == "Hello"
         assert isinstance(message.timestamp, datetime)
 
     def test_message_to_dict(self):
-        message = Message(
-            role="user",
-            content="Hello"
-        )
+        message = Message(role="user", content="Hello")
         result = message.to_dict()
         assert result["role"] == "user"
         assert result["content"] == "Hello"
@@ -30,7 +25,7 @@ class TestMessage:
         data = {
             "role": "assistant",
             "content": "Hi there",
-            "timestamp": "2024-01-01T00:00:00"
+            "timestamp": "2024-01-01T00:00:00",
         }
         message = Message.from_dict(data)
         assert message.role == "assistant"

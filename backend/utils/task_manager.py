@@ -20,6 +20,7 @@ logger = get_logger(__name__)
 
 class TaskStatus(Enum):
     """任务状态"""
+
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
@@ -29,6 +30,7 @@ class TaskStatus(Enum):
 @dataclass
 class Task:
     """任务对象"""
+
     task_id: str
     func_name: str
     args: tuple = field(default_factory=tuple)
@@ -60,28 +62,29 @@ class Task:
             "created_at": self.created_at,
             "started_at": self.started_at,
             "completed_at": self.completed_at,
-            "duration": self.duration
+            "duration": self.duration,
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Task':
+    def from_dict(cls, data: dict) -> "Task":
         task = cls(
-            task_id=data['task_id'],
-            func_name=data['func_name'],
-            args=tuple(data.get('args', ())),
-            kwargs=data.get('kwargs', {}),
-            status=TaskStatus(data['status']),
-            result=data.get('result'),
-            error=data.get('error', ''),
-            created_at=data['created_at'],
-            started_at=data.get('started_at', 0),
-            completed_at=data.get('completed_at', 0)
+            task_id=data["task_id"],
+            func_name=data["func_name"],
+            args=tuple(data.get("args", ())),
+            kwargs=data.get("kwargs", {}),
+            status=TaskStatus(data["status"]),
+            result=data.get("result"),
+            error=data.get("error", ""),
+            created_at=data["created_at"],
+            started_at=data.get("started_at", 0),
+            completed_at=data.get("completed_at", 0),
         )
         return task
 
 
 class TaskStorage:
     """任务存储基类"""
+
     def get(self, task_id: str) -> Optional[Task]:
         raise NotImplementedError
 
@@ -94,6 +97,7 @@ class TaskStorage:
 
 class MemoryTaskStorage(TaskStorage):
     """内存存储（单 worker 用）"""
+
     def __init__(self):
         self.tasks: Dict[str, Task] = {}
         self.lock = threading.RLock()
@@ -114,9 +118,11 @@ class MemoryTaskStorage(TaskStorage):
 
 class RedisTaskStorage(TaskStorage):
     """Redis 存储（多 worker 共享用）"""
+
     def __init__(self):
         import redis
-        self.redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+
+        self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
         self.redis = redis.from_url(self.redis_url, decode_responses=True)
         self.ttl = 7200
 
@@ -147,7 +153,7 @@ class TaskManager:
         self._running = True
         self.storage: Union[RedisTaskStorage, MemoryTaskStorage]
 
-        use_redis = os.getenv('USE_REDIS_STORAGE', 'false').lower() == 'true'
+        use_redis = os.getenv("USE_REDIS_STORAGE", "false").lower() == "true"
         if use_redis:
             try:
                 self.storage = RedisTaskStorage()
@@ -170,10 +176,7 @@ class TaskManager:
         import asyncio
 
         async def async_process_chat(
-            query: str,
-            session_id: str,
-            top_k: int = 3,
-            user_id: Optional[str] = None
+            query: str, session_id: str, top_k: int = 3, user_id: Optional[str] = None
         ) -> dict:
             """处理聊天请求（异步版本）"""
             try:
@@ -181,33 +184,26 @@ class TaskManager:
 
                 history = await memory.get_history(limit=20)
 
-                context = "\n".join(
-                    [f"{msg.role}: {msg.content}" for msg in history]
-                )
+                context = "\n".join([f"{msg.role}: {msg.content}" for msg in history])
 
                 rag_chain = get_rag_chain()
                 result = await rag_chain.async_run(
-                    query=query,
-                    top_k=top_k,
-                    use_rag=True,
-                    history=context
+                    query=query, top_k=top_k, use_rag=True, history=context
                 )
 
                 await memory.save_message("user", query)
-                await memory.save_message(
-                    "assistant", result.get('answer', '')
-                )
+                await memory.save_message("assistant", result.get("answer", ""))
 
                 sources = []
-                for ref in result.get('references', []):
-                    if ref.get('metadata') and ref['metadata'].get('source'):
-                        sources.append(ref['metadata']['source'])
+                for ref in result.get("references", []):
+                    if ref.get("metadata") and ref["metadata"].get("source"):
+                        sources.append(ref["metadata"]["source"])
 
                 return {
                     "status": "success",
-                    "answer": result.get('answer', ''),
-                    "references": result.get('references', []),
-                    "sources": sources
+                    "answer": result.get("answer", ""),
+                    "references": result.get("references", []),
+                    "sources": sources,
                 }
 
             except Exception as e:
@@ -215,28 +211,18 @@ class TaskManager:
                 raise
 
         def process_chat(
-            query: str,
-            session_id: str,
-            top_k: int = 3,
-            user_id: Optional[str] = None
+            query: str, session_id: str, top_k: int = 3, user_id: Optional[str] = None
         ) -> dict:
             """处理聊天请求（同步包装）"""
-            return asyncio.run(
-                async_process_chat(query, session_id, top_k, user_id)
-            )
+            return asyncio.run(async_process_chat(query, session_id, top_k, user_id))
 
-        self.functions['process_chat'] = process_chat
+        self.functions["process_chat"] = process_chat
 
     def submit(self, func_name: str, *args, **kwargs) -> str:
         """提交任务"""
         task_id = str(uuid.uuid4())
 
-        task = Task(
-            task_id=task_id,
-            func_name=func_name,
-            args=args,
-            kwargs=kwargs
-        )
+        task = Task(task_id=task_id, func_name=func_name, args=args, kwargs=kwargs)
 
         self.storage.set(task)
 

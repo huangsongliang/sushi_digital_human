@@ -1,4 +1,5 @@
 """错误追踪模块单元测试"""
+
 import pytest
 from backend.utils.error_tracking import (
     ErrorTracker,
@@ -6,7 +7,7 @@ from backend.utils.error_tracking import (
     capture_exception,
     capture_message,
     error_handler_middleware,
-    get_error_info
+    get_error_info,
 )
 
 
@@ -16,8 +17,8 @@ class TestErrorTracker:
     def test_error_tracker_creation(self):
         tracker = ErrorTracker()
         assert tracker is not None
-        assert hasattr(tracker, '_error_counts')
-        assert hasattr(tracker, '_last_error_time')
+        assert hasattr(tracker, "_error_counts")
+        assert hasattr(tracker, "_last_error_time")
 
     def test_track_error(self):
         tracker = ErrorTracker()
@@ -42,7 +43,7 @@ class TestErrorTracker:
             "test_message",
             request_id="req-123",
             endpoint="/test",
-            method="POST"
+            method="POST",
         )
         assert result is not None
 

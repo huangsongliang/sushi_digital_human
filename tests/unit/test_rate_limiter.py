@@ -1,9 +1,10 @@
 """限流模块单元测试"""
+
 from backend.utils.rate_limiter import (
     RateLimiter,
     RequestQueue,
     rate_limiter,
-    request_queue
+    request_queue,
 )
 
 

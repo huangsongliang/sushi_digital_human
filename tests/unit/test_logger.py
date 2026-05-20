@@ -1,10 +1,11 @@
 """日志模块单元测试"""
+
 from backend.utils.logger import (
     set_request_id,
     get_request_id,
     set_session_id,
     get_session_id,
-    logger
+    logger,
 )
 
 
@@ -25,9 +26,9 @@ class TestStructuredLogger:
 
     def test_logger_methods(self):
         assert logger is not None
-        assert hasattr(logger, 'info')
-        assert hasattr(logger, 'error')
-        assert hasattr(logger, 'warning')
+        assert hasattr(logger, "info")
+        assert hasattr(logger, "error")
+        assert hasattr(logger, "warning")
 
     def test_log_with_context(self):
         logger.info("test message", extra={"key": "value"})

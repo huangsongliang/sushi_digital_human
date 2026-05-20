@@ -15,7 +15,7 @@ function Write-CheckResult {
         [string]$CheckName,
         [bool]$Passed
     )
-    
+
     if ($Passed) {
         Write-Host "✅ $CheckName" -ForegroundColor Green
     } else {

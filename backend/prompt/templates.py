@@ -7,11 +7,11 @@ from typing import Dict, Any
 
 class PromptTemplate:
     """提示词模板基类"""
-    
+
     def __init__(self, template: str, variables: list):
         self.template = template
         self.variables = variables
-    
+
     def format(self, **kwargs) -> str:
         """格式化提示词"""
         missing_vars = [v for v in self.variables if v not in kwargs]
@@ -22,20 +22,20 @@ class PromptTemplate:
 
 class PromptManager:
     """提示词管理器"""
-    
+
     def __init__(self):
         self.templates: Dict[str, PromptTemplate] = {}
-    
+
     def register(self, name: str, template: str, variables: list):
         """注册提示词模板"""
         self.templates[name] = PromptTemplate(template, variables)
-    
+
     def get(self, name: str) -> PromptTemplate:
         """获取提示词模板"""
         if name not in self.templates:
             raise ValueError(f"未找到提示词模板: {name}")
         return self.templates[name]
-    
+
     def format(self, name: str, **kwargs) -> str:
         """获取并格式化提示词"""
         template = self.get(name)
@@ -71,7 +71,7 @@ default_prompts.register(
 
 【回答】
 """,
-    variables=["context", "question"]
+    variables=["context", "question"],
 )
 
 # 文档总结提示词
@@ -90,7 +90,7 @@ default_prompts.register(
 
 总结：
 """,
-    variables=["document"]
+    variables=["document"],
 )
 
 # 问题重写提示词
@@ -102,7 +102,7 @@ default_prompts.register(
 
 重写后的问题：
 """,
-    variables=["question"]
+    variables=["question"],
 )
 
 # 多轮对话提示词 - 苏轼风格
@@ -135,5 +135,5 @@ default_prompts.register(
 
 【回答】
 """,
-    variables=["history", "question", "context"]
+    variables=["history", "question", "context"],
 )

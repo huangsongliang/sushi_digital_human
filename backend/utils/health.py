@@ -26,6 +26,7 @@ logger = get_logger(__name__)
 
 class HealthStatus(Enum):
     """健康状态枚举"""
+
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNHEALTHY = "unhealthy"
@@ -34,6 +35,7 @@ class HealthStatus(Enum):
 @dataclass
 class ComponentHealth:
     """组件健康状态"""
+
     name: str
     status: HealthStatus
     message: str
@@ -64,14 +66,14 @@ class HealthChecker:
                         status=HealthStatus.HEALTHY,
                         message="数据库连接正常",
                         latency_ms=round(latency_ms, 2),
-                        last_checked=datetime.now()
+                        last_checked=datetime.now(),
                     )
             return ComponentHealth(
                 name="database",
                 status=HealthStatus.DEGRADED,
                 message="数据库会话未初始化",
                 latency_ms=(time.time() - start_time) * 1000,
-                last_checked=datetime.now()
+                last_checked=datetime.now(),
             )
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
@@ -81,7 +83,7 @@ class HealthChecker:
                 status=HealthStatus.UNHEALTHY,
                 message=f"数据库连接失败: {str(e)}",
                 latency_ms=round(latency_ms, 2),
-                last_checked=datetime.now()
+                last_checked=datetime.now(),
             )
 
     async def check_redis(self) -> ComponentHealth:
@@ -97,7 +99,7 @@ class HealthChecker:
                 status=HealthStatus.HEALTHY,
                 message="Redis 连接正常",
                 latency_ms=round(latency_ms, 2),
-                last_checked=datetime.now()
+                last_checked=datetime.now(),
             )
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
@@ -107,7 +109,7 @@ class HealthChecker:
                 status=HealthStatus.UNHEALTHY,
                 message=f"Redis 连接失败: {str(e)}",
                 latency_ms=round(latency_ms, 2),
-                last_checked=datetime.now()
+                last_checked=datetime.now(),
             )
 
     async def check_retriever(self) -> ComponentHealth:
@@ -115,6 +117,7 @@ class HealthChecker:
         start_time = time.time()
         try:
             from backend.retrieval import get_hybrid_retriever
+
             retriever = get_hybrid_retriever()
             if retriever:
                 latency_ms = (time.time() - start_time) * 1000
@@ -123,14 +126,14 @@ class HealthChecker:
                     status=HealthStatus.HEALTHY,
                     message="检索器初始化正常",
                     latency_ms=round(latency_ms, 2),
-                    last_checked=datetime.now()
+                    last_checked=datetime.now(),
                 )
             return ComponentHealth(
                 name="retriever",
                 status=HealthStatus.DEGRADED,
                 message="检索器未初始化",
                 latency_ms=(time.time() - start_time) * 1000,
-                last_checked=datetime.now()
+                last_checked=datetime.now(),
             )
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
@@ -140,7 +143,7 @@ class HealthChecker:
                 status=HealthStatus.UNHEALTHY,
                 message=f"检索器检查失败: {str(e)}",
                 latency_ms=round(latency_ms, 2),
-                last_checked=datetime.now()
+                last_checked=datetime.now(),
             )
 
     async def check_llm(self) -> ComponentHealth:
@@ -148,6 +151,7 @@ class HealthChecker:
         start_time = time.time()
         try:
             from backend.generator import get_async_llm
+
             llm = get_async_llm()
             if llm:
                 latency_ms = (time.time() - start_time) * 1000
@@ -156,14 +160,14 @@ class HealthChecker:
                     status=HealthStatus.HEALTHY,
                     message="LLM 服务初始化正常",
                     latency_ms=round(latency_ms, 2),
-                    last_checked=datetime.now()
+                    last_checked=datetime.now(),
                 )
             return ComponentHealth(
                 name="llm",
                 status=HealthStatus.DEGRADED,
                 message="LLM 服务未初始化",
                 latency_ms=(time.time() - start_time) * 1000,
-                last_checked=datetime.now()
+                last_checked=datetime.now(),
             )
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
@@ -172,7 +176,7 @@ class HealthChecker:
                 status=HealthStatus.DEGRADED,
                 message=f"LLM 服务检查失败: {str(e)}",
                 latency_ms=round(latency_ms, 2),
-                last_checked=datetime.now()
+                last_checked=datetime.now(),
             )
 
     async def _attempt_recovery(self, component_name: str):
@@ -207,7 +211,7 @@ class HealthChecker:
             self.check_database(),
             self.check_redis(),
             self.check_retriever(),
-            self.check_llm()
+            self.check_llm(),
         )
         checks = list(checks_tuple)
         self._checks = checks
@@ -231,28 +235,26 @@ class HealthChecker:
         """获取健康报告"""
         checks_data = []
         for check in self._checks:
-            checks_data.append({
-                "name": check.name,
-                "status": check.status.value,
-                "message": check.message,
-                "latency_ms": check.latency_ms,
-                "last_checked": (
-                    check.last_checked.isoformat()
-                    if check.last_checked
-                    else None
-                )
-            })
+            checks_data.append(
+                {
+                    "name": check.name,
+                    "status": check.status.value,
+                    "message": check.message,
+                    "latency_ms": check.latency_ms,
+                    "last_checked": (
+                        check.last_checked.isoformat() if check.last_checked else None
+                    ),
+                }
+            )
 
         return {
             "status": self.get_overall_status().value,
             "timestamp": (
-                self._last_check_time.isoformat()
-                if self._last_check_time
-                else None
+                self._last_check_time.isoformat() if self._last_check_time else None
             ),
             "checks": checks_data,
             "service": settings.app_name,
-            "version": settings.app_version
+            "version": settings.app_version,
         }
 
 
@@ -262,12 +264,34 @@ health_checker = HealthChecker()
 async def perform_health_check() -> Dict[str, Any]:
     """执行健康检查并返回报告"""
     await health_checker.run_all_checks()
+    
+    # 将健康状态记录到告警系统
+    status = health_checker.get_overall_status()
+    status_value = 1.0 if status == HealthStatus.HEALTHY else 0.5 if status == HealthStatus.DEGRADED else 0.0
+    
+    try:
+        from backend.utils.alerting import record_alert_metric
+        record_alert_metric("health_status", status_value)
+    except ImportError:
+        pass
+    
     return health_checker.get_health_report()
 
 
 def get_health_status() -> HealthStatus:
     """获取当前健康状态"""
     return health_checker.get_overall_status()
+
+
+def get_health_status_value() -> float:
+    """获取健康状态数值（用于告警）"""
+    status = health_checker.get_overall_status()
+    if status == HealthStatus.HEALTHY:
+        return 1.0
+    elif status == HealthStatus.DEGRADED:
+        return 0.5
+    else:
+        return 0.0
 
 
 class GracefulShutdownManager:
@@ -294,9 +318,7 @@ class GracefulShutdownManager:
         while self._active_requests > 0:
             elapsed = time.time() - start_time
             if elapsed >= self._max_wait_time:
-                logger.warning(
-                    f"等待请求完成超时，仍有 {self._active_requests} 个请求"
-                )
+                logger.warning(f"等待请求完成超时，仍有 {self._active_requests} 个请求")
                 break
 
             await asyncio.sleep(0.5)

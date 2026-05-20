@@ -1,9 +1,6 @@
 """AB测试模块单元测试"""
-from backend.core.ab_test import (
-    ExperimentVariant,
-    ExperimentType,
-    ExperimentStatus
-)
+
+from backend.core.ab_test import ExperimentVariant, ExperimentType, ExperimentStatus
 
 
 class TestExperimentVariant:
@@ -15,7 +12,7 @@ class TestExperimentVariant:
             name="variant_a",
             description="Test variant",
             config={"param": "value"},
-            traffic_percentage=50.0
+            traffic_percentage=50.0,
         )
         assert variant.variant_id == "v1"
         assert variant.name == "variant_a"

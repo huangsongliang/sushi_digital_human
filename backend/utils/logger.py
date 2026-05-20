@@ -101,7 +101,7 @@ def remove_emoji(text: str) -> str:
     if not IS_WINDOWS:
         return text
 
-    return ''.join(c for c in text if not is_emoji(c))
+    return "".join(c for c in text if not is_emoji(c))
 
 
 def emoji_safe_sink(message):
@@ -124,7 +124,7 @@ def setup_logger(
     log_file: Optional[str] = "app.log",
     rotation: str = "500 MB",
     retention: str = "7 days",
-    format_string: Optional[str] = None
+    format_string: Optional[str] = None,
 ) -> None:
     """
     配置日志系统
@@ -154,7 +154,7 @@ def setup_logger(
             format=format_string,
             colorize=False,
             backtrace=True,
-            diagnose=True
+            diagnose=True,
         )
     else:
         logger.add(
@@ -163,7 +163,7 @@ def setup_logger(
             format=format_string,
             colorize=True,
             backtrace=True,
-            diagnose=True
+            diagnose=True,
         )
 
     if log_file:
@@ -176,7 +176,7 @@ def setup_logger(
             retention=retention,
             compression="zip",
             backtrace=True,
-            diagnose=True
+            diagnose=True,
         )
 
 
@@ -249,8 +249,7 @@ def get_session_id() -> str:
 
 @contextmanager
 def with_request_context(
-    request_id: Optional[str] = None,
-    session_id: Optional[str] = None
+    request_id: Optional[str] = None, session_id: Optional[str] = None
 ):
     """
     上下文管理器：设置请求上下文
@@ -319,18 +318,14 @@ def console_formatter(record: Dict[str, Any]) -> str:
 
     parts = []
 
-    parts.append(
-        f"<green>{record['time'].strftime('%Y-%m-%d %H:%M:%S')}</green>"
-    )
+    parts.append(f"<green>{record['time'].strftime('%Y-%m-%d %H:%M:%S')}</green>")
 
     parts.append(f"<level>{record['level'].name: <8}</level>")
 
     if request_id:
         parts.append(f"<magenta>[{request_id[:8]}]</magenta>")
 
-    parts.append(
-        f"<cyan>{record['name']}:{record['function']}:{record['line']}</cyan>"
-    )
+    parts.append(f"<cyan>{record['name']}:{record['function']}:{record['line']}</cyan>")
 
     parts.append(f"<level>{record['message']}</level>")
 
@@ -381,10 +376,7 @@ class StructuredLogger:
             message: 日志消息
             **context: 额外的上下文信息
         """
-        extra = {
-            "request_id": get_request_id(),
-            "session_id": get_session_id()
-        }
+        extra = {"request_id": get_request_id(), "session_id": get_session_id()}
         extra.update(context)
         self._logger.log(level, message, **extra)
 
@@ -399,11 +391,13 @@ def log_function_call(logger_instance=None):
     Args:
         logger_instance: 自定义日志实例
     """
+
     def decorator(func):
         import asyncio
         import time
 
         if asyncio.iscoroutinefunction(func):
+
             async def async_wrapper(*args, **kwargs):
                 start_time = time.time()
                 log = logger_instance or logger
@@ -412,9 +406,7 @@ def log_function_call(logger_instance=None):
                 try:
                     result = await func(*args, **kwargs)
                     duration = time.time() - start_time
-                    log.debug(
-                        f"函数 {func.__name__} 执行完成，耗时: {duration:.4f}s"
-                    )
+                    log.debug(f"函数 {func.__name__} 执行完成，耗时: {duration:.4f}s")
                     return result
                 except Exception as e:
                     duration = time.time() - start_time
@@ -426,6 +418,7 @@ def log_function_call(logger_instance=None):
 
             return async_wrapper
         else:
+
             def sync_wrapper(*args, **kwargs):
                 start_time = time.time()
                 log = logger_instance or logger
@@ -434,9 +427,7 @@ def log_function_call(logger_instance=None):
                 try:
                     result = func(*args, **kwargs)
                     duration = time.time() - start_time
-                    log.debug(
-                        f"函数 {func.__name__} 执行完成，耗时: {duration:.4f}s"
-                    )
+                    log.debug(f"函数 {func.__name__} 执行完成，耗时: {duration:.4f}s")
                     return result
                 except Exception as e:
                     duration = time.time() - start_time

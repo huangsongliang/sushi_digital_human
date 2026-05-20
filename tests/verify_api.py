@@ -1,4 +1,5 @@
 """最简单的API验证"""
+
 import httpx
 import time
 
@@ -25,9 +26,9 @@ try:
             "message": "苏轼是谁？",
             "session_id": "simple_test",
             "use_rag": True,
-            "top_k": 3
+            "top_k": 3,
         },
-        timeout=60
+        timeout=60,
     )
     elapsed = time.time() - start
     print(f"   状态码: {response.status_code}")
@@ -49,17 +50,17 @@ try:
             "message": "乌台诗案是什么？",
             "session_id": "async_test",
             "use_rag": True,
-            "top_k": 3
+            "top_k": 3,
         },
-        timeout=10
+        timeout=10,
     )
     submit_time = time.time() - start_submit
-    
+
     if resp.status_code == 200:
-        task_id = resp.json()['task_id']
+        task_id = resp.json()["task_id"]
         print(f"   提交成功, task_id: {task_id}")
         print(f"   提交耗时: {submit_time:.2f}秒 (用户体验很好!)")
-        
+
         # 轮询
         print("\n   轮询结果:")
         for i in range(20):
@@ -67,21 +68,22 @@ try:
             check_resp = httpx.get(f"{BASE_URL}/api/chat/async/{task_id}", timeout=5)
             if check_resp.status_code == 200:
                 data = check_resp.json()
-                status = data.get('status')
+                status = data.get("status")
                 print(f"   [{i+1}] {status}", end="")
-                if status == 'completed':
+                if status == "completed":
                     print(" ✅ 完成!")
-                    answer = data.get('result', {}).get('answer', '')
+                    answer = data.get("result", {}).get("answer", "")
                     print(f"   答案: {answer[:150]}...")
                     break
-                elif status == 'failed':
+                elif status == "failed":
                     print(" ❌ 失败")
                     print(f"   错误: {data.get('error', '')}")
                     break
                 else:
                     print("...")
-                    
+
 except Exception as e:
     print(f"   错误: {e}")
     import traceback
+
     traceback.print_exc()

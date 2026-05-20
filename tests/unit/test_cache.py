@@ -1,4 +1,5 @@
 """缓存模块单元测试"""
+
 from unittest.mock import patch
 from backend.memory.cache import CacheManager
 
@@ -7,7 +8,7 @@ class TestCacheManager:
     """缓存管理器测试"""
 
     def test_cache_manager_creation(self):
-        with patch('backend.memory.cache.redis_conn'):
+        with patch("backend.memory.cache.redis_conn"):
             cache = CacheManager()
             assert cache is not None
 

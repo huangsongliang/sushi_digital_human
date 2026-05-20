@@ -3,16 +3,39 @@
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field, EmailStr
+import requests
+from urllib.parse import urlencode
 
 from backend.core.auth_manager import get_auth_manager, get_permission_manager
 from backend.core.security import verify_token
+from backend.core.sms_service import get_sms_service
+from backend.core.config import settings
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 security = HTTPBearer()
+
+
+class SmsSendRequest(BaseModel):
+    """发送短信验证码请求"""
+    phone: str = Field(..., min_length=11, max_length=11)
+
+
+class PhoneLoginRequest(BaseModel):
+    """手机号登录请求"""
+    phone: str = Field(..., min_length=11, max_length=11)
+    code: str = Field(..., min_length=6, max_length=6)
+
+
+class PhoneRegisterRequest(BaseModel):
+    """手机号注册请求"""
+    phone: str = Field(..., min_length=11, max_length=11)
+    code: str = Field(..., min_length=6, max_length=6)
+    password: Optional[str] = Field(None, min_length=6, max_length=100)
 
 
 class RegisterRequest(BaseModel):
@@ -39,7 +62,8 @@ class UserInfo(BaseModel):
     """用户信息"""
     id: int
     username: str
-    email: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
     roles: List[str]
     permissions: List[str]
 
@@ -81,7 +105,7 @@ async def get_current_user_id(
         )
 
 
-async def require_permission(permission_name: str):
+def require_permission(permission_name: str):
     """权限依赖装饰器"""
     async def dependency(user_id: int = Depends(get_current_user_id)):
         permission_manager = get_permission_manager()
@@ -158,6 +182,7 @@ async def get_current_user(user_id: int = Depends(get_current_user_id)):
         id=user.id,
         username=user.username,
         email=user.email,
+        phone=getattr(user, 'phone', None),
         roles=roles,
         permissions=permissions,
     )
@@ -224,3 +249,139 @@ async def list_permissions(user_id: int = Depends(get_current_user_id)):
             }
             for perm in permissions
         ]
+
+
+@router.post("/sms/send")
+async def send_sms_code(request: SmsSendRequest):
+    """发送短信验证码"""
+    sms_service = get_sms_service()
+    success = await sms_service.send_sms_code(request.phone)
+    
+    if not success:
+        raise HTTPException(status_code=429, detail="发送过于频繁，请稍后再试")
+    
+    return {"message": "验证码发送成功"}
+
+
+@router.post("/login/phone", response_model=TokenResponse)
+async def login_with_phone(request: PhoneLoginRequest):
+    """手机号验证码登录"""
+    sms_service = get_sms_service()
+    auth_manager = get_auth_manager()
+    
+    # 验证验证码
+    if not sms_service.verify_sms_code(request.phone, request.code):
+        raise HTTPException(status_code=400, detail="验证码错误或已过期")
+    
+    # 检查用户是否存在
+    result = await auth_manager.login_with_phone(request.phone)
+    
+    if not result.get("success"):
+        raise HTTPException(status_code=404, detail=result.get("error"))
+    
+    return TokenResponse(
+        access_token=result.get("access_token"),
+        refresh_token=result.get("refresh_token"),
+    )
+
+
+@router.post("/register/phone")
+async def register_with_phone(request: PhoneRegisterRequest):
+    """手机号注册"""
+    sms_service = get_sms_service()
+    auth_manager = get_auth_manager()
+    
+    # 验证验证码
+    if not sms_service.verify_sms_code(request.phone, request.code):
+        raise HTTPException(status_code=400, detail="验证码错误或已过期")
+    
+    # 注册用户
+    result = await auth_manager.register_with_phone(
+        phone=request.phone,
+        password=request.password
+    )
+    
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("error"))
+    
+    return {"message": "注册成功", "user_id": result.get("user_id")}
+
+
+@router.get("/github/redirect")
+async def github_login_redirect():
+    """重定向到 GitHub 授权页面"""
+    if not settings.github_client_id:
+        raise HTTPException(status_code=500, detail="GitHub OAuth 未配置")
+    
+    params = {
+        "client_id": settings.github_client_id,
+        "redirect_uri": settings.github_redirect_uri,
+        "scope": "user:email",
+        "response_type": "code"
+    }
+    
+    github_auth_url = f"https://github.com/login/oauth/authorize?{urlencode(params)}"
+    return RedirectResponse(url=github_auth_url)
+
+
+@router.get("/github/callback")
+async def github_callback(code: str):
+    """GitHub OAuth 回调处理"""
+    if not settings.github_client_id or not settings.github_client_secret:
+        raise HTTPException(status_code=500, detail="GitHub OAuth 未配置")
+    
+    try:
+        token_response = requests.post(
+            "https://github.com/login/oauth/access_token",
+            data={
+                "client_id": settings.github_client_id,
+                "client_secret": settings.github_client_secret,
+                "code": code,
+                "redirect_uri": settings.github_redirect_uri
+            },
+            headers={"Accept": "application/json"}
+        )
+        token_data = token_response.json()
+        
+        if "error" in token_data:
+            raise HTTPException(status_code=400, detail=token_data["error_description"])
+        
+        access_token = token_data.get("access_token")
+        if not access_token:
+            raise HTTPException(status_code=400, detail="获取 access token 失败")
+        
+        user_response = requests.get(
+            "https://api.github.com/user",
+            headers={"Authorization": f"token {access_token}"}
+        )
+        user_data = user_response.json()
+        
+        email_response = requests.get(
+            "https://api.github.com/user/emails",
+            headers={"Authorization": f"token {access_token}"}
+        )
+        emails = email_response.json()
+        email = next((e["email"] for e in emails if e["primary"]), None) or user_data.get("email")
+        
+        auth_manager = get_auth_manager()
+        result = await auth_manager.login_with_oauth(
+            provider="github",
+            provider_id=str(user_data.get("id")),
+            username=user_data.get("login"),
+            email=email
+        )
+        
+        if not result.get("success"):
+            raise HTTPException(status_code=400, detail=result.get("error"))
+        
+        logger.info(f"GitHub 登录成功: {user_data.get('login')}")
+        
+        frontend_callback_url = f"http://localhost:5173/github/callback?access_token={result.get('access_token')}&refresh_token={result.get('refresh_token')}"
+        return RedirectResponse(url=frontend_callback_url)
+    
+    except requests.exceptions.RequestException as e:
+        logger.error(f"GitHub OAuth 请求失败: {str(e)}")
+        raise HTTPException(status_code=500, detail="GitHub 认证请求失败")
+    except Exception as e:
+        logger.error(f"GitHub OAuth 处理失败: {str(e)}")
+        raise HTTPException(status_code=500, detail="GitHub 认证处理失败")

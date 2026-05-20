@@ -28,7 +28,7 @@ helm install sushi-digital-human sushi-digital-human/sushi-digital-human \
 backend:
   env:
     DASHSCOPE_API_KEY: "your-api-key"
-  
+
   autoscaling:
     enabled: true
     minReplicas: 3

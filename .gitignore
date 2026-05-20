@@ -47,6 +47,13 @@ Thumbs.db
 # Docker
 docker-compose.override.yml
 
+# SSL 证书和密钥（敏感信息，禁止提交！）
+ssl/
+*.pem
+*.key
+*.crt
+*.csr
+
 # 临时文件
 *.tmp
 *.bak

@@ -11,14 +11,14 @@
   --color-success: #5b8c5a;
   --color-warning: #c9a227;
   --color-error: #b54747;
-  
+
   --font-family-chinese: "Noto Serif SC", "Songti SC", "SimSun", serif;
   --font-family-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-  
+
   --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
   --shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.16);
-  
+
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;

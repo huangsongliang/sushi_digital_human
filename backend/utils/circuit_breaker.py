@@ -1,4 +1,5 @@
 """熔断器模块 - 防止服务雪崩"""
+
 import asyncio
 import time
 from typing import Callable, Any, Dict
@@ -10,6 +11,7 @@ logger = get_logger(__name__)
 
 class CircuitBreakerState(Enum):
     """熔断器状态"""
+
     CLOSED = "closed"
     OPEN = "open"
     HALF_OPEN = "half_open"
@@ -17,6 +19,7 @@ class CircuitBreakerState(Enum):
 
 class CircuitBreakerError(Exception):
     """熔断器异常"""
+
     def __init__(self, message: str, breaker_name: str):
         super().__init__(message)
         self.breaker_name = breaker_name
@@ -31,7 +34,7 @@ class CircuitBreaker:
         failure_threshold: int = 20,
         success_threshold: int = 5,
         reset_timeout: int = 60,
-        max_concurrent_requests: int = 100
+        max_concurrent_requests: int = 100,
     ):
         """
         Args:
@@ -85,7 +88,7 @@ class CircuitBreaker:
             "total_successes": self._total_successes,
             "total_failures": self._total_failures,
             "tripped_count": self._tripped_count,
-            "concurrent_requests": self._concurrent_requests
+            "concurrent_requests": self._concurrent_requests,
         }
 
     async def _record_success(self):
@@ -116,21 +119,18 @@ class CircuitBreaker:
                     self._tripped_count += 1
                 self._state = CircuitBreakerState.OPEN
 
-    async def call(self, func: Callable[..., Any],
-                   *args, **kwargs) -> Any:
+    async def call(self, func: Callable[..., Any], *args, **kwargs) -> Any:
         """执行受保护的调用"""
         current_state = self.state
 
         if current_state == CircuitBreakerState.OPEN:
             raise CircuitBreakerError(
-                f"Circuit breaker {self.name} is open, request rejected",
-                self.name
+                f"Circuit breaker {self.name} is open, request rejected", self.name
             )
 
         if self._concurrent_requests >= self.max_concurrent_requests:
             raise CircuitBreakerError(
-                f"Circuit breaker {self.name} concurrent limit exceeded",
-                self.name
+                f"Circuit breaker {self.name} concurrent limit exceeded", self.name
             )
 
         self._total_requests += 1
@@ -168,7 +168,7 @@ class CircuitBreakerManager:
         name: str,
         failure_threshold: int = 20,
         success_threshold: int = 5,
-        reset_timeout: int = 60
+        reset_timeout: int = 60,
     ) -> CircuitBreaker:
         """获取或创建熔断器"""
         if name not in self._breakers:
@@ -176,16 +176,13 @@ class CircuitBreakerManager:
                 name=name,
                 failure_threshold=failure_threshold,
                 success_threshold=success_threshold,
-                reset_timeout=reset_timeout
+                reset_timeout=reset_timeout,
             )
         return self._breakers[name]
 
     def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
         """获取所有熔断器的统计信息"""
-        return {
-            name: breaker.stats
-            for name, breaker in self._breakers.items()
-        }
+        return {name: breaker.stats for name, breaker in self._breakers.items()}
 
     def reset_all(self):
         """重置所有熔断器"""
@@ -196,22 +193,13 @@ class CircuitBreakerManager:
 circuit_breaker_manager = CircuitBreakerManager()
 
 llm_breaker = CircuitBreaker(
-    name="llm_api",
-    failure_threshold=10,
-    success_threshold=3,
-    reset_timeout=30
+    name="llm_api", failure_threshold=10, success_threshold=3, reset_timeout=30
 )
 
 embedding_breaker = CircuitBreaker(
-    name="embedding_api",
-    failure_threshold=15,
-    success_threshold=5,
-    reset_timeout=45
+    name="embedding_api", failure_threshold=15, success_threshold=5, reset_timeout=45
 )
 
 redis_breaker = CircuitBreaker(
-    name="redis",
-    failure_threshold=5,
-    success_threshold=3,
-    reset_timeout=10
+    name="redis", failure_threshold=5, success_threshold=3, reset_timeout=10
 )
