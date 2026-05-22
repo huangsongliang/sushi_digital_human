@@ -11,6 +11,7 @@ from typing import List, Dict, Any, Optional, Type, Callable
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
+import asyncio
 import importlib
 import os
 import sys
@@ -23,27 +24,30 @@ logger = get_logger(__name__)
 
 class PluginType(Enum):
     """插件类型枚举"""
-    RETRIEVER = "retriever"           # 检索插件
-    GENERATOR = "generator"           # 生成器插件
-    PROCESSOR = "processor"           # 处理器插件
-    NOTIFIER = "notifier"             # 通知插件
-    AUTH = "auth"                     # 认证插件
-    STORAGE = "storage"               # 存储插件
-    UI = "ui"                         # UI 插件
-    OTHER = "other"                   # 其他类型
+
+    RETRIEVER = "retriever"  # 检索插件
+    GENERATOR = "generator"  # 生成器插件
+    PROCESSOR = "processor"  # 处理器插件
+    NOTIFIER = "notifier"  # 通知插件
+    AUTH = "auth"  # 认证插件
+    STORAGE = "storage"  # 存储插件
+    UI = "ui"  # UI 插件
+    OTHER = "other"  # 其他类型
 
 
 class PluginStatus(Enum):
     """插件状态枚举"""
-    LOADED = "loaded"                 # 已加载
-    ACTIVE = "active"                 # 活跃中
-    INACTIVE = "inactive"             # 非活跃
-    ERROR = "error"                   # 出错
+
+    LOADED = "loaded"  # 已加载
+    ACTIVE = "active"  # 活跃中
+    INACTIVE = "inactive"  # 非活跃
+    ERROR = "error"  # 出错
 
 
 @dataclass
 class PluginInfo:
     """插件信息"""
+
     name: str
     id: str
     version: str
@@ -149,19 +153,19 @@ class PluginManager:
     def _load_plugin_from_dir(self, plugin_dir: Path):
         """从目录加载插件"""
         plugin_name = plugin_dir.name
-        
+
         try:
             # 尝试导入插件模块
             module_name = f"plugins.{plugin_name}"
             module = importlib.import_module(module_name)
-            
+
             # 查找插件类
             plugin_class = None
             for name, obj in module.__dict__.items():
                 if isinstance(obj, type) and issubclass(obj, BasePlugin) and obj != BasePlugin:
                     plugin_class = obj
                     break
-            
+
             if plugin_class:
                 # 创建插件实例
                 plugin = plugin_class()
@@ -169,7 +173,7 @@ class PluginManager:
                 logger.info(f"已加载插件: {plugin_name}")
             else:
                 logger.warning(f"插件 {plugin_name} 未找到插件类")
-                
+
         except Exception as e:
             logger.error(f"加载插件 {plugin_name} 失败: {str(e)}")
 
@@ -193,15 +197,15 @@ class PluginManager:
         """注销插件"""
         if plugin_id in self._plugins:
             plugin = self._plugins[plugin_id]
-            
+
             # 从类型分类中移除
             plugin_type = plugin.plugin_info.type
             if plugin_type in self._plugin_types and plugin_id in self._plugin_types[plugin_type]:
                 self._plugin_types[plugin_type].remove(plugin_id)
-            
+
             # 关闭插件
             asyncio.create_task(plugin.shutdown())
-            
+
             # 删除插件
             del self._plugins[plugin_id]
             logger.info(f"已注销插件: {plugin_id}")
@@ -247,7 +251,7 @@ class PluginManager:
     async def initialize_all_plugins(self, configs: Dict[str, Dict[str, Any]] = None):
         """初始化所有插件"""
         configs = configs or {}
-        
+
         for plugin_id in self._plugins:
             config = configs.get(plugin_id, {})
             try:
@@ -305,10 +309,6 @@ class PluginManager:
 
 # 全局插件管理器实例
 plugin_manager = PluginManager()
-
-
-# 异步支持
-import asyncio
 
 
 def get_plugin_manager() -> PluginManager:

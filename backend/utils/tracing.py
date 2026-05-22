@@ -21,6 +21,7 @@ logger = get_logger(__name__)
 @dataclass
 class TraceStep:
     """溯源步骤"""
+
     step_id: str
     step_type: str  # question, retrieval, reasoning, generation, answer
     content: str
@@ -38,6 +39,7 @@ class TraceStep:
 @dataclass
 class RetrievedDocument:
     """检索到的文档"""
+
     doc_id: str
     title: str
     content: str
@@ -50,6 +52,7 @@ class RetrievedDocument:
 @dataclass
 class TraceRecord:
     """完整的溯源记录"""
+
     trace_id: str
     question: str
     answer: str
@@ -78,8 +81,9 @@ class TraceRecord:
                     "content": step.content,
                     "timestamp": step.timestamp.isoformat(),
                     "metadata": step.metadata,
-                    "confidence": step.confidence
-                } for step in self.steps
+                    "confidence": step.confidence,
+                }
+                for step in self.steps
             ],
             "retrieved_docs": [
                 {
@@ -89,12 +93,13 @@ class TraceRecord:
                     "source": doc.source,
                     "score": doc.score,
                     "page_number": doc.page_number,
-                    "chunk_index": doc.chunk_index
-                } for doc in self.retrieved_docs
+                    "chunk_index": doc.chunk_index,
+                }
+                for doc in self.retrieved_docs
             ],
             "token_usage": self.token_usage,
             "latency": self.latency,
-            "created_at": self.created_at.isoformat()
+            "created_at": self.created_at.isoformat(),
         }
 
 
@@ -109,16 +114,18 @@ class TraceManager:
         """创建新的溯源记录"""
         trace_id = str(uuid.uuid4())
         self._traces[trace_id] = TraceRecord(
-            trace_id=trace_id,
-            question=question,
-            answer="",
-            steps=[],
-            retrieved_docs=[]
+            trace_id=trace_id, question=question, answer="", steps=[], retrieved_docs=[]
         )
         return trace_id
 
-    def add_step(self, trace_id: str, step_type: str, content: str, 
-                  metadata: Optional[Dict[str, Any]] = None, confidence: float = 0.0):
+    def add_step(
+        self,
+        trace_id: str,
+        step_type: str,
+        content: str,
+        metadata: Optional[Dict[str, Any]] = None,
+        confidence: float = 0.0,
+    ):
         """添加溯源步骤"""
         if trace_id not in self._traces:
             logger.warning(f"溯源记录不存在: {trace_id}")
@@ -130,7 +137,7 @@ class TraceManager:
             content=content,
             timestamp=datetime.now(),
             metadata=metadata,
-            confidence=confidence
+            confidence=confidence,
         )
         self._traces[trace_id].steps.append(step)
 
@@ -142,19 +149,23 @@ class TraceManager:
 
         retrieved_docs = []
         for doc in docs:
-            retrieved_docs.append(RetrievedDocument(
-                doc_id=doc.get("id", ""),
-                title=doc.get("title", ""),
-                content=doc.get("content", ""),
-                source=doc.get("source", ""),
-                score=doc.get("score", 0.0),
-                page_number=doc.get("page_number"),
-                chunk_index=doc.get("chunk_index")
-            ))
-        
+            retrieved_docs.append(
+                RetrievedDocument(
+                    doc_id=doc.get("id", ""),
+                    title=doc.get("title", ""),
+                    content=doc.get("content", ""),
+                    source=doc.get("source", ""),
+                    score=doc.get("score", 0.0),
+                    page_number=doc.get("page_number"),
+                    chunk_index=doc.get("chunk_index"),
+                )
+            )
+
         self._traces[trace_id].retrieved_docs = retrieved_docs
 
-    def set_answer(self, trace_id: str, answer: str, token_usage: Optional[Dict[str, int]] = None, latency: Optional[float] = None):
+    def set_answer(
+        self, trace_id: str, answer: str, token_usage: Optional[Dict[str, int]] = None, latency: Optional[float] = None
+    ):
         """设置最终答案"""
         if trace_id not in self._traces:
             logger.warning(f"溯源记录不存在: {trace_id}")
@@ -189,8 +200,8 @@ class TraceManager:
         if len(self._traces) > self._max_history:
             traces = list(self._traces.values())
             traces.sort(key=lambda t: t.created_at)
-            to_remove = traces[:len(traces) - self._max_history]
-            
+            to_remove = traces[: len(traces) - self._max_history]
+
             for trace in to_remove:
                 del self._traces[trace.trace_id]
 
@@ -201,7 +212,7 @@ class TraceManager:
             return ""
 
         markdown = "## 📚 回答来源\n\n"
-        
+
         if trace.retrieved_docs:
             for i, doc in enumerate(trace.retrieved_docs, 1):
                 markdown += f"### 来源 {i} (相似度: {doc.score:.2f})\n\n"
@@ -222,19 +233,19 @@ class TraceManager:
             return ""
 
         reasoning = "## 🔍 推理过程\n\n"
-        
+
         for step in trace.steps:
             step_icon = {
                 "question": "❓",
                 "retrieval": "🔍",
                 "reasoning": "🧠",
                 "generation": "✨",
-                "answer": "💡"
+                "answer": "💡",
             }.get(step.step_type, "📝")
-            
+
             reasoning += f"{step_icon} **{step.step_type.capitalize()}**\n\n"
             reasoning += f"{step.content}\n\n"
-            
+
             if step.confidence > 0:
                 reasoning += f"置信度: {step.confidence:.2f}\n\n"
 
@@ -250,8 +261,9 @@ def create_trace(question: str) -> str:
     return trace_manager.create_trace(question)
 
 
-def add_trace_step(trace_id: str, step_type: str, content: str, 
-                   metadata: Optional[Dict[str, Any]] = None, confidence: float = 0.0):
+def add_trace_step(
+    trace_id: str, step_type: str, content: str, metadata: Optional[Dict[str, Any]] = None, confidence: float = 0.0
+):
     """添加溯源步骤"""
     trace_manager.add_step(trace_id, step_type, content, metadata, confidence)
 
@@ -261,7 +273,9 @@ def add_retrieved_docs(trace_id: str, docs: List[Dict[str, Any]]):
     trace_manager.add_retrieved_docs(trace_id, docs)
 
 
-def set_trace_answer(trace_id: str, answer: str, token_usage: Optional[Dict[str, int]] = None, latency: Optional[float] = None):
+def set_trace_answer(
+    trace_id: str, answer: str, token_usage: Optional[Dict[str, int]] = None, latency: Optional[float] = None
+):
     """设置最终答案"""
     trace_manager.set_answer(trace_id, answer, token_usage, latency)
 

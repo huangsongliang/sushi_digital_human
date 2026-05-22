@@ -2,42 +2,46 @@
   <div class="callback-container">
     <div class="loading-spinner">
       <div class="spinner"></div>
-      <p>正在登录...</p>
+      <p v-if="!errorText">正在登录...</p>
+      <p v-else class="error-text">{{ errorText }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const errorText = ref('')
 
 onMounted(async () => {
   try {
     const urlParams = new URLSearchParams(window.location.search)
     const accessToken = urlParams.get('access_token')
-    const refreshToken = urlParams.get('refresh_token')
-    
+    const refreshTokenVal = urlParams.get('refresh_token')
+
     if (accessToken) {
       authStore.accessToken = accessToken
       localStorage.setItem('access_token', accessToken)
-      
-      if (refreshToken) {
-        authStore.refreshToken = refreshToken
-        localStorage.setItem('refresh_token', refreshToken)
+
+      if (refreshTokenVal) {
+        authStore.refreshToken = refreshTokenVal
+        localStorage.setItem('refresh_token', refreshTokenVal)
       }
-      
+
       await authStore.fetchUser()
       router.push('/')
     } else {
-      router.push('/login')
+      errorText.value = '授权失败，正在返回登录页...'
+      setTimeout(() => router.push('/login'), 2000)
     }
-  } catch (error) {
-    console.error('GitHub 登录失败:', error)
-    router.push('/login')
+  } catch (err) {
+    console.error('GitHub 登录失败:', err)
+    errorText.value = '登录失败，正在返回...'
+    setTimeout(() => router.push('/login'), 2000)
   }
 })
 </script>
@@ -76,5 +80,9 @@ onMounted(async () => {
 .loading-spinner p {
   color: white;
   font-size: 16px;
+}
+
+.error-text {
+  color: #ffcdd2 !important;
 }
 </style>

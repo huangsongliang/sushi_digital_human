@@ -38,13 +38,13 @@ class CacheManager:
     def generate_key(*args, **kwargs) -> str:
         """生成缓存键（MD5 哈希）"""
         data = json.dumps({"args": args, "kwargs": kwargs}, sort_keys=True)
-        hash_value = hashlib.md5(data.encode()).hexdigest()
+        hash_value = hashlib.md5(data.encode(), usedforsecurity=False).hexdigest()
         return hash_value
 
     @staticmethod
     def generate_embedding_key(text: str) -> str:
         """生成嵌入缓存键"""
-        return hashlib.md5(text.encode()).hexdigest()
+        return hashlib.md5(text.encode(), usedforsecurity=False).hexdigest()
 
     # ============ 查询缓存 ============
 
@@ -71,9 +71,7 @@ class CacheManager:
             logger.error(f"获取缓存失败: {e}")
             return None
 
-    async def set(
-        self, query: str, result: Any, use_rag: bool = True, ttl: int = DEFAULT_TTL
-    ) -> bool:
+    async def set(self, query: str, result: Any, use_rag: bool = True, ttl: int = DEFAULT_TTL) -> bool:
         """设置查询缓存（支持动态 TTL）"""
         try:
             key = self.generate_key(query, use_rag)
@@ -124,15 +122,10 @@ class CacheManager:
             logger.error(f"设置嵌入缓存失败: {e}")
             return False
 
-    async def get_embeddings_batch(
-        self, texts: List[str]
-    ) -> Dict[str, Optional[List[float]]]:
+    async def get_embeddings_batch(self, texts: List[str]) -> Dict[str, Optional[List[float]]]:
         """批量获取嵌入缓存"""
         try:
-            keys = [
-                f"{self.EMBEDDING_KEY_PREFIX}{self.generate_embedding_key(t)}"
-                for t in texts
-            ]
+            keys = [f"{self.EMBEDDING_KEY_PREFIX}{self.generate_embedding_key(t)}" for t in texts]
 
             client = await redis_conn.get_client()
             cached_values = await client.mget(*keys)
@@ -242,9 +235,7 @@ class CacheManager:
             self._hit_count = 0
             self._miss_count = 0
 
-            logger.info(
-                f"已清空 {len(query_keys)} 条查询缓存和 {len(embed_keys)} 条嵌入缓存"
-            )
+            logger.info(f"已清空 {len(query_keys)} 条查询缓存和 {len(embed_keys)} 条嵌入缓存")
             return True
         except Exception as e:
             logger.error(f"清空缓存失败: {e}")

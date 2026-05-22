@@ -1,11 +1,13 @@
 """
-A/B 测试框架
-支持不同检索策略、提示词和模型参数的对比测试
+A/B 测试框架 - 支持不同检索策略、提示词和模型参数的对比测试
+
+⚠️ NOTE: 当前为内存版实现，服务重启后数据丢失。
+生产环境建议持久化到 MySQL/Redis。
 """
 
 import hashlib
 import time
-import random
+import secrets
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -14,7 +16,6 @@ from enum import Enum
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
-assert logger is not None, "Logger cannot be None"
 
 
 class ExperimentType(Enum):
@@ -188,7 +189,7 @@ class ABTestManager:
         if experiment.status != ExperimentStatus.RUNNING:
             return None
 
-        anon_id = f"anonymous_{random.randint(1000, 9999)}"
+        anon_id = f"anonymous_{secrets.randbelow(9000) + 1000}"
         assign_key = user_id or session_id or anon_id
         cache_key = f"{experiment_id}:{assign_key}"
 
@@ -222,9 +223,7 @@ class ABTestManager:
 
         return True
 
-    def _update_variant_metrics(
-        self, variant: ExperimentVariant, result: ExperimentResult
-    ):
+    def _update_variant_metrics(self, variant: ExperimentVariant, result: ExperimentResult):
         """更新变体指标"""
         if "total_count" not in variant.metrics:
             variant.metrics["total_count"] = 0
@@ -235,9 +234,7 @@ class ABTestManager:
 
         if result.feedback is not None:
             variant.metrics["total_score"] += result.feedback
-            variant.metrics["avg_score"] = (
-                variant.metrics["total_score"] / variant.metrics["total_count"]
-            )
+            variant.metrics["avg_score"] = variant.metrics["total_score"] / variant.metrics["total_count"]
 
         if "response_times" not in variant.metrics:
             variant.metrics["response_times"] = []
@@ -258,14 +255,10 @@ class ABTestManager:
             variant_results = [r for r in results if r.variant_id == variant.variant_id]
 
             total_count = len(variant_results)
-            avg_score = sum(r.feedback or 0 for r in variant_results) / max(
-                total_count, 1
-            )
+            avg_score = sum(r.feedback or 0 for r in variant_results) / max(total_count, 1)
 
             response_times = [
-                r.metrics.get("response_time", 0)
-                for r in variant_results
-                if "response_time" in r.metrics
+                r.metrics.get("response_time", 0) for r in variant_results if "response_time" in r.metrics
             ]
             avg_response_time = sum(response_times) / max(len(response_times), 1)
 
@@ -287,14 +280,10 @@ class ABTestManager:
             "minimum_sample_size": experiment.minimum_sample_size,
             "variant_stats": variant_stats,
             "significance": significance,
-            "recommendation": self._generate_recommendation(
-                variant_stats, significance
-            ),
+            "recommendation": self._generate_recommendation(variant_stats, significance),
         }
 
-    def _calculate_significance(
-        self, experiment: Experiment, variant_stats: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _calculate_significance(self, experiment: Experiment, variant_stats: Dict[str, Any]) -> Dict[str, Any]:
         """计算统计显著性"""
         if len(experiment.variants) < 2:
             return {"is_significant": False, "confidence_level": 0}
@@ -327,9 +316,7 @@ class ABTestManager:
                     }
                 )
 
-        max_improvement = max(
-            (i["improvement_percent"] for i in improvements), default=0
-        )
+        max_improvement = max((i["improvement_percent"] for i in improvements), default=0)
         is_significant = abs(max_improvement) > 5
 
         return {
@@ -338,9 +325,7 @@ class ABTestManager:
             "improvements": improvements,
         }
 
-    def _generate_recommendation(
-        self, variant_stats: Dict[str, Any], significance: Dict[str, Any]
-    ) -> str:
+    def _generate_recommendation(self, variant_stats: Dict[str, Any], significance: Dict[str, Any]) -> str:
         """生成推荐建议"""
         if not significance.get("is_significant"):
             return "样本量不足或差异不显著，建议继续收集数据"
@@ -357,13 +342,13 @@ class ABTestManager:
 
     def _calculate_traffic_hash(self, key: str) -> float:
         """根据哈希分配流量"""
-        hash_value = hashlib.md5(f"{key}{time.time()}".encode()).hexdigest()
+        hash_value = hashlib.md5(f"{key}{time.time()}".encode(), usedforsecurity=False).hexdigest()
         return (int(hash_value[:8], 16) % 10000) / 100.0
 
     def _generate_experiment_id(self, name: str) -> str:
         """生成实验 ID"""
         hash_input = f"{name}{datetime.now().isoformat()}"
-        return hashlib.md5(hash_input.encode()).hexdigest()[:12]
+        return hashlib.md5(hash_input.encode(), usedforsecurity=False).hexdigest()[:12]
 
     def _generate_variant_id(self, experiment_id: str, index: int) -> str:
         """生成变体 ID"""

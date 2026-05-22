@@ -64,9 +64,7 @@ class DocumentManager:
 
             async with get_db_session() as session:
                 existing_doc = await session.execute(
-                    select(DocumentLibrary).where(
-                        DocumentLibrary.document_id == document_id
-                    )
+                    select(DocumentLibrary).where(DocumentLibrary.document_id == document_id)
                 )
                 existing_doc = existing_doc.scalar_one_or_none()
 
@@ -100,10 +98,7 @@ class DocumentManager:
 
                 reload_hybrid_retriever()
 
-                logger.info(
-                    f"文档上传成功: {file_name}, "
-                    f"doc_id={document_id}"
-                )
+                logger.info(f"文档上传成功: {file_name}, " f"doc_id={document_id}")
 
                 return {
                     "success": True,
@@ -199,9 +194,7 @@ class DocumentManager:
         )
         session.add(version)
 
-        stmt = select(Document).where(
-            Document.document_id == existing_doc.document_id
-        )
+        stmt = select(Document).where(Document.document_id == existing_doc.document_id)
         result = await session.execute(stmt)
         old_chunks = result.scalars().all()
 
@@ -247,12 +240,14 @@ class DocumentManager:
                 document_id=document_id,
                 chunk_index=idx,
                 total_chunks=len(chunks),
-                metadata_json=json.dumps({
-                    "source": source,
-                    "document_id": document_id,
-                    "chunk_index": idx,
-                    "total_chunks": len(chunks),
-                }),
+                metadata_json=json.dumps(
+                    {
+                        "source": source,
+                        "document_id": document_id,
+                        "chunk_index": idx,
+                        "total_chunks": len(chunks),
+                    }
+                ),
             )
             session.add(doc)
             doc_chunks.append(chunk)
@@ -312,9 +307,7 @@ class DocumentManager:
         """删除文档"""
         try:
             async with get_db_session() as session:
-                stmt = select(DocumentLibrary).where(
-                    DocumentLibrary.document_id == document_id
-                )
+                stmt = select(DocumentLibrary).where(DocumentLibrary.document_id == document_id)
                 result = await session.execute(stmt)
                 doc = result.scalar_one_or_none()
 
@@ -329,9 +322,7 @@ class DocumentManager:
                 else:
                     await session.delete(doc)
 
-                    chunk_stmt = select(Document).where(
-                        Document.document_id == document_id
-                    )
+                    chunk_stmt = select(Document).where(Document.document_id == document_id)
                     chunks = (await session.execute(chunk_stmt)).scalars().all()
                     for chunk in chunks:
                         await session.delete(chunk)
@@ -348,15 +339,48 @@ class DocumentManager:
             logger.error(f"文档删除失败: {e}")
             return {"success": False, "error": str(e)}
 
+    async def get_document_content(
+        self,
+        document_id: str,
+    ) -> Dict[str, Any]:
+        """获取文档内容"""
+        try:
+            async with get_db_session() as session:
+                stmt = select(DocumentLibrary).where(DocumentLibrary.document_id == document_id)
+                result = await session.execute(stmt)
+                doc = result.scalar_one_or_none()
+
+                if not doc:
+                    return {"success": False, "error": "Document not found"}
+
+                file_path = Path(doc.file_path)
+                if not file_path.exists():
+                    return {"success": False, "error": "File not found"}
+
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+
+                return {
+                    "success": True,
+                    "content": content,
+                    "name": doc.name,
+                }
+
+        except Exception as e:
+            logger.error(f"获取文档内容失败: {e}")
+            return {"success": False, "error": str(e)}
+
     async def get_document_versions(
         self,
         document_id: str,
     ) -> List[Dict[str, Any]]:
         """获取文档版本历史"""
         async with get_db_session() as session:
-            stmt = select(DocumentVersion).where(
-                DocumentVersion.document_id == document_id
-            ).order_by(DocumentVersion.version.desc())
+            stmt = (
+                select(DocumentVersion)
+                .where(DocumentVersion.document_id == document_id)
+                .order_by(DocumentVersion.version.desc())
+            )
 
             result = await session.execute(stmt)
             versions = result.scalars().all()
@@ -373,7 +397,7 @@ class DocumentManager:
 
     def _compute_hash(self, content: str) -> str:
         """计算文件哈希"""
-        return hashlib.md5(content.encode("utf-8")).hexdigest()
+        return hashlib.md5(content.encode("utf-8"), usedforsecurity=False).hexdigest()
 
     def _guess_mime_type(self, file_name: str) -> str:
         """猜测文件类型"""

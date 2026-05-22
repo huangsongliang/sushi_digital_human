@@ -2,7 +2,7 @@
 
 import uuid
 from typing import List, Dict, Optional, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -38,9 +38,7 @@ class AuthManager:
         """注册新用户"""
         async with get_db_session() as session:
             existing_user = await session.execute(
-                select(User).where(
-                    or_(User.username == username, User.email == email)
-                )
+                select(User).where(or_(User.username == username, User.email == email))
             )
             existing_user = existing_user.scalar_one_or_none()
 
@@ -66,9 +64,7 @@ class AuthManager:
     async def login_user(self, email: str, password: str) -> Dict[str, Any]:
         """用户登录"""
         async with get_db_session() as session:
-            user = await session.execute(
-                select(User).where(User.email == email)
-            )
+            user = await session.execute(select(User).where(User.email == email))
             user = user.scalar_one_or_none()
 
             if not user or not user.is_active:
@@ -77,9 +73,7 @@ class AuthManager:
             if not verify_password(password, user.hashed_password):
                 return {"success": False, "error": "密码错误"}
 
-            access_token = create_access_token(
-                data={"sub": str(user.id), "username": user.username}
-            )
+            access_token = create_access_token(data={"sub": str(user.id), "username": user.username})
 
             refresh_token = self._create_refresh_token(user.id)
 
@@ -101,7 +95,7 @@ class AuthManager:
         token_data = {
             "sub": str(user_id),
             "type": "refresh",
-            "exp": datetime.utcnow() + timedelta(days=7),
+            "exp": datetime.now(timezone.utc) + timedelta(days=7),
         }
         return create_access_token(data=token_data)
 
@@ -121,9 +115,7 @@ class AuthManager:
                 if not user or not user.is_active:
                     return {"success": False, "error": "用户不存在或已禁用"}
 
-                access_token = create_access_token(
-                    data={"sub": str(user.id), "username": user.username}
-                )
+                access_token = create_access_token(data={"sub": str(user.id), "username": user.username})
 
                 return {
                     "success": True,
@@ -139,38 +131,35 @@ class AuthManager:
         async with get_db_session() as session:
             return await session.get(User, user_id)
 
+    async def _generate_unique_username(self, session: AsyncSession, phone: str) -> str:
+        """根据手机号生成唯一用户名"""
+        username = f"user_{phone[-4:]}"
+        while True:
+            existing = await session.execute(select(User).where(User.username == username))
+            existing = existing.scalar_one_or_none()
+            if not existing:
+                break
+            username = f"user_{phone[-4:]}_{int(datetime.now().timestamp()) % 1000}"
+        return username
+
     async def get_user_by_phone(self, phone: str) -> Optional[User]:
         """根据手机号获取用户"""
         async with get_db_session() as session:
-            result = await session.execute(
-                select(User).where(User.phone == phone)
-            )
+            result = await session.execute(select(User).where(User.phone == phone))
             return result.scalar_one_or_none()
 
     async def login_with_phone(self, phone: str) -> Dict[str, Any]:
         """手机号登录（验证码已验证通过）- 如果用户不存在则自动注册"""
         async with get_db_session() as session:
-            user = await session.execute(
-                select(User).where(User.phone == phone)
-            )
+            user = await session.execute(select(User).where(User.phone == phone))
             user = user.scalar_one_or_none()
 
             # 如果用户不存在，自动注册
             if not user:
                 logger.info(f"用户不存在，自动注册手机号: {phone}")
-                
+
                 # 生成随机用户名（基于手机号）
-                username = f"user_{phone[-4:]}"
-                
-                # 检查用户名是否已存在
-                while True:
-                    existing = await session.execute(
-                        select(User).where(User.username == username)
-                    )
-                    existing = existing.scalar_one_or_none()
-                    if not existing:
-                        break
-                    username = f"user_{phone[-4:]}_{int(datetime.now().timestamp()) % 1000}"
+                username = await self._generate_unique_username(session, phone)
 
                 user = User(
                     username=username,
@@ -181,15 +170,13 @@ class AuthManager:
                 session.add(user)
                 await session.commit()
                 await session.refresh(user)
-                
+
                 await self._assign_default_role(session, user.id)
                 logger.info(f"自动注册成功: {username}")
             elif not user.is_active:
                 return {"success": False, "error": "用户已禁用"}
 
-            access_token = create_access_token(
-                data={"sub": str(user.id), "username": user.username}
-            )
+            access_token = create_access_token(data={"sub": str(user.id), "username": user.username})
 
             refresh_token = self._create_refresh_token(user.id)
 
@@ -209,29 +196,17 @@ class AuthManager:
     async def register_with_phone(self, phone: str, password: Optional[str] = None) -> Dict[str, Any]:
         """手机号注册"""
         async with get_db_session() as session:
-            existing_user = await session.execute(
-                select(User).where(User.phone == phone)
-            )
+            existing_user = await session.execute(select(User).where(User.phone == phone))
             existing_user = existing_user.scalar_one_or_none()
 
             if existing_user:
                 return {"success": False, "error": "该手机号已被注册"}
 
             # 生成随机用户名（基于手机号）
-            username = f"user_{phone[-4:]}"
-            
-            # 检查用户名是否已存在
-            while True:
-                existing = await session.execute(
-                    select(User).where(User.username == username)
-                )
-                existing = existing.scalar_one_or_none()
-                if not existing:
-                    break
-                username = f"user_{phone[-4:]}_{int(datetime.now().timestamp()) % 1000}"
+            username = await self._generate_unique_username(session, phone)
 
             hashed_password = get_password_hash(password) if password else None
-            
+
             user = User(
                 username=username,
                 phone=phone,
@@ -249,50 +224,39 @@ class AuthManager:
 
     async def _assign_default_role(self, session: AsyncSession, user_id: int):
         """为新用户分配默认角色"""
-        default_role = await session.execute(
-            select(Role).where(Role.name == "user")
-        )
+        default_role = await session.execute(select(Role).where(Role.name == "user"))
         default_role = default_role.scalar_one_or_none()
 
         if default_role:
             user_role = UserRole(user_id=user_id, role_id=default_role.id)
             session.add(user_role)
+            await session.flush()
 
     async def login_with_oauth(
-        self,
-        provider: str,
-        provider_id: str,
-        username: str,
-        email: Optional[str] = None
+        self, provider: str, provider_id: str, username: str, email: Optional[str] = None
     ) -> Dict[str, Any]:
         """OAuth 登录 - 如果用户不存在则自动注册"""
         async with get_db_session() as session:
             # 检查是否已有绑定该 OAuth 的用户
             user = await session.execute(
-                select(User).where(
-                    and_(User.oauth_provider == provider, User.oauth_id == provider_id)
-                )
+                select(User).where(and_(User.oauth_provider == provider, User.oauth_id == provider_id))
             )
             user = user.scalar_one_or_none()
 
             # 如果用户不存在，检查是否有相同邮箱的用户
             if not user and email:
-                user = await session.execute(
-                    select(User).where(User.email == email)
-                )
+                user = await session.execute(select(User).where(User.email == email))
                 user = user.scalar_one_or_none()
 
             # 如果用户不存在，自动注册
             if not user:
                 logger.info(f"OAuth 用户不存在，自动注册: {provider}:{username}")
-                
+
                 # 确保用户名唯一
                 base_username = username
                 counter = 1
                 while True:
-                    existing = await session.execute(
-                        select(User).where(User.username == username)
-                    )
+                    existing = await session.execute(select(User).where(User.username == username))
                     existing = existing.scalar_one_or_none()
                     if not existing:
                         break
@@ -310,7 +274,7 @@ class AuthManager:
                 session.add(user)
                 await session.commit()
                 await session.refresh(user)
-                
+
                 await self._assign_default_role(session, user.id)
                 logger.info(f"OAuth 自动注册成功: {username}")
             elif not user.is_active:
@@ -322,9 +286,7 @@ class AuthManager:
                 await session.commit()
                 logger.info(f"用户绑定 OAuth: {user.username} -> {provider}")
 
-            access_token = create_access_token(
-                data={"sub": str(user.id), "username": user.username}
-            )
+            access_token = create_access_token(data={"sub": str(user.id), "username": user.username})
 
             refresh_token = self._create_refresh_token(user.id)
 
@@ -366,40 +328,28 @@ class PermissionManager:
     async def has_role(self, user_id: int, role_name: str) -> bool:
         """检查用户是否具有指定角色"""
         async with get_db_session() as session:
-            stmt = (
-                select(Role)
-                .join(UserRole)
-                .where(and_(UserRole.user_id == user_id, Role.name == role_name))
-            )
+            stmt = select(Role).join(UserRole).where(and_(UserRole.user_id == user_id, Role.name == role_name))
             result = await session.execute(stmt)
             return result.scalar_one_or_none() is not None
 
     async def get_user_roles(self, user_id: int) -> List[str]:
         """获取用户的所有角色"""
         async with get_db_session() as session:
-            stmt = (
-                select(Role.name)
-                .join(UserRole)
-                .where(UserRole.user_id == user_id)
-            )
+            stmt = select(Role.name).join(UserRole).where(UserRole.user_id == user_id)
             result = await session.execute(stmt)
             return [row[0] for row in result.all()]
 
     async def assign_role_to_user(self, user_id: int, role_name: str) -> bool:
         """为用户分配角色"""
         async with get_db_session() as session:
-            role = await session.execute(
-                select(Role).where(Role.name == role_name)
-            )
+            role = await session.execute(select(Role).where(Role.name == role_name))
             role = role.scalar_one_or_none()
 
             if not role:
                 return False
 
             existing = await session.execute(
-                select(UserRole).where(
-                    and_(UserRole.user_id == user_id, UserRole.role_id == role.id)
-                )
+                select(UserRole).where(and_(UserRole.user_id == user_id, UserRole.role_id == role.id))
             )
             existing = existing.scalar_one_or_none()
 
@@ -413,9 +363,7 @@ class PermissionManager:
     async def create_role(self, name: str, description: str = "") -> bool:
         """创建角色"""
         async with get_db_session() as session:
-            existing = await session.execute(
-                select(Role).where(Role.name == name)
-            )
+            existing = await session.execute(select(Role).where(Role.name == name))
             existing = existing.scalar_one_or_none()
 
             if existing:
@@ -426,14 +374,10 @@ class PermissionManager:
             await session.commit()
             return True
 
-    async def create_permission(
-        self, name: str, resource: str, action: str, description: str = ""
-    ) -> bool:
+    async def create_permission(self, name: str, resource: str, action: str, description: str = "") -> bool:
         """创建权限"""
         async with get_db_session() as session:
-            existing = await session.execute(
-                select(Permission).where(Permission.name == name)
-            )
+            existing = await session.execute(select(Permission).where(Permission.name == name))
             existing = existing.scalar_one_or_none()
 
             if existing:
@@ -449,19 +393,13 @@ class PermissionManager:
             await session.commit()
             return True
 
-    async def assign_permission_to_role(
-        self, role_name: str, permission_name: str
-    ) -> bool:
+    async def assign_permission_to_role(self, role_name: str, permission_name: str) -> bool:
         """为角色分配权限"""
         async with get_db_session() as session:
-            role = await session.execute(
-                select(Role).where(Role.name == role_name)
-            )
+            role = await session.execute(select(Role).where(Role.name == role_name))
             role = role.scalar_one_or_none()
 
-            permission = await session.execute(
-                select(Permission).where(Permission.name == permission_name)
-            )
+            permission = await session.execute(select(Permission).where(Permission.name == permission_name))
             permission = permission.scalar_one_or_none()
 
             if not role or not permission:
@@ -478,9 +416,7 @@ class PermissionManager:
             existing = existing.scalar_one_or_none()
 
             if not existing:
-                role_permission = RolePermission(
-                    role_id=role.id, permission_id=permission.id
-                )
+                role_permission = RolePermission(role_id=role.id, permission_id=permission.id)
                 session.add(role_permission)
                 await session.commit()
 
@@ -531,12 +467,8 @@ async def initialize_default_roles_and_permissions():
         await permission_manager.create_permission(**perm)
 
     # 创建默认角色
-    await permission_manager.create_role(
-        "admin", "系统管理员 - 拥有所有权限"
-    )
-    await permission_manager.create_role(
-        "user", "普通用户 - 基础访问权限"
-    )
+    await permission_manager.create_role("admin", "系统管理员 - 拥有所有权限")
+    await permission_manager.create_role("user", "普通用户 - 基础访问权限")
 
     # 为管理员角色分配所有权限
     await permission_manager.assign_permission_to_role("admin", "chat:access")

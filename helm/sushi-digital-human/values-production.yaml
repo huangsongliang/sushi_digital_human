@@ -1,0 +1,64 @@
+# ==================== 生产环境覆盖值 ====================
+# 用于 CI 自动部署时的 --values 参数
+
+replicaCount:
+  api: 5
+  nginx: 3
+
+resources:
+  api:
+    requests:
+      cpu: 1
+      memory: 2Gi
+    limits:
+      cpu: 4
+      memory: 4Gi
+  nginx:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1
+      memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 80
+
+# Ingress 暂不启用（需预先安装 nginx-ingress + cert-manager）
+# 启用步骤：
+#   1. helm install ingress-nginx ingress-nginx/ingress-nginx
+#   2. helm install cert-manager jetstack/cert-manager
+#   3. 将下面 enabled 改为 true，并修改域名
+ingress:
+  enabled: false
+  className: nginx
+  hosts:
+    - host: your-domain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    enabled: false
+    clusterIssuer: letsencrypt-prod
+
+env:
+  appName: "企业智能文档问答系统"
+  logLevel: "warning"
+
+redis:
+  enabled: true
+  image: redis:7-alpine
+  port: 6379
+
+healthCheck:
+  liveness:
+    path: /health/liveness
+    initialDelay: 60
+    period: 30
+  readiness:
+    path: /health/readiness
+    initialDelay: 30
+    period: 15

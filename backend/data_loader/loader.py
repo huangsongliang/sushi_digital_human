@@ -7,6 +7,9 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 from backend.retrieval import get_vector_store
+from backend.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class DocumentLoader:
@@ -80,9 +83,9 @@ class DocumentLoader:
             try:
                 docs = self.load_from_file(str(file_path))
                 documents.extend(docs)
-                print(f"[OK] 加载文件: {file_path}")
+                logger.info(f"加载文件成功: {file_path}")
             except Exception as e:
-                print(f"[FAIL] 加载文件 {file_path} 失败: {str(e)}")
+                logger.error(f"加载文件 {file_path} 失败: {str(e)}")
 
         return documents
 
@@ -99,27 +102,23 @@ class DocumentLoader:
             text = soup.get_text(strip=True)
 
             # 按段落分割
-            paragraphs = [
-                p.strip() for p in text.split("\n") if p.strip() and len(p.strip()) > 20
-            ]
+            paragraphs = [p.strip() for p in text.split("\n") if p.strip() and len(p.strip()) > 20]
             return paragraphs
         except Exception as e:
-            print(f"加载 URL 失败: {str(e)}")
+            logger.error(f"加载 URL 失败: {str(e)}")
             return []
 
-    def load_to_vector_store(
-        self, documents: List[str], metadatas: Optional[List[Dict[str, Any]]] = None
-    ) -> List[str]:
+    def load_to_vector_store(self, documents: List[str], metadatas: Optional[List[Dict[str, Any]]] = None) -> List[str]:
         """加载文档到向量库"""
         if not documents:
-            print("没有文档可加载")
+            logger.warning("没有文档可加载")
             return []
 
         if metadatas is None:
             metadatas = [{"source": "manual"}] * len(documents)
 
         ids = self.vector_store.add_documents(documents, metadatas=metadatas)
-        print(f"成功加载 {len(documents)} 个文档到向量库")
+        logger.info(f"成功加载 {len(documents)} 个文档到向量库")
         return ids
 
     def load_from_jsonl(self, file_path: str) -> List[str]:

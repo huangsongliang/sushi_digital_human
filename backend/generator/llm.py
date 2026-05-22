@@ -20,6 +20,9 @@ from backend.core.config import settings
 if settings.dashscope_api_key:
     os.environ["DASHSCOPE_API_KEY"] = settings.dashscope_api_key
 
+# 容错机制
+from backend.generator.llm_fault_tolerance import create_safe_llm, get_circuit_breaker
+
 
 class AsyncLLM:
     """异步 LLM 封装 - 性能优化"""
@@ -33,9 +36,7 @@ class AsyncLLM:
     async def invoke(self, prompt: str, **kwargs) -> Any:
         """异步调用 - 使用线程池执行"""
         loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(
-            self._executor, self._sync_invoke, prompt, kwargs
-        )
+        response = await loop.run_in_executor(self._executor, self._sync_invoke, prompt, kwargs)
         return response
 
     def _sync_invoke(self, prompt: str, kwargs) -> Any:
@@ -75,9 +76,7 @@ class AsyncLLM:
                             asyncio.run_coroutine_threadsafe(queue.put(delta), loop)
                         last_content = content
                     else:
-                        asyncio.run_coroutine_threadsafe(
-                            queue.put(f"[错误: {chunk.message}]"), loop
-                        )
+                        asyncio.run_coroutine_threadsafe(queue.put(f"[错误: {chunk.message}]"), loop)
                         break
             except Exception as e:
                 asyncio.run_coroutine_threadsafe(queue.put(f"[错误: {str(e)}]"), loop)
@@ -102,14 +101,14 @@ class SimpleLLM:
     """简化版 LLM 封装"""
 
     def __init__(self):
-        self.client = Generation()
         self.model = settings.llm_model
         self.temperature = settings.llm_temperature
         self.max_tokens = settings.llm_max_tokens
+        self._executor = ThreadPoolExecutor(max_workers=2)
 
     def invoke(self, prompt: str, **kwargs) -> Any:
         """同步调用"""
-        response = self.client.call(
+        response = Generation.call(
             model=self.model,
             prompt=prompt,
             temperature=kwargs.get("temperature", self.temperature),
@@ -119,13 +118,13 @@ class SimpleLLM:
         return response
 
     async def stream(self, prompt: str, **kwargs) -> AsyncGenerator[str, None]:
-        """异步流式调用"""
+        """异步流式调用（使用线程池避免线程泄漏）"""
         loop = asyncio.get_event_loop()
         queue: Queue = asyncio.Queue(maxsize=10)
 
         def _worker():
             """在单独线程中运行的工作函数"""
-            response = self.client.call(
+            response = Generation.call(
                 model=self.model,
                 prompt=prompt,
                 temperature=kwargs.get("temperature", self.temperature),
@@ -143,19 +142,21 @@ class SimpleLLM:
                         asyncio.run_coroutine_threadsafe(queue.put(delta), loop)
                     last_content = content
                 else:
-                    asyncio.run_coroutine_threadsafe(
-                        queue.put(f"[错误: {chunk.message}]"), loop
-                    )
+                    asyncio.run_coroutine_threadsafe(queue.put(f"[错误: {chunk.message}]"), loop)
                     break
             asyncio.run_coroutine_threadsafe(queue.put(None), loop)
 
-        threading.Thread(target=_worker, daemon=True).start()
+        self._executor.submit(_worker)
 
         while True:
             item = await queue.get()
             if item is None:
                 break
             yield item
+
+    def close(self):
+        """关闭线程池"""
+        self._executor.shutdown(wait=True)
 
 
 class SimpleEmbeddings:
@@ -197,9 +198,7 @@ class CachedEmbeddings:
                 return cached
 
         loop = asyncio.get_event_loop()
-        embedding = await loop.run_in_executor(
-            self._executor, self._sync_embed_query, text
-        )
+        embedding = await loop.run_in_executor(self._executor, self._sync_embed_query, text)
 
         if self._cache_enabled:
             from backend.memory.cache import cache_manager
@@ -226,9 +225,7 @@ class CachedEmbeddings:
 
             if uncached_texts:
                 loop = asyncio.get_event_loop()
-                embeddings = await loop.run_in_executor(
-                    self._executor, self._sync_embed_documents, uncached_texts
-                )
+                embeddings = await loop.run_in_executor(self._executor, self._sync_embed_documents, uncached_texts)
 
                 embeddings_dict = {}
                 for text, embedding in zip(uncached_texts, embeddings):
@@ -243,17 +240,13 @@ class CachedEmbeddings:
                     result.append(cached)
                 else:
                     loop = asyncio.get_event_loop()
-                    embedding = await loop.run_in_executor(
-                        self._executor, self._sync_embed_query, text
-                    )
+                    embedding = await loop.run_in_executor(self._executor, self._sync_embed_query, text)
                     result.append(embedding)
 
             return result
 
         loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(
-            self._executor, self._sync_embed_documents, texts
-        )
+        return await loop.run_in_executor(self._executor, self._sync_embed_documents, texts)
 
     def _sync_embed_documents(self, texts: List[str]) -> List[List[float]]:
         """同步批量嵌入"""
@@ -282,9 +275,10 @@ def get_llm() -> SimpleLLM:
 
 
 @lru_cache()
-def get_async_llm() -> AsyncLLM:
-    """获取异步 LLM 实例（带线程池）"""
-    return AsyncLLM()
+def get_async_llm() -> Any:
+    """获取异步 LLM 实例（带线程池和容错机制）"""
+    base_llm = AsyncLLM()
+    return create_safe_llm(base_llm)
 
 
 @lru_cache()

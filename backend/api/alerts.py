@@ -46,16 +46,18 @@ async def get_active_alerts(
     # 转换为字典格式
     result = []
     for alert in alerts[:limit]:
-        result.append({
-            "instance_id": alert.instance_id,
-            "rule_name": alert.rule_name,
-            "severity": alert.severity.value,
-            "message": alert.message,
-            "details": alert.details,
-            "timestamp": alert.timestamp.isoformat(),
-            "status": alert.status.value,
-            "acknowledged_at": alert.acknowledged_at.isoformat() if alert.acknowledged_at else None,
-        })
+        result.append(
+            {
+                "instance_id": alert.instance_id,
+                "rule_name": alert.rule_name,
+                "severity": alert.severity.value,
+                "message": alert.message,
+                "details": alert.details,
+                "timestamp": alert.timestamp.isoformat(),
+                "status": alert.status.value,
+                "acknowledged_at": alert.acknowledged_at.isoformat() if alert.acknowledged_at else None,
+            }
+        )
 
     return {"status": "success", "data": result}
 
@@ -87,17 +89,19 @@ async def get_alert_history(
     # 转换为字典格式
     result = []
     for alert in history:
-        result.append({
-            "instance_id": alert.instance_id,
-            "rule_name": alert.rule_name,
-            "severity": alert.severity.value,
-            "message": alert.message,
-            "details": alert.details,
-            "timestamp": alert.timestamp.isoformat(),
-            "status": alert.status.value,
-            "acknowledged_at": alert.acknowledged_at.isoformat() if alert.acknowledged_at else None,
-            "resolved_at": alert.resolved_at.isoformat() if alert.resolved_at else None,
-        })
+        result.append(
+            {
+                "instance_id": alert.instance_id,
+                "rule_name": alert.rule_name,
+                "severity": alert.severity.value,
+                "message": alert.message,
+                "details": alert.details,
+                "timestamp": alert.timestamp.isoformat(),
+                "status": alert.status.value,
+                "acknowledged_at": alert.acknowledged_at.isoformat() if alert.acknowledged_at else None,
+                "resolved_at": alert.resolved_at.isoformat() if alert.resolved_at else None,
+            }
+        )
 
     return {"status": "success", "data": result}
 
@@ -123,18 +127,20 @@ async def get_alert_rules():
 
     result = []
     for rule in rules:
-        result.append({
-            "name": rule.name,
-            "description": rule.description,
-            "severity": rule.severity.value,
-            "metric_type": rule.metric_type,
-            "operator": rule.operator,
-            "threshold": rule.threshold,
-            "window_seconds": rule.window_seconds,
-            "cooldown_seconds": rule.cooldown_seconds,
-            "enabled": rule.enabled,
-            "notification_channels": rule.notification_channels,
-        })
+        result.append(
+            {
+                "name": rule.name,
+                "description": rule.description,
+                "severity": rule.severity.value,
+                "metric_type": rule.metric_type,
+                "operator": rule.operator,
+                "threshold": rule.threshold,
+                "window_seconds": rule.window_seconds,
+                "cooldown_seconds": rule.cooldown_seconds,
+                "enabled": rule.enabled,
+                "notification_channels": rule.notification_channels,
+            }
+        )
 
     return {"status": "success", "data": result}
 

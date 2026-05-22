@@ -1,10 +1,11 @@
 """数据库会话管理"""
 
-from typing import AsyncGenerator, Optional
+from typing import Any, AsyncGenerator, Optional
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from backend.core.config import settings
+from backend.database.pool import DatabasePoolMonitor, OptimizedDatabaseSessionManager
 
 
 class DatabaseSessionManager:
@@ -24,6 +25,8 @@ class DatabaseSessionManager:
                 max_overflow=20,
                 pool_timeout=30,
                 pool_recycle=1800,
+                pool_pre_ping=False,  # aiomysql 兼容性问题，禁用心跳检查
+                pool_reset_on_return='rollback',  # 归还连接时回滚
             )
             self._session_factory = sessionmaker(
                 bind=self._engine,
@@ -32,6 +35,7 @@ class DatabaseSessionManager:
                 autocommit=False,
                 autoflush=False,
             )
+            self._monitor = DatabasePoolMonitor(self._engine)
 
     async def get_session(self) -> AsyncGenerator[Optional[AsyncSession], None]:
         """获取数据库会话"""
@@ -96,17 +100,17 @@ async def async_initialize_database():
 
 class DBSessionContext:
     """数据库会话上下文管理器"""
-    
+
     def __init__(self):
         self.session = None
-    
+
     async def __aenter__(self):
         if not db_manager._session_factory:
             db_manager.init()
         self.session = db_manager._session_factory()
         return self.session
-    
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+
+    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: Any) -> None:
         if self.session:
             try:
                 if exc_type is None:

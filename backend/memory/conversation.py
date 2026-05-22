@@ -76,9 +76,7 @@ class ConversationMemory:
                 msg_dict = json.loads(msg_str)
                 messages.append(Message.from_dict(msg_dict))
 
-            logger.info(
-                f"获取历史消息: session={self.session_id}, count={len(messages)}"
-            )
+            logger.info(f"获取历史消息: session={self.session_id}, count={len(messages)}")
             return messages
         except Exception as e:
             logger.error(f"获取历史失败: {e}")

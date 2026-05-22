@@ -20,6 +20,7 @@ logger = get_logger(__name__)
 
 class IntegrationType(Enum):
     """集成类型枚举"""
+
     DINGTALK = "dingtalk"
     WECOM = "wecom"
     SLACK = "slack"
@@ -28,6 +29,7 @@ class IntegrationType(Enum):
 
 class MessageType(Enum):
     """消息类型枚举"""
+
     TEXT = "text"
     MARKDOWN = "markdown"
     LINK = "link"
@@ -37,6 +39,7 @@ class MessageType(Enum):
 @dataclass
 class IntegrationConfig:
     """集成配置"""
+
     type: IntegrationType
     name: str
     webhook_url: str
@@ -52,6 +55,7 @@ class IntegrationConfig:
 @dataclass
 class MessageResult:
     """消息发送结果"""
+
     success: bool
     message_id: Optional[str] = None
     error_message: Optional[str] = None
@@ -170,13 +174,7 @@ class DingTalkIntegration(BaseIntegration):
                 sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
                 webhook_url = f"{webhook_url}&timestamp={timestamp}&sign={sign}"
 
-            payload = {
-                "msgtype": "markdown",
-                "markdown": {
-                    "title": title or "消息通知",
-                    "text": content
-                }
-            }
+            payload = {"msgtype": "markdown", "markdown": {"title": title or "消息通知", "text": content}}
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(webhook_url, json=payload) as response:
@@ -213,12 +211,7 @@ class DingTalkIntegration(BaseIntegration):
 
             payload = {
                 "msgtype": "link",
-                "link": {
-                    "text": text,
-                    "title": title,
-                    "picUrl": pic_url or "",
-                    "messageUrl": url
-                }
+                "link": {"text": text, "title": title, "picUrl": pic_url or "", "messageUrl": url},
             }
 
             async with aiohttp.ClientSession() as session:
@@ -254,10 +247,7 @@ class DingTalkIntegration(BaseIntegration):
                 sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
                 webhook_url = f"{webhook_url}&timestamp={timestamp}&sign={sign}"
 
-            payload = {
-                "msgtype": "actionCard",
-                "actionCard": card_data
-            }
+            payload = {"msgtype": "actionCard", "actionCard": card_data}
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(webhook_url, json=payload) as response:
@@ -280,10 +270,7 @@ class WeComIntegration(BaseIntegration):
         try:
             import aiohttp
 
-            payload = {
-                "msgtype": "text",
-                "text": {"content": content}
-            }
+            payload = {"msgtype": "text", "text": {"content": content}}
 
             if at_users:
                 payload["text"]["mentioned_list"] = at_users
@@ -305,12 +292,7 @@ class WeComIntegration(BaseIntegration):
         try:
             import aiohttp
 
-            payload = {
-                "msgtype": "markdown",
-                "markdown": {
-                    "content": content
-                }
-            }
+            payload = {"msgtype": "markdown", "markdown": {"content": content}}
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(self._config.webhook_url, json=payload) as response:
@@ -331,14 +313,7 @@ class WeComIntegration(BaseIntegration):
 
             payload = {
                 "msgtype": "news",
-                "news": {
-                    "articles": [{
-                        "title": title,
-                        "description": text,
-                        "url": url,
-                        "picurl": pic_url or ""
-                    }]
-                }
+                "news": {"articles": [{"title": title, "description": text, "url": url, "picurl": pic_url or ""}]},
             }
 
             async with aiohttp.ClientSession() as session:
@@ -358,10 +333,7 @@ class WeComIntegration(BaseIntegration):
         try:
             import aiohttp
 
-            payload = {
-                "msgtype": "template_card",
-                "template_card": card_data
-            }
+            payload = {"msgtype": "template_card", "template_card": card_data}
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(self._config.webhook_url, json=payload) as response:
@@ -414,9 +386,7 @@ class SlackIntegration(BaseIntegration):
         try:
             import aiohttp
 
-            payload = {
-                "attachments": [card_data]
-            }
+            payload = {"attachments": [card_data]}
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(self._config.webhook_url, json=payload) as response:
@@ -439,11 +409,7 @@ class WebhookIntegration(BaseIntegration):
         try:
             import aiohttp
 
-            payload = {
-                "type": "text",
-                "content": content,
-                **kwargs
-            }
+            payload = {"type": "text", "content": content, **kwargs}
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(self._config.webhook_url, json=payload) as response:
@@ -459,12 +425,7 @@ class WebhookIntegration(BaseIntegration):
         try:
             import aiohttp
 
-            payload = {
-                "type": "markdown",
-                "title": title or "",
-                "content": content,
-                **kwargs
-            }
+            payload = {"type": "markdown", "title": title or "", "content": content, **kwargs}
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(self._config.webhook_url, json=payload) as response:
@@ -486,7 +447,7 @@ class WebhookIntegration(BaseIntegration):
                 "text": text,
                 "url": url,
                 "pic_url": pic_url,
-                **self._config.additional_config
+                **self._config.additional_config,
             }
 
             async with aiohttp.ClientSession() as session:
@@ -503,10 +464,7 @@ class WebhookIntegration(BaseIntegration):
         try:
             import aiohttp
 
-            payload = {
-                "type": "card",
-                "data": card_data
-            }
+            payload = {"type": "card", "data": card_data}
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(self._config.webhook_url, json=payload) as response:
@@ -645,11 +603,14 @@ async def send_markdown(name: str, content: str, title: Optional[str] = None) ->
 
 async def send_link(name: str, title: str, text: str, url: str, pic_url: Optional[str] = None) -> MessageResult:
     """发送链接消息（对外接口）"""
-    return await integration_manager.send_message(name, MessageType.LINK, title=title, text=text, url=url, pic_url=pic_url)
+    return await integration_manager.send_message(
+        name, MessageType.LINK, title=title, text=text, url=url, pic_url=pic_url
+    )
 
 
-def register_integration(type: str, name: str, webhook_url: str, enabled: bool = True,
-                         secret: Optional[str] = None, **kwargs):
+def register_integration(
+    type: str, name: str, webhook_url: str, enabled: bool = True, secret: Optional[str] = None, **kwargs
+):
     """注册集成（对外接口）"""
     try:
         type_enum = IntegrationType[type.upper()]
@@ -658,12 +619,7 @@ def register_integration(type: str, name: str, webhook_url: str, enabled: bool =
         return
 
     config = IntegrationConfig(
-        type=type_enum,
-        name=name,
-        webhook_url=webhook_url,
-        enabled=enabled,
-        secret=secret,
-        additional_config=kwargs
+        type=type_enum, name=name, webhook_url=webhook_url, enabled=enabled, secret=secret, additional_config=kwargs
     )
 
     integration_manager.register_integration(config)

@@ -248,9 +248,7 @@ def get_session_id() -> str:
 
 
 @contextmanager
-def with_request_context(
-    request_id: Optional[str] = None, session_id: Optional[str] = None
-):
+def with_request_context(request_id: Optional[str] = None, session_id: Optional[str] = None):
     """
     上下文管理器：设置请求上下文
 
@@ -410,10 +408,7 @@ def log_function_call(logger_instance=None):
                     return result
                 except Exception as e:
                     duration = time.time() - start_time
-                    log.error(
-                        f"函数 {func.__name__} 执行失败，耗时: {duration:.4f}s，"
-                        f"错误: {str(e)}"
-                    )
+                    log.error(f"函数 {func.__name__} 执行失败，耗时: {duration:.4f}s，" f"错误: {str(e)}")
                     raise
 
             return async_wrapper
@@ -431,10 +426,7 @@ def log_function_call(logger_instance=None):
                     return result
                 except Exception as e:
                     duration = time.time() - start_time
-                    log.error(
-                        f"函数 {func.__name__} 执行失败，耗时: {duration:.4f}s，"
-                        f"错误: {str(e)}"
-                    )
+                    log.error(f"函数 {func.__name__} 执行失败，耗时: {duration:.4f}s，" f"错误: {str(e)}")
                     raise
 
             return sync_wrapper

@@ -109,10 +109,10 @@ class DocumentChunker:
 
         if self.tokenizer:
             tokens = self.tokenizer.encode(text)
-            overlap_tokens = tokens[-self.chunk_overlap:]
+            overlap_tokens = tokens[-self.chunk_overlap :]
             return self.tokenizer.decode(overlap_tokens, skip_special_tokens=True)
         else:
-            return text[-self.chunk_overlap:] if len(text) > self.chunk_overlap else text
+            return text[-self.chunk_overlap :] if len(text) > self.chunk_overlap else text
 
 
 class MarkdownChunker(DocumentChunker):

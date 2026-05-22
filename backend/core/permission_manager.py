@@ -1,6 +1,11 @@
 """
-细粒度权限管理模块
-提供完整的权限控制功能，支持：
+细粒度权限管理模块（已弃用 - 内存版）
+
+⚠️ DEPRECATED: 本模块为内存版权限管理器，仅用于开发和单机场景。
+生产环境请使用 backend.core.auth_manager.PermissionManager（数据库版），
+该版本持久化到 MySQL 并支持多进程共享，拥有完整的 RBAC 功能。
+
+本模块提供：
 - 基于角色的访问控制（RBAC）
 - 文档级权限控制
 - 自定义权限检查
@@ -20,6 +25,7 @@ logger = get_logger(__name__)
 
 class PermissionAction(Enum):
     """权限操作枚举"""
+
     READ = "read"
     WRITE = "write"
     EDIT = "edit"
@@ -30,6 +36,7 @@ class PermissionAction(Enum):
 
 class ResourceType(Enum):
     """资源类型枚举"""
+
     DOCUMENT = "document"
     CONVERSATION = "conversation"
     USER = "user"
@@ -40,6 +47,7 @@ class ResourceType(Enum):
 @dataclass
 class Permission:
     """权限定义"""
+
     name: str
     resource_type: ResourceType
     action: PermissionAction
@@ -49,12 +57,18 @@ class Permission:
 @dataclass
 class RolePermission:
     """角色权限关联"""
+
     role_name: str
     permissions: List[Permission]
 
 
 class PermissionManager:
-    """权限管理器"""
+    """
+    权限管理器（内存版，已弃用）
+
+    ⚠️ 线程安全警告: 本管理器使用普通 dict 存储数据，
+    多线程并发读写存在竞态条件。生产环境请使用数据库版。
+    """
 
     def __init__(self):
         self._roles: Dict[str, List[Permission]] = {}
@@ -126,8 +140,9 @@ class PermissionManager:
         """获取用户在文档上的权限"""
         return self._document_permissions.get(doc_id, {}).get(user_id, [])
 
-    def has_permission(self, user_id: int, resource_type: ResourceType, action: PermissionAction, 
-                       resource_id: Optional[int] = None) -> bool:
+    def has_permission(
+        self, user_id: int, resource_type: ResourceType, action: PermissionAction, resource_id: Optional[int] = None
+    ) -> bool:
         """检查用户是否有指定权限"""
         # 超级管理员拥有所有权限
         if "admin" in self.get_user_roles(user_id):
@@ -182,51 +197,51 @@ permission_manager = PermissionManager()
 
 def requires_permission(resource_type: ResourceType, action: PermissionAction):
     """权限验证装饰器"""
+
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             # 从 kwargs 中获取 user_id
             user_id = kwargs.get("user_id")
             if user_id is None:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="未提供用户ID"
-                )
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="未提供用户ID")
 
             # 检查权限
             if not permission_manager.has_permission(user_id, resource_type, action):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"用户 {user_id} 没有 {action.value} {resource_type.value} 的权限"
+                    detail=f"用户 {user_id} 没有 {action.value} {resource_type.value} 的权限",
                 )
 
             return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
 def requires_document_permission(action: PermissionAction):
     """文档权限验证装饰器"""
+
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             user_id = kwargs.get("user_id")
             doc_id = kwargs.get("doc_id")
-            
+
             if user_id is None:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="未提供用户ID"
-                )
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="未提供用户ID")
 
             if not permission_manager.has_permission(user_id, ResourceType.DOCUMENT, action, doc_id):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"用户 {user_id} 没有 {action.value} 文档 {doc_id} 的权限"
+                    detail=f"用户 {user_id} 没有 {action.value} 文档 {doc_id} 的权限",
                 )
 
             return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 

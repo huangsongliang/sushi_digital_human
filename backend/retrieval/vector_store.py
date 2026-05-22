@@ -18,18 +18,14 @@ class VectorStore:
         self.persist_dir = Path(settings.chroma_persist_dir)
         self.persist_dir.mkdir(parents=True, exist_ok=True)
 
-        self.client = Client(
-            Settings(
-                persist_directory=str(self.persist_dir), anonymized_telemetry=False
-            )
-        )
+        self.client = Client(Settings(persist_directory=str(self.persist_dir), anonymized_telemetry=False))
         self.collection = None
         self._init_collection()
 
     def _init_collection(self):
         """初始化或获取集合"""
         self.collection = self.client.get_or_create_collection(
-            name="sushi_docs", metadata={"description": "苏轼文化文档"}
+            name="sushi_docs", metadata={"description": "企业文档知识库"}
         )
 
     def add_documents(
@@ -45,14 +41,10 @@ class VectorStore:
         if not ids:
             ids = [f"doc_{i}" for i in range(len(texts))]
 
-        self.collection.add(
-            embeddings=vectors, documents=texts, metadatas=metadatas, ids=ids
-        )
+        self.collection.add(embeddings=vectors, documents=texts, metadatas=metadatas, ids=ids)
         return ids
 
-    def query(
-        self, query_text: str, n_results: int = 5, include: Optional[List[str]] = None
-    ) -> QueryResult:
+    def query(self, query_text: str, n_results: int = 5, include: Optional[List[str]] = None) -> QueryResult:
         """查询相似文档"""
         embeddings = get_embeddings()
         query_vector = embeddings.embed_query(query_text)
@@ -60,9 +52,7 @@ class VectorStore:
         if include is None:
             include = ["documents", "distances", "metadatas"]
 
-        results = self.collection.query(
-            query_embeddings=[query_vector], n_results=n_results, include=include
-        )
+        results = self.collection.query(query_embeddings=[query_vector], n_results=n_results, include=include)
         return results
 
     def similarity_search(self, query: str, k: int = 5) -> List[Dict]:
@@ -77,9 +67,7 @@ class VectorStore:
             for i, doc in enumerate(documents[0]):
                 distance = distances[0][i] if distances and distances[0] else None
                 metadata = metadatas[0][i] if metadatas and metadatas[0] else None
-                docs.append(
-                    {"content": doc, "distance": distance, "metadata": metadata}
-                )
+                docs.append({"content": doc, "distance": distance, "metadata": metadata})
         return docs
 
     def count(self) -> int:
@@ -102,9 +90,7 @@ class VectorStore:
                     {
                         "id": all_data["ids"][i],
                         "content": all_data["documents"][i],
-                        "metadata": (
-                            all_data["metadatas"][i] if all_data["metadatas"] else None
-                        ),
+                        "metadata": (all_data["metadatas"][i] if all_data["metadatas"] else None),
                     }
                 )
 

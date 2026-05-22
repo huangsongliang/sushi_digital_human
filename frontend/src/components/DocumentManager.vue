@@ -217,6 +217,62 @@
         </div>
       </div>
     </div>
+
+    <!-- 详情弹窗 -->
+    <div v-if="showDetailModal" class="modal-overlay" @click.self="showDetailModal = false">
+      <div class="modal-content detail-modal">
+        <div class="modal-header">
+          <h3>📄 文档详情</h3>
+          <button class="close-btn" @click="showDetailModal = false">✕</button>
+        </div>
+        <div class="modal-body" v-if="detailDocument">
+          <div class="detail-item">
+            <label>文档名称</label>
+            <span>{{ detailDocument.name }}</span>
+          </div>
+          <div class="detail-item">
+            <label>文档ID</label>
+            <span class="doc-id">{{ detailDocument.document_id }}</span>
+          </div>
+          <div class="detail-item">
+            <label>版本</label>
+            <span>v{{ detailDocument.version }}</span>
+          </div>
+          <div class="detail-item">
+            <label>分块数</label>
+            <span>{{ detailDocument.chunk_count }} 个</span>
+          </div>
+          <div class="detail-item">
+            <label>状态</label>
+            <span :class="detailDocument.is_active ? 'status-active' : 'status-inactive'">
+              {{ detailDocument.is_active ? '活跃' : '已删除' }}
+            </span>
+          </div>
+          <div class="detail-item">
+            <label>描述</label>
+            <span>{{ detailDocument.description || '无' }}</span>
+          </div>
+          <div class="detail-item">
+            <label>创建时间</label>
+            <span>{{ formatDate(detailDocument.created_at) }}</span>
+          </div>
+          <div class="detail-item">
+            <label>更新时间</label>
+            <span>{{ formatDate(detailDocument.updated_at) }}</span>
+          </div>
+          
+          <div class="preview-section">
+            <button class="preview-toggle-btn" @click="togglePreview">
+              {{ showPreview ? '收起内容' : '预览内容' }}
+            </button>
+            <div v-if="showPreview" class="preview-content">
+              <div v-if="isLoadingPreview" class="preview-loading">加载中...</div>
+              <pre v-else class="preview-text">{{ previewContent }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -348,8 +404,42 @@ const fetchDocuments = async () => {
   }
 }
 
-const viewDocument = (doc: Document) => {
-  console.log('查看文档:', doc)
+const showDetailModal = ref(false)
+const detailDocument = ref<Document | null>(null)
+const showPreview = ref(false)
+const previewContent = ref('')
+const isLoadingPreview = ref(false)
+
+const viewDocument = async (doc: Document) => {
+  detailDocument.value = doc
+  showDetailModal.value = true
+  showPreview.value = false
+  previewContent.value = ''
+}
+
+const togglePreview = async () => {
+  if (showPreview.value) {
+    showPreview.value = false
+    return
+  }
+  
+  if (!detailDocument.value) return
+  
+  isLoadingPreview.value = true
+  try {
+    const response = await fetch(`/api/documents/${detailDocument.value.document_id}/content`)
+    const result = await response.json()
+    if (result.success) {
+      previewContent.value = result.content || ''
+    } else {
+      previewContent.value = '加载失败: ' + (result.error || '未知错误')
+    }
+    showPreview.value = true
+  } catch (error) {
+    previewContent.value = '加载失败，请重试'
+  } finally {
+    isLoadingPreview.value = false
+  }
 }
 
 const showVersionHistory = async (doc: Document) => {
@@ -873,5 +963,92 @@ onMounted(() => {
 .form-actions .delete-btn {
   background: #c62828;
   color: white;
+}
+
+.detail-modal {
+  max-width: 450px;
+}
+
+.detail-item {
+  display: flex;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-item label {
+  width: 100px;
+  font-weight: 500;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.detail-item span {
+  flex: 1;
+  word-break: break-all;
+}
+
+.doc-id {
+  font-family: monospace;
+  font-size: 12px;
+  color: #999;
+}
+
+.status-active {
+  color: #4caf50;
+}
+
+.status-inactive {
+  color: #999;
+}
+
+.preview-section {
+  margin-top: 16px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+}
+
+.preview-toggle-btn {
+  width: 100%;
+  padding: 12px;
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: background 0.3s;
+}
+
+.preview-toggle-btn:hover {
+  background: #e0e0e0;
+}
+
+.preview-content {
+  margin-top: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.preview-loading {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+}
+
+.preview-text {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+  max-height: 280px;
+  overflow-y: auto;
 }
 </style>

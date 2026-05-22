@@ -80,6 +80,7 @@
 <script setup lang="ts">
 import { watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessageBox } from 'element-plus'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
 
@@ -115,9 +116,22 @@ function navigate(path: string) {
   router.push(path)
 }
 
-function handleLogout() {
-  authStore.logout()
-  router.push('/login')
+async function handleLogout() {
+  try {
+    await ElMessageBox.confirm(
+      '退出登录后需要重新登录才能继续使用，确定退出吗？',
+      '确认退出',
+      {
+        confirmButtonText: '确定退出',
+        cancelButtonText: '取消',
+        type: 'warning',
+      },
+    )
+    authStore.logout()
+    router.push('/login')
+  } catch {
+    // 用户点击取消，不执行任何操作
+  }
 }
 
 const emit = defineEmits<{
@@ -376,21 +390,27 @@ function toggleSettings() {
 }
 
 .logout-btn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: none;
-  background: transparent;
+  background: rgba(181, 71, 71, 0.1);
   border-radius: var(--radius-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  color: #b54747;
 }
 
 .logout-btn:hover {
-  background: rgba(181, 71, 71, 0.1);
+  background: rgba(181, 71, 71, 0.2);
+  transform: scale(1.05);
+}
+
+.logout-btn:active {
+  transform: scale(0.95);
 }
 
 .settings-toggle {

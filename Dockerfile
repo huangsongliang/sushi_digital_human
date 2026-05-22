@@ -109,8 +109,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 # 设置工作目录
 WORKDIR /app
 
-# 复制应用代码（仅后端代码）
+# 复制应用代码
 COPY backend/ ./backend/
+COPY frontend/dist/ ./frontend/dist/
 COPY config/ ./config/
 COPY migrations/ ./migrations/
 COPY pyproject.toml alembic.ini ./

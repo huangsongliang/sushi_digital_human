@@ -7,7 +7,8 @@
 - 输入验证与清洗
 """
 
-from datetime import datetime, timedelta
+import re
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -62,9 +63,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(
-    data: Dict[str, Any], expires_delta: Optional[timedelta] = None
-) -> str:
+def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """
     创建访问令牌（JWT）
 
@@ -78,11 +77,9 @@ def create_access_token(
     to_encode = data.copy()
 
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=settings.access_token_expire_minutes
-        )
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
 
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm="HS256")
@@ -157,8 +154,6 @@ def sanitize_input(text: str, max_length: int = 10000) -> str:
     text = text[:max_length]
 
     # 移除潜在的 HTML 标签
-    import re
-
     text = re.sub(r"<[^>]+>", "", text)
 
     # 移除控制字符
@@ -202,7 +197,5 @@ class OptionalBearerAuth(HTTPBearer):
     如果未提供令牌也不会抛出异常
     """
 
-    async def __call__(
-        self, request: Request
-    ) -> Optional[HTTPAuthorizationCredentials]:
+    async def __call__(self, request: Request) -> Optional[HTTPAuthorizationCredentials]:
         return await super().__call__(request)

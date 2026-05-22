@@ -17,5 +17,25 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    // 启用代码分割
+    rollupOptions: {
+      output: {
+        // 手动分包
+        manualChunks: {
+          'vendor': ['vue', 'vue-router', 'pinia', 'axios'],
+          'editor': ['@vueuse/core']
+        }
+      }
+    },
+    // 启用压缩
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
   }
 })

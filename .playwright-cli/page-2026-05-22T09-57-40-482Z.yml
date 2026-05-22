@@ -1,0 +1,67 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - button "🌙" [ref=e4] [cursor=pointer]:
+      - generic [ref=e5]: 🌙
+    - generic [ref=e33]:
+      - complementary [ref=e34]:
+        - generic [ref=e35]:
+          - heading "企业级智能文档问答平台" [level=1] [ref=e36]
+          - paragraph [ref=e37]: 智能文档 · 精准问答
+        - button "+ 新对话" [ref=e39]:
+          - generic [ref=e40]: +
+          - text: 新对话
+        - generic [ref=e41]:
+          - button "💬 对话" [ref=e42] [cursor=pointer]:
+            - generic [ref=e43]: 💬
+            - generic [ref=e44]: 对话
+          - button "📁 文档管理" [ref=e45] [cursor=pointer]:
+            - generic [ref=e46]: 📁
+            - generic [ref=e47]: 文档管理
+        - generic [ref=e49]:
+          - generic [ref=e50]: 📜
+          - paragraph [ref=e51]: 暂无对话
+          - paragraph [ref=e52]: 点击上方按钮开始新对话
+        - generic [ref=e53]:
+          - generic [ref=e54]:
+            - generic [ref=e56]: v
+            - generic [ref=e57]:
+              - paragraph [ref=e58]: verify_user
+              - paragraph [ref=e59]: 用户
+            - button "🚪" [ref=e60] [cursor=pointer]:
+              - generic [ref=e61]: 🚪
+          - button "⚙️ 设置" [ref=e62] [cursor=pointer]:
+            - generic [ref=e63]: ⚙️
+            - text: 设置
+      - generic [ref=e64]:
+        - generic [ref=e67]:
+          - generic [ref=e69]: 知
+          - heading "企业级智能文档问答平台" [level=1] [ref=e70]
+          - paragraph [ref=e71]: 智能管理企业知识库，精准回答问题
+          - generic [ref=e72]:
+            - generic [ref=e73]: 📚 智能问答
+            - generic [ref=e74]: 📖 文档管理
+            - generic [ref=e75]: 🎨 智能检索
+          - button "开始对话" [ref=e76]
+        - generic [ref=e77]:
+          - generic [ref=e78] [cursor=pointer]:
+            - heading "📚 参考资料" [level=3] [ref=e79]
+            - generic [ref=e80]: 0 篇文档
+            - generic [ref=e81]: ▼
+          - generic [ref=e83]:
+            - generic [ref=e84]: 书
+            - paragraph [ref=e85]: 暂无参考资料
+            - paragraph [ref=e86]: 发送问题后将显示相关文档
+  - dialog "确认退出" [ref=e109]:
+    - generic [ref=e110]:
+      - generic [ref=e111]:
+        - generic [ref=e112]: 确认退出
+        - button "Close this dialog" [ref=e113] [cursor=pointer]:
+          - img [ref=e115]
+      - generic [ref=e118]:
+        - img [ref=e120]
+        - paragraph [ref=e123]: 退出登录后需要重新登录才能继续使用，确定退出吗？
+      - generic [ref=e124]:
+        - button "取消" [ref=e125] [cursor=pointer]:
+          - generic [ref=e126]: 取消
+        - button "确定退出" [active] [ref=e127] [cursor=pointer]:
+          - generic [ref=e128]: 确定退出

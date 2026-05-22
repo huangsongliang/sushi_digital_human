@@ -17,8 +17,8 @@
           <label class="setting-label">
             <input
               type="checkbox"
-              :checked="settings.useRag"
-              @change="updateSettings({ useRag: !settings.useRag })"
+              :checked="store.settings.useRag"
+              @change="updateSetting('useRag', !store.settings.useRag)"
             />
             <span>启用知识库检索</span>
           </label>
@@ -29,13 +29,13 @@
           <label class="setting-label">检索数量</label>
           <input
             type="range"
-            :value="settings.topK"
+            :value="store.settings.topK"
             min="1"
             max="10"
-            @input="updateSettings({ topK: Number(($event.target as HTMLInputElement).value) })"
+            @input="updateSetting('topK', Number(($event.target as HTMLInputElement).value))"
             class="range-input"
           />
-          <span class="range-value">{{ settings.topK }}</span>
+          <span class="range-value">{{ store.settings.topK }}</span>
           <p class="setting-desc">每次检索返回的文档数量</p>
         </div>
       </div>
@@ -47,14 +47,14 @@
           <label class="setting-label">温度参数</label>
           <input
             type="range"
-            :value="settings.temperature"
+            :value="store.settings.temperature"
             min="0"
             max="2"
             step="0.1"
-            @input="updateSettings({ temperature: Number(($event.target as HTMLInputElement).value) })"
+            @input="updateSetting('temperature', Number(($event.target as HTMLInputElement).value))"
             class="range-input"
           />
-          <span class="range-value">{{ settings.temperature.toFixed(1) }}</span>
+          <span class="range-value">{{ store.settings.temperature.toFixed(1) }}</span>
           <p class="setting-desc">控制回答的随机性，值越大越随机</p>
         </div>
       </div>
@@ -92,14 +92,17 @@ const emit = defineEmits<{
 }>()
 
 const store = useChatStore()
-const { settings, updateSettings } = store
 
 function close() {
   emit('close')
 }
 
+function updateSetting(key: 'useRag' | 'topK' | 'temperature', value: boolean | number) {
+  store.updateSettings({ [key]: value })
+}
+
 function resetSettings() {
-  updateSettings({
+  store.updateSettings({
     useRag: true,
     topK: 3,
     temperature: 0.7
@@ -111,17 +114,21 @@ function resetSettings() {
 .settings-panel {
   position: fixed;
   top: 0;
-  right: -300px;
-  width: 300px;
-  height: 100%;
-  background: var(--color-paper-warm);
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
-  transition: right 0.3s ease;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1000;
+  display: none;
 }
 
 .settings-panel.visible {
-  right: 0;
+  display: block;
+}
+
+.settings-panel.visible .panel-overlay {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .panel-overlay {
@@ -134,6 +141,7 @@ function resetSettings() {
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
+  z-index: 1001;
 }
 
 .settings-panel.visible .panel-overlay {
@@ -142,10 +150,18 @@ function resetSettings() {
 }
 
 .panel-content {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
   height: 100%;
   display: flex;
   flex-direction: column;
   padding: 20px;
+  z-index: 1002;
+  background: #ffffff;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
 }
 
 .panel-header {
@@ -207,9 +223,14 @@ function resetSettings() {
 }
 
 .setting-label input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--color-accent);
+  width: 18px;
+  height: 18px;
+  accent-color: #667eea;
+  cursor: pointer;
+}
+
+.setting-label input[type="checkbox"]:hover {
+  transform: scale(1.1);
 }
 
 .setting-desc {
@@ -220,27 +241,48 @@ function resetSettings() {
 
 .range-input {
   width: 100%;
-  height: 6px;
+  height: 8px;
   -webkit-appearance: none;
   appearance: none;
-  background: rgba(139, 115, 85, 0.2);
-  border-radius: 3px;
+  background: #e8e8e8;
+  border-radius: 4px;
   cursor: pointer;
+  outline: none;
 }
 
 .range-input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
-  background: var(--color-accent);
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 50%;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
 }
 
 .range-input::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.5);
+}
+
+.range-input::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  background: #e8e8e8;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.range-input::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
 }
 
 .range-value {

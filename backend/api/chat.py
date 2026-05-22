@@ -50,14 +50,10 @@ class ChatResponse(BaseModel):
 class AddDocumentsRequest(BaseModel):
     """添加文档请求模型"""
 
-    documents: List[str] = Field(
-        ..., min_length=1, max_length=100, description="文档列表"
-    )
+    documents: List[str] = Field(..., min_length=1, max_length=100, description="文档列表")
 
 
-def format_error_response(
-    error_type: str, message: str, detail: Optional[str] = None
-) -> dict:
+def format_error_response(error_type: str, message: str, detail: Optional[str] = None) -> dict:
     """格式化错误响应"""
     return {
         "error": error_type,
@@ -170,67 +166,8 @@ async def generate_stream_response(
     session_id: str, message: str, use_rag: bool = True, top_k: int = 3
 ) -> AsyncGenerator[str, None]:
     """生成流式响应"""
-    start_time = time.time()
-
-    try:
-        # 输入验证
-        if not message or message.strip() == "":
-            error_info = json.dumps(
-                {"type": "error", "data": "消息内容不能为空"}, ensure_ascii=False
-            )
-            yield f"data: {error_info}\n\n"
-            yield "data: [DONE]\n\n"
-            return
-
-        # 获取对话记忆
-        memory = ConversationMemory(session_id)
-
-        # 获取历史消息（最近20条）
-        history = await memory.get_history(limit=20)
-
-        # 构建上下文
-        context = "\n".join([f"{msg.role}: {msg.content}" for msg in history])
-
-        # 保存用户消息到记忆
-        await memory.save_message("user", message)
-
-        # 获取 RAG 链
-        rag_chain = get_rag_chain()
-
-        # 先发送引用信息（使用正确的 SSE JSON 格式）
-        references = rag_chain.get_references(message, top_k=top_k)
-        if references:
-            ref_json = json.dumps(
-                {"type": "references", "data": references}, ensure_ascii=False
-            )
-            yield f"data: {ref_json}\n\n"
-
-        # 流式生成回答（每个 chunk 直接发送）
-        full_answer = ""
-        async for chunk in rag_chain.stream_run(
-            message, top_k=top_k, use_rag=use_rag, history=context
-        ):
-            full_answer += chunk
-            chunk_json = json.dumps(
-                {"type": "chunk", "data": chunk}, ensure_ascii=False
-            )
-            yield f"data: {chunk_json}\n\n"
-
-        # 保存助手回复到记忆
-        await memory.save_message("assistant", full_answer)
-
-        # 更新性能指标
-        performance_monitor.increment_request_count()
-        performance_monitor.add_request_time(time.time() - start_time)
-
-        # 发送完成信号
-        yield f"data: {json.dumps({'type': 'done', 'data': full_answer}, ensure_ascii=False)}\n\n"
-
-    except Exception as e:
-        logger.error(f"流式响应生成失败: {str(e)}\n{traceback.format_exc()}")
-        error_info = json.dumps({"type": "error", "data": str(e)}, ensure_ascii=False)
-        yield f"data: {error_info}\n\n"
-        yield f"data: {json.dumps({'type': 'done', 'data': ''}, ensure_ascii=False)}\n\n"
+    async for chunk in _stream_response_core(session_id, message, use_rag, top_k):
+        yield chunk
 
 
 @router.post("/chat/stream")
@@ -258,7 +195,7 @@ async def chat_stream(request: ChatRequest):
 @router.get("/health")
 async def health_check():
     """健康检查接口"""
-    return {"status": "healthy", "service": "苏轼文化数字人问答系统"}
+    return {"status": "healthy", "service": "企业智能文档问答系统"}
 
 
 @router.get("/docs/count")
@@ -291,13 +228,21 @@ async def reset_performance_stats():
 
 
 # ==================== 异步流式 API ====================
-async def generate_async_stream_response(
+async def _stream_response_core(
     session_id: str, message: str, use_rag: bool = True, top_k: int = 3
 ) -> AsyncGenerator[str, None]:
-    """生成异步流式响应（结合异步任务队列和SSE）"""
+    """流式响应核心逻辑（消除 generate_stream_response 和
+    generate_async_stream_response 的代码重复）"""
     start_time = time.time()
 
     try:
+        # 输入验证
+        if not message or message.strip() == "":
+            error_info = json.dumps({"type": "error", "data": "消息内容不能为空"}, ensure_ascii=False)
+            yield f"data: {error_info}\n\n"
+            yield "data: [DONE]\n\n"
+            return
+
         # 获取对话记忆
         memory = ConversationMemory(session_id)
 
@@ -313,25 +258,17 @@ async def generate_async_stream_response(
         # 获取 RAG 链
         rag_chain = get_rag_chain()
 
-        # 先发送引用信息（使用正确的 SSE JSON 格式）
-        references = (
-            await rag_chain.async_retrieve(message, top_k=top_k) if use_rag else []
-        )
+        # 先发送引用信息（异步检索，不阻塞事件循环）
+        references = await rag_chain.async_retrieve(message, top_k=top_k) if use_rag else []
         if references:
-            ref_json = json.dumps(
-                {"type": "references", "data": references}, ensure_ascii=False
-            )
+            ref_json = json.dumps({"type": "references", "data": references}, ensure_ascii=False)
             yield f"data: {ref_json}\n\n"
 
         # 流式生成回答（每个 chunk 直接发送）
         full_answer = ""
-        async for chunk in rag_chain.stream_run(
-            message, top_k=top_k, use_rag=use_rag, history=context
-        ):
+        async for chunk in rag_chain.stream_run(message, top_k=top_k, use_rag=use_rag, history=context):
             full_answer += chunk
-            chunk_json = json.dumps(
-                {"type": "chunk", "data": chunk}, ensure_ascii=False
-            )
+            chunk_json = json.dumps({"type": "chunk", "data": chunk}, ensure_ascii=False)
             yield f"data: {chunk_json}\n\n"
 
         # 保存助手回复到记忆
@@ -345,9 +282,18 @@ async def generate_async_stream_response(
         yield f"data: {json.dumps({'type': 'done', 'data': full_answer}, ensure_ascii=False)}\n\n"
 
     except Exception as e:
+        logger.error(f"流式响应生成失败: {str(e)}\n{traceback.format_exc()}")
         error_info = json.dumps({"type": "error", "data": str(e)}, ensure_ascii=False)
         yield f"data: {error_info}\n\n"
         yield f"data: {json.dumps({'type': 'done', 'data': ''}, ensure_ascii=False)}\n\n"
+
+
+async def generate_async_stream_response(
+    session_id: str, message: str, use_rag: bool = True, top_k: int = 3
+) -> AsyncGenerator[str, None]:
+    """生成异步流式响应（结合异步任务队列和SSE，与 generate_stream_response 共享核心逻辑）"""
+    async for chunk in _stream_response_core(session_id, message, use_rag, top_k):
+        yield chunk
 
 
 @router.post("/chat/async/stream")
@@ -450,41 +396,15 @@ async def get_async_chat_result(task_id: str):
         task = task_manager.get_task(task_id)
 
         if not task:
-            return TaskStatusResponse(
-                task_id=task_id, status="not_found", error="任务不存在或已过期"
-            )
+            return TaskStatusResponse(task_id=task_id, status="not_found", error="任务不存在或已过期")
 
         if task.status.value == "completed":
-            return TaskStatusResponse(
-                task_id=task_id, status="completed", result=task.result
-            )
+            return TaskStatusResponse(task_id=task_id, status="completed", result=task.result)
         elif task.status.value == "failed":
-            return TaskStatusResponse(
-                task_id=task_id, status="failed", error=task.error
-            )
+            return TaskStatusResponse(task_id=task_id, status="failed", error=task.error)
         else:
             # 任务还在执行中
-            return TaskStatusResponse(
-                task_id=task_id, status=task.status.value, result={"info": "处理中..."}
-            )
+            return TaskStatusResponse(task_id=task_id, status=task.status.value, result={"info": "处理中..."})
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"查询任务失败: {str(e)}")
-
-
-# @router.get("/queue/stats")
-# async def get_queue_stats():
-#     """获取队列统计信息（Celery 版本）"""
-#     pass
-#
-#
-# @router.post("/cache/warmup")
-# async def warmup_cache():
-#     """预热缓存（Celery 版本）"""
-#     pass
-#
-#
-# @router.post("/cache/cleanup")
-# async def cleanup_cache():
-#     """清理缓存（Celery 版本）"""
-#     pass

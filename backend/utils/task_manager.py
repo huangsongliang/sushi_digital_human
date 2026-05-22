@@ -187,9 +187,7 @@ class TaskManager:
                 context = "\n".join([f"{msg.role}: {msg.content}" for msg in history])
 
                 rag_chain = get_rag_chain()
-                result = await rag_chain.async_run(
-                    query=query, top_k=top_k, use_rag=True, history=context
-                )
+                result = await rag_chain.async_run(query=query, top_k=top_k, use_rag=True, history=context)
 
                 await memory.save_message("user", query)
                 await memory.save_message("assistant", result.get("answer", ""))
@@ -210,9 +208,7 @@ class TaskManager:
                 logger.error(f"async_process_chat 失败: {e}")
                 raise
 
-        def process_chat(
-            query: str, session_id: str, top_k: int = 3, user_id: Optional[str] = None
-        ) -> dict:
+        def process_chat(query: str, session_id: str, top_k: int = 3, user_id: Optional[str] = None) -> dict:
             """处理聊天请求（同步包装）"""
             return asyncio.run(async_process_chat(query, session_id, top_k, user_id))
 

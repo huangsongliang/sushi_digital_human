@@ -9,13 +9,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
+from backend.utils.warnings import *  # noqa: F401, F403
 from backend.api import chat_router, ab_test_router, dify_router, documents_router, alerts_router, auth_router
 from backend.api.agent import router as agent_router
+from backend.api.summary import router as summary_router
 from backend.core.config import settings
 from backend.database.session import async_initialize_database
 from backend.utils.rate_limiter import (
     rate_limit_middleware,
     concurrency_limit_middleware,
+)
+from backend.middleware.security import (
+    SecurityHeadersMiddleware,
+    SQLInjectionProtectionMiddleware,
+    XSSProtectionMiddleware,
 )
 from backend.utils.performance import (
     generate_prometheus_metrics,
@@ -57,6 +64,7 @@ async def lifespan(app: FastAPI):
     # 初始化默认角色和权限
     logger.info("初始化默认角色和权限...")
     from backend.core.auth_manager import initialize_default_roles_and_permissions
+
     await initialize_default_roles_and_permissions()
     logger.info("角色和权限初始化完成")
 
@@ -127,6 +135,14 @@ app.add_middleware(
 # 信任主机中间件（安全防护）
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
+# 安全头中间件
+app.add_middleware(SecurityHeadersMiddleware)
+
+# SQL注入防护中间件
+app.add_middleware(SQLInjectionProtectionMiddleware)
+
+# XSS防护中间件
+app.add_middleware(XSSProtectionMiddleware)
 
 # 限流中间件（性能保护）
 @app.middleware("http")
@@ -158,6 +174,7 @@ app.include_router(documents_router)
 app.include_router(auth_router)
 app.include_router(alerts_router)
 app.include_router(agent_router)
+app.include_router(summary_router)
 
 # 设置全局异常处理器
 setup_exception_handlers(app)

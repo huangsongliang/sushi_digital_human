@@ -1,0 +1,37 @@
+name: AI Auto Fix
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline", "Frontend CI"]
+    types: [completed]
+    branches: [main, develop]
+
+jobs:
+  auto-fix:
+    name: "🤖 AI Analyze & Fix"
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install dashscope requests PyGithub
+
+      - name: AI Analyze & Fix
+        run: python .github/scripts/ci_auto_fix.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          REPO: ${{ github.repository }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          MAX_RETRIES: "3"

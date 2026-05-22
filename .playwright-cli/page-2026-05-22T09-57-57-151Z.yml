@@ -1,0 +1,32 @@
+- generic [ref=e3]:
+  - button "🌙" [ref=e4] [cursor=pointer]:
+    - generic [ref=e5]: 🌙
+  - generic [ref=e130]:
+    - generic [ref=e131]:
+      - heading "Sushi Digital Human" [level=1] [ref=e132]
+      - paragraph [ref=e133]: 智能问答助手
+    - generic [ref=e134]:
+      - button "登录" [ref=e135] [cursor=pointer]
+      - button "注册" [ref=e136] [cursor=pointer]
+    - generic [ref=e137]:
+      - generic [ref=e138]:
+        - button "📧 邮箱登录" [ref=e139] [cursor=pointer]:
+          - generic [ref=e140]: 📧
+          - text: 邮箱登录
+        - button "📱 手机登录" [ref=e141] [cursor=pointer]:
+          - generic [ref=e142]: 📱
+          - text: 手机登录
+        - button "🐙 GitHub" [ref=e143] [cursor=pointer]:
+          - generic [ref=e144]: 🐙
+          - text: GitHub
+      - generic [ref=e145]:
+        - generic [ref=e146]:
+          - generic [ref=e147]: 邮箱
+          - textbox "请输入邮箱" [ref=e148]
+        - generic [ref=e149]:
+          - generic [ref=e150]: 密码
+          - textbox "请输入密码" [ref=e151]
+        - button "登录" [ref=e152] [cursor=pointer]
+    - paragraph [ref=e154]:
+      - link "忘记密码？" [ref=e155] [cursor=pointer]:
+        - /url: "#"

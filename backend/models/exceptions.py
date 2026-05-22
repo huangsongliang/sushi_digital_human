@@ -55,9 +55,7 @@ class LLMTimeoutException(LLMException):
         self.timeout = timeout
         details = details or {}
         details["timeout"] = timeout
-        super().__init__(
-            message=f"LLM 调用超时（{timeout}秒）", model=model, details=details
-        )
+        super().__init__(message=f"LLM 调用超时（{timeout}秒）", model=model, details=details)
         self.error_code = "LLM_TIMEOUT"
 
 
@@ -72,9 +70,7 @@ class LLMConnectionException(LLMException):
     ):
         details = details or {}
         details["reason"] = reason
-        super().__init__(
-            message=f"LLM 连接失败: {reason}", model=model, details=details
-        )
+        super().__init__(message=f"LLM 连接失败: {reason}", model=model, details=details)
         self.error_code = "LLM_CONNECTION_ERROR"
 
 
@@ -146,9 +142,7 @@ class RedisConnectionException(MemoryException):
     ):
         details = details or {}
         details["reason"] = reason
-        super().__init__(
-            message=f"Redis 连接失败: {reason}", session_id=session_id, details=details
-        )
+        super().__init__(message=f"Redis 连接失败: {reason}", session_id=session_id, details=details)
         self.error_code = "REDIS_CONNECTION_ERROR"
 
 
@@ -206,16 +200,12 @@ class RateLimitException(AppException):
 class AuthenticationException(AppException):
     """认证异常"""
 
-    def __init__(
-        self, message: str = "认证失败", details: Optional[Dict[str, Any]] = None
-    ):
+    def __init__(self, message: str = "认证失败", details: Optional[Dict[str, Any]] = None):
         super().__init__(message, error_code="AUTH_ERROR", details=details)
 
 
 class AuthorizationException(AppException):
     """授权异常"""
 
-    def __init__(
-        self, message: str = "权限不足", details: Optional[Dict[str, Any]] = None
-    ):
+    def __init__(self, message: str = "权限不足", details: Optional[Dict[str, Any]] = None):
         super().__init__(message, error_code="AUTHORIZATION_ERROR", details=details)

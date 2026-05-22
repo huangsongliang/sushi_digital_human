@@ -25,9 +25,7 @@ class BatchRequest:
 class RequestBatcher:
     """请求批处理器"""
 
-    def __init__(
-        self, batch_size: int = 10, timeout_ms: int = 500, max_batch_wait_ms: int = 2000
-    ):
+    def __init__(self, batch_size: int = 10, timeout_ms: int = 500, max_batch_wait_ms: int = 2000):
         """
         Args:
             batch_size: 最大批处理大小
@@ -48,10 +46,8 @@ class RequestBatcher:
     def _generate_key(self, func: Callable, args: tuple, kwargs: dict) -> str:
         """生成请求的唯一标识（用于去重）"""
         func_name = getattr(func, "__name__", str(func))
-        data = json.dumps(
-            {"func": func_name, "args": args, "kwargs": kwargs}, sort_keys=True
-        )
-        return hashlib.md5(data.encode()).hexdigest()
+        data = json.dumps({"func": func_name, "args": args, "kwargs": kwargs}, sort_keys=True)
+        return hashlib.md5(data.encode(), usedforsecurity=False).hexdigest()
 
     def _generate_group_key(self, func: Callable) -> str:
         """生成批处理组的标识"""
@@ -124,9 +120,7 @@ class RequestBatcher:
             del self._dedupe_cache[oldest_key]
         self._dedupe_cache[key] = value
 
-    async def submit(
-        self, func: Callable[..., Any], *args, dedupe: bool = True, **kwargs
-    ) -> Any:
+    async def submit(self, func: Callable[..., Any], *args, dedupe: bool = True, **kwargs) -> Any:
         """提交请求到批处理器"""
         request_key = self._generate_key(func, args, kwargs)
         group_key = self._generate_group_key(func)
@@ -210,9 +204,7 @@ class SimilarQueryDeduplicator:
         """检查是否有相似查询，并返回结果"""
         now = datetime.now()
 
-        self._recent_queries = [
-            q for q in self._recent_queries if (now - q[2]).total_seconds() < 300
-        ]
+        self._recent_queries = [q for q in self._recent_queries if (now - q[2]).total_seconds() < 300]
 
         for stored_query, result, _ in self._recent_queries:
             similarity = self._jaccard_similarity(query, stored_query)

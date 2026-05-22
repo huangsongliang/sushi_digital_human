@@ -179,9 +179,7 @@ class AlertManager:
                 AlertSeverity.WARNING: "🟡",
                 AlertSeverity.INFO: "🔵",
             }
-            logger.error(
-                f"{severity_color[alert.severity]} [告警] {alert.rule_name}: {alert.message}"
-            )
+            logger.error(f"{severity_color[alert.severity]} [告警] {alert.rule_name}: {alert.message}")
             return True
         except Exception as e:
             logger.error(f"日志通知失败: {str(e)}")
@@ -256,22 +254,23 @@ class AlertManager:
             async def send_dingtalk():
                 timestamp = str(round(time.time() * 1000))
                 url = webhook_url
-                
+
                 # 判断是否需要签名（URL中包含access_token但不包含secret）
                 if "secret" in url.lower():
                     # 解析 secret
                     import urllib.parse
+
                     parsed = urllib.parse.urlparse(url)
                     query = urllib.parse.parse_qs(parsed.query)
                     secret = query.get("secret", [""])[0]
-                    
+
                     # 计算签名
                     secret_enc = secret.encode("utf-8")
                     string_to_sign = f"{timestamp}\n{secret}"
                     string_to_sign_enc = string_to_sign.encode("utf-8")
                     hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
                     sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-                    
+
                     # 构建带签名的URL
                     url = url + f"&timestamp={timestamp}&sign={sign}"
 
@@ -282,15 +281,18 @@ class AlertManager:
                         AlertSeverity.WARNING: "🟡",
                         AlertSeverity.INFO: "🔵",
                     }
-                    
+
                     payload = {
                         "msgtype": "text",
                         "text": {
-                            "content": f"{severity_icon[alert.severity]} **[{alert.severity.value.upper()}] {alert.rule_name}**\n\n"
-                                        f"📝 消息: {alert.message}\n"
-                                        f"🕐 时间: {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}\n"
-                                        f"📋 详情: {json.dumps(alert.details, ensure_ascii=False)[:500]}..."
-                        }
+                            "content": (
+                                f"{severity_icon[alert.severity]} **[{alert.severity.value.upper()}] "
+                                f"{alert.rule_name}**\n\n"
+                                f"📝 消息: {alert.message}\n"
+                                f"🕐 时间: {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}\n"
+                                f"📋 详情: {json.dumps(alert.details, ensure_ascii=False)[:500]}..."
+                            )
+                        },
                     }
                     async with session.post(url, json=payload) as response:
                         result = await response.json()
@@ -315,15 +317,18 @@ class AlertManager:
                         AlertSeverity.WARNING: "#ffcc00",
                         AlertSeverity.INFO: "#0066cc",
                     }
-                    
+
                     payload = {
                         "msgtype": "markdown",
                         "markdown": {
-                            "content": f"## <font color=\"{severity_color[alert.severity]}\">[{alert.severity.value.upper()}] {alert.rule_name}</font>\n\n"
-                                        f"> **消息**: {alert.message}\n\n"
-                                        f"> **时间**: {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}\n\n"
-                                        f"> **详情**: `{json.dumps(alert.details, ensure_ascii=False)[:300]}...`"
-                        }
+                            "content": (
+                                f'## <font color="{severity_color[alert.severity]}">'
+                                f"[{alert.severity.value.upper()}] {alert.rule_name}</font>\n\n"
+                                f"> **消息**: {alert.message}\n\n"
+                                f"> **时间**: {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+                                f"> **详情**: `{json.dumps(alert.details, ensure_ascii=False)[:300]}...`"
+                            )
+                        },
                     }
                     async with session.post(webhook_url, json=payload) as response:
                         result = await response.json()

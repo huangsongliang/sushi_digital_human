@@ -69,8 +69,8 @@ class DifyIntegration:
     def get_rag_search_tool(self) -> DifyTool:
         """获取 RAG 检索工具定义（符合 Dify 工具规范）"""
         return DifyTool(
-            name="search_sushi_documents",
-            description="搜索苏轼文化知识库，获取相关文档内容。用于回答关于苏轼的问题。",
+            name="search_documents",
+            description="搜索企业文档知识库，获取相关文档内容。用于回答关于企业文档的问题。",
             parameters=[
                 {
                     "name": "query",
@@ -107,9 +107,7 @@ class DifyIntegration:
             文档列表
         """
         retriever = get_hybrid_retriever()
-        results = retriever.search(
-            query, top_k=top_k, use_bm25=True, use_vector=True, use_rerank=True
-        )
+        results = retriever.search(query, top_k=top_k, use_bm25=True, use_vector=True, use_rerank=True)
 
         # 转换为 Dify 工具返回格式
         formatted_results = []
@@ -161,9 +159,7 @@ class DifyIntegration:
         else:
             return {"success": False, "error": f"未知工具: {tool_name}"}
 
-    def generate_tool_response(
-        self, task_id: str, result: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def generate_tool_response(self, task_id: str, result: Dict[str, Any]) -> Dict[str, Any]:
         """
         生成 Dify 工具响应格式
 
@@ -182,9 +178,7 @@ class DifyIntegration:
             for doc in documents:
                 content = doc.get("content", "")
                 if content:
-                    summaries.append(
-                        content[:200] + "..." if len(content) > 200 else content
-                    )
+                    summaries.append(content[:200] + "..." if len(content) > 200 else content)
 
             return {
                 "task_id": task_id,
@@ -223,7 +217,7 @@ class DifyIntegration:
         payload = {"name": name, "description": description, "app_type": "chat"}
 
         try:
-            response = requests.post(url, headers=self.get_headers(), json=payload)
+            response = requests.post(url, headers=self.get_headers(), json=payload, timeout=30)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -235,7 +229,7 @@ class DifyIntegration:
         url = f"{self._base_url}/apps/{app_id}"
 
         try:
-            response = requests.get(url, headers=self.get_headers())
+            response = requests.get(url, headers=self.get_headers(), timeout=30)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -247,7 +241,7 @@ class DifyIntegration:
         url = f"{self._base_url}/apps"
 
         try:
-            response = requests.get(url, headers=self.get_headers())
+            response = requests.get(url, headers=self.get_headers(), timeout=30)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -267,7 +261,7 @@ class DifyIntegration:
             payload["description"] = description
 
         try:
-            response = requests.put(url, headers=self.get_headers(), json=payload)
+            response = requests.put(url, headers=self.get_headers(), json=payload, timeout=30)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -279,16 +273,14 @@ class DifyIntegration:
         url = f"{self._base_url}/apps/{app_id}"
 
         try:
-            response = requests.delete(url, headers=self.get_headers())
+            response = requests.delete(url, headers=self.get_headers(), timeout=30)
             response.raise_for_status()
             return {"success": True}
         except Exception as e:
             logger.error(f"删除 Dify 应用失败: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    def chat_completion(
-        self, app_id: str, message: str, user_id: str = "default"
-    ) -> Dict[str, Any]:
+    def chat_completion(self, app_id: str, message: str, user_id: str = "default") -> Dict[str, Any]:
         """
         调用 Dify 聊天接口
 
@@ -311,9 +303,7 @@ class DifyIntegration:
         }
 
         try:
-            response = requests.post(
-                url, headers=self.get_headers(), json=payload, stream=True
-            )
+            response = requests.post(url, headers=self.get_headers(), json=payload, stream=True, timeout=60)
             response.raise_for_status()
 
             # 处理流式响应
@@ -356,9 +346,7 @@ class DifyWebhookHandler:
         """注册事件处理器"""
         self._handlers[event_type] = handler
 
-    def handle_webhook(
-        self, event_type: str, payload: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def handle_webhook(self, event_type: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         """
         处理 Dify Webhook 事件
 

@@ -1,0 +1,46 @@
+[bandit]
+exclude_dirs = /tests, /frontend, /venv, /__pycache__
+skips = B101, B404, B601, B602, B603, B604, B605, B606, B607, B608
+
+[bandit.format]
+output_format = json
+show_counts = True
+quiet = False
+
+[bandit.plugins]
+plugins =
+    # 安全相关的检查
+    app_debug_mode
+    exec_statement
+    hardcoded_tmp_directory
+    hardcoded_bind_all_interfaces
+    hardcoded_sql_expressions
+    hardcoded_password_string
+    set_bad_file_permissions
+    subprocess_shell
+    yaml_load
+    pickle
+    sqlalchemy_exec
+    flask_debug_true
+    process_without_shell
+    subprocess_popen_with_shell
+    password_config_option_not_marked_secret
+    django_debug_true
+    use_of_mako_templates
+    exec_with_insecure_object
+    import_of_pycrypto
+    use_of_tempfile_mktemp
+    weak_cryptographic_key
+    secret_config_option
+    insecure_random_module
+    start_process_with_partial_path
+    use_of_md5
+    use_of_sha1
+    insecure_ssl_tls_version
+    use_of_eval
+    assert_used
+    use_of_os_popen
+    use_of_tempfile_mkstemp
+    use_of_gettempdir
+    try_except_continue
+    try_except_pass

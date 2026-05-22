@@ -1,0 +1,50 @@
+{
+  "uid": "sushi-dashboard",
+  "title": "Sushi Digital Human 监控",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "id": 1,
+      "gridPos": {"h": 3, "w": 4, "x": 0, "y": 0},
+      "title": "系统运行时间(秒)",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [{"expr": "sushi_uptime_seconds"}]
+    },
+    {
+      "id": 2,
+      "gridPos": {"h": 3, "w": 4, "x": 4, "y": 0},
+      "title": "活跃会话数",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [{"expr": "sushi_active_sessions"}]
+    },
+    {
+      "id": 3,
+      "gridPos": {"h": 3, "w": 4, "x": 8, "y": 0},
+      "title": "错误数",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [{"expr": "sum(sushi_errors_total)"}]
+    },
+    {
+      "id": 4,
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 3},
+      "title": "系统运行时间趋势",
+      "type": "timeseries",
+      "datasource": "prometheus",
+      "targets": [{"expr": "sushi_uptime_seconds", "legendFormat": "运行时间"}]
+    },
+    {
+      "id": 5,
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 3},
+      "title": "活跃会话趋势",
+      "type": "timeseries",
+      "datasource": "prometheus",
+      "targets": [{"expr": "sushi_active_sessions", "legendFormat": "活跃会话"}]
+    }
+  ],
+  "refresh": "5s",
+  "time": {"from": "now-5m", "to": "now"}
+}

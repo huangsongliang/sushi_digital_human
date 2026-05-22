@@ -22,9 +22,7 @@ class CreateExperimentRequest(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=100)
     description: str = Field(..., max_length=500)
-    experiment_type: str = Field(
-        ..., description="retrieval_strategy|prompt_template|model_params|reranking"
-    )
+    experiment_type: str = Field(..., description="retrieval_strategy|prompt_template|model_params|reranking")
     target_metric: str = Field(default="user_satisfaction")
     minimum_sample_size: int = Field(default=100, ge=10, le=10000)
     variants: List[dict] = Field(..., min_length=2, max_length=5)
@@ -148,9 +146,7 @@ async def assign_variant(
 ):
     """为用户分配实验变体"""
     manager = get_ab_test_manager()
-    variant = manager.assign_variant(
-        experiment_id=experiment_id, user_id=x_user_id, session_id=x_session_id
-    )
+    variant = manager.assign_variant(experiment_id=experiment_id, user_id=x_user_id, session_id=x_session_id)
 
     if variant is None:
         raise HTTPException(status_code=404, detail="实验不存在或未运行")

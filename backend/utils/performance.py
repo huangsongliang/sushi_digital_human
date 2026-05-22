@@ -108,15 +108,11 @@ MEMORY_OPS_COUNTER = (
 )
 
 APP_UPTIME = (
-    Gauge("sushi_uptime_seconds", "Application uptime in seconds", registry=_registry)
-    if PROMETHEUS_AVAILABLE
-    else None
+    Gauge("sushi_uptime_seconds", "Application uptime in seconds", registry=_registry) if PROMETHEUS_AVAILABLE else None
 )
 
 ACTIVE_SESSIONS = (
-    Gauge("sushi_active_sessions", "Number of active sessions", registry=_registry)
-    if PROMETHEUS_AVAILABLE
-    else None
+    Gauge("sushi_active_sessions", "Number of active sessions", registry=_registry) if PROMETHEUS_AVAILABLE else None
 )
 
 ERROR_COUNTER = (
@@ -277,28 +273,28 @@ async def periodic_performance_log(interval: int = 60):
     """定期输出性能日志并记录告警指标"""
     while True:
         log_performance_summary()
-        
+
         # 记录告警指标
         metrics = performance_monitor.get_metrics()
         try:
             from backend.utils.alerting import record_alert_metric
-            
+
             # 记录平均延迟
             record_alert_metric("avg_latency", metrics.get("avg_request_time", 0.0))
-            
+
             # 计算并记录错误率（基于请求计数）
             if ERROR_COUNTER is not None:
                 error_count = ERROR_COUNTER._metrics.get("exception", {}).get("unknown", 0)
                 total_requests = metrics.get("request_count", 1)
                 error_rate = error_count / total_requests if total_requests > 0 else 0.0
                 record_alert_metric("error_rate", error_rate)
-            
+
             # 记录并发数估计
             record_alert_metric("concurrency", min(metrics.get("request_count", 0) // 10, 100))
-            
+
         except ImportError:
             pass
-        
+
         await asyncio.sleep(interval)
 
 
@@ -344,13 +340,9 @@ def track_request(endpoint: str, method: str = "POST"):
             finally:
                 duration = time.time() - start_time
                 if REQUEST_COUNTER is not None:
-                    REQUEST_COUNTER.labels(
-                        endpoint=endpoint, method=method, status=status
-                    ).inc()
+                    REQUEST_COUNTER.labels(endpoint=endpoint, method=method, status=status).inc()
                 if REQUEST_DURATION is not None:
-                    REQUEST_DURATION.labels(endpoint=endpoint, method=method).observe(
-                        duration
-                    )
+                    REQUEST_DURATION.labels(endpoint=endpoint, method=method).observe(duration)
 
         def sync_wrapper(*args, **kwargs):
             start_time = time.time()
@@ -367,13 +359,9 @@ def track_request(endpoint: str, method: str = "POST"):
             finally:
                 duration = time.time() - start_time
                 if REQUEST_COUNTER is not None:
-                    REQUEST_COUNTER.labels(
-                        endpoint=endpoint, method=method, status=status
-                    ).inc()
+                    REQUEST_COUNTER.labels(endpoint=endpoint, method=method, status=status).inc()
                 if REQUEST_DURATION is not None:
-                    REQUEST_DURATION.labels(endpoint=endpoint, method=method).observe(
-                        duration
-                    )
+                    REQUEST_DURATION.labels(endpoint=endpoint, method=method).observe(duration)
 
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
@@ -468,9 +456,7 @@ def track_memory_operation(operation: str):
                 raise
             finally:
                 if MEMORY_OPS_COUNTER is not None:
-                    MEMORY_OPS_COUNTER.labels(
-                        operation=operation, success=success
-                    ).inc()
+                    MEMORY_OPS_COUNTER.labels(operation=operation, success=success).inc()
 
         def sync_wrapper(*args, **kwargs):
             success = "true"
@@ -482,9 +468,7 @@ def track_memory_operation(operation: str):
                 raise
             finally:
                 if MEMORY_OPS_COUNTER is not None:
-                    MEMORY_OPS_COUNTER.labels(
-                        operation=operation, success=success
-                    ).inc()
+                    MEMORY_OPS_COUNTER.labels(operation=operation, success=success).inc()
 
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
@@ -501,20 +485,14 @@ def record_request(endpoint: str, method: str, status: str, duration: float):
         REQUEST_DURATION.labels(endpoint=endpoint, method=method).observe(duration)
 
 
-def record_llm_call(
-    model: str, success: bool, prompt_tokens: int = 0, completion_tokens: int = 0
-):
+def record_llm_call(model: str, success: bool, prompt_tokens: int = 0, completion_tokens: int = 0):
     """记录 LLM 调用指标"""
     if LLM_CALL_COUNTER is not None:
-        LLM_CALL_COUNTER.labels(
-            model=model, success="true" if success else "false"
-        ).inc()
+        LLM_CALL_COUNTER.labels(model=model, success="true" if success else "false").inc()
     if LLM_TOKEN_USAGE is not None and prompt_tokens > 0:
         LLM_TOKEN_USAGE.labels(model=model, type="prompt").observe(prompt_tokens)
     if LLM_TOKEN_USAGE is not None and completion_tokens > 0:
-        LLM_TOKEN_USAGE.labels(model=model, type="completion").observe(
-            completion_tokens
-        )
+        LLM_TOKEN_USAGE.labels(model=model, type="completion").observe(completion_tokens)
 
 
 def record_error(error_type: str, endpoint: str = "unknown"):
@@ -534,6 +512,4 @@ def record_retrieval_result(method: str, duration: float, document_count: int):
 def record_memory_operation(operation: str, success: bool):
     """记录内存操作指标"""
     if MEMORY_OPS_COUNTER is not None:
-        MEMORY_OPS_COUNTER.labels(
-            operation=operation, success="true" if success else "false"
-        ).inc()
+        MEMORY_OPS_COUNTER.labels(operation=operation, success="true" if success else "false").inc()

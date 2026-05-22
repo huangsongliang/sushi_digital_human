@@ -2,8 +2,9 @@
 Dify 集成 API 接口
 """
 
+import asyncio
 from typing import Optional, Dict, Any
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Depends
 from pydantic import BaseModel, Field
 
 from backend.core.dify import (
@@ -14,6 +15,20 @@ from backend.core.dify import (
 )
 
 router = APIRouter(prefix="/api/dify", tags=["Dify 集成"])
+
+
+def _ensure_dify_configured(
+    x_dify_api_key: Optional[str] = Header(None),
+) -> str:
+    """确保 Dify API Key 已通过请求头提供并配置"""
+    if not x_dify_api_key:
+        raise HTTPException(
+            status_code=401,
+            detail="请在请求头 X-Dify-API-Key 中提供 Dify API Key",
+        )
+    dify = get_dify_integration()
+    dify.configure(x_dify_api_key)
+    return x_dify_api_key
 
 
 class ToolCallRequest(BaseModel):
@@ -29,6 +44,28 @@ class WebhookRequest(BaseModel):
 
     event_type: str = Field(..., description="事件类型")
     payload: Dict[str, Any] = Field(..., description="事件数据")
+
+
+class DifyConfigureRequest(BaseModel):
+    """Dify 配置请求"""
+
+    api_key: str = Field(..., min_length=1, description="Dify API Key")
+    base_url: Optional[str] = Field("https://api.dify.ai/v1", description="Dify API 基础地址")
+
+
+class DifyChatRequest(BaseModel):
+    """Dify 聊天请求"""
+
+    app_id: str = Field(..., description="应用 ID")
+    message: str = Field(..., min_length=1, description="用户消息")
+    user_id: Optional[str] = Field("default", description="用户 ID")
+
+
+class DifyAppCreateRequest(BaseModel):
+    """创建 Dify 应用请求"""
+
+    name: str = Field(..., min_length=1, description="应用名称")
+    description: str = Field("", description="应用描述")
 
 
 @router.post("/tool/execute")
@@ -47,7 +84,8 @@ async def execute_tool(request: ToolCallRequest):
             task_id=request.task_id,
         )
 
-        result = dify.execute_tool(tool_call)
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, dify.execute_tool, tool_call)
         response = dify.generate_tool_response(request.task_id, result)
 
         return response
@@ -93,35 +131,27 @@ async def handle_webhook(request: WebhookRequest):
 
 
 @router.post("/configure")
-async def configure_dify(
-    api_key: str, base_url: Optional[str] = "https://api.dify.ai/v1"
-):
+async def configure_dify(request: DifyConfigureRequest):
     """
-    配置 Dify API
+    配置 Dify API（通过请求体传递 API Key）
 
-    Args:
-        api_key: Dify API Key
-        base_url: Dify API 基础地址
+    推荐使用 X-Dify-API-Key 请求头方式传递，更安全。
     """
     dify = get_dify_integration()
-    dify.configure(api_key, base_url or "https://api.dify.ai/v1")
+    dify.configure(request.api_key, request.base_url or "https://api.dify.ai/v1")
 
     return {"success": True, "message": "Dify 配置成功"}
 
 
 @router.get("/applications")
-async def list_applications(x_dify_api_key: Optional[str] = Header(None)):
-    """
-    获取 Dify 应用列表
-
-    需要在请求头中提供 Dify API Key
-    """
+async def list_applications(
+    _api_key: str = Depends(_ensure_dify_configured),
+):
+    """获取 Dify 应用列表（需要 X-Dify-API-Key 请求头）"""
     dify = get_dify_integration()
 
-    if x_dify_api_key:
-        dify.configure(x_dify_api_key)
-
-    result = dify.list_applications()
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, dify.list_applications)
 
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))
@@ -131,21 +161,16 @@ async def list_applications(x_dify_api_key: Optional[str] = Header(None)):
 
 @router.post("/applications")
 async def create_application(
-    name: str,
-    description: Optional[str] = "",
-    x_dify_api_key: Optional[str] = Header(None),
+    request: DifyAppCreateRequest,
+    _api_key: str = Depends(_ensure_dify_configured),
 ):
-    """
-    在 Dify 中创建应用
-
-    需要在请求头中提供 Dify API Key
-    """
+    """在 Dify 中创建应用（需要 X-Dify-API-Key 请求头）"""
     dify = get_dify_integration()
 
-    if x_dify_api_key:
-        dify.configure(x_dify_api_key)
-
-    result = dify.create_application(name, description or "")
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(
+        None, dify.create_application, request.name, request.description
+    )
 
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))
@@ -154,18 +179,15 @@ async def create_application(
 
 
 @router.get("/applications/{app_id}")
-async def get_application(app_id: str, x_dify_api_key: Optional[str] = Header(None)):
-    """
-    获取 Dify 应用详情
-
-    需要在请求头中提供 Dify API Key
-    """
+async def get_application(
+    app_id: str,
+    _api_key: str = Depends(_ensure_dify_configured),
+):
+    """获取 Dify 应用详情（需要 X-Dify-API-Key 请求头）"""
     dify = get_dify_integration()
 
-    if x_dify_api_key:
-        dify.configure(x_dify_api_key)
-
-    result = dify.get_application(app_id)
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, dify.get_application, app_id)
 
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))
@@ -174,18 +196,15 @@ async def get_application(app_id: str, x_dify_api_key: Optional[str] = Header(No
 
 
 @router.delete("/applications/{app_id}")
-async def delete_application(app_id: str, x_dify_api_key: Optional[str] = Header(None)):
-    """
-    删除 Dify 应用
-
-    需要在请求头中提供 Dify API Key
-    """
+async def delete_application(
+    app_id: str,
+    _api_key: str = Depends(_ensure_dify_configured),
+):
+    """删除 Dify 应用（需要 X-Dify-API-Key 请求头）"""
     dify = get_dify_integration()
 
-    if x_dify_api_key:
-        dify.configure(x_dify_api_key)
-
-    result = dify.delete_application(app_id)
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, dify.delete_application, app_id)
 
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))
@@ -195,22 +214,16 @@ async def delete_application(app_id: str, x_dify_api_key: Optional[str] = Header
 
 @router.post("/chat")
 async def chat_with_dify(
-    app_id: str,
-    message: str,
-    user_id: Optional[str] = "default",
-    x_dify_api_key: Optional[str] = Header(None),
+    request: DifyChatRequest,
+    _api_key: str = Depends(_ensure_dify_configured),
 ):
-    """
-    通过 Dify 进行聊天
-
-    需要在请求头中提供 Dify API Key
-    """
+    """通过 Dify 进行聊天（需要 X-Dify-API-Key 请求头）"""
     dify = get_dify_integration()
 
-    if x_dify_api_key:
-        dify.configure(x_dify_api_key)
-
-    result = dify.chat_completion(app_id, message, user_id or "default")
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(
+        None, dify.chat_completion, request.app_id, request.message, request.user_id or "default"
+    )
 
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))

@@ -20,10 +20,12 @@
 - 📄 **PDF 处理**：OCR 识别、表格提取、图表解析
 - 📝 **智能总结**：支持单文档、多文档、对话总结，多种总结类型
 - 🔍 **问答溯源**：完整的推理过程记录，可解释性强
+- 🎨 **主题切换**：深色/浅色主题一键切换
+- 📱 **响应式设计**：完美适配手机/平板/桌面
 - 🔐 **细粒度权限**：RBAC 角色体系 + 文档级权限控制
 - 📋 **审计日志**：完整的操作记录、安全事件追踪
 - 🚨 **告警系统**：多级别告警、多种通知方式（钉钉/企业微信）
-- ⚡ **性能优化**：多级缓存、请求批处理、限流熔断
+- ⚡ **性能优化**：多级缓存、RAG查询缓存、请求批处理、限流熔断
 - 🔌 **插件系统**：模块化设计，支持热插拔扩展
 - 🌐 **API 市场**：API 端点注册、密钥管理、访问统计
 - 🔗 **应用集成**：钉钉、企业微信、Slack 消息推送
@@ -121,7 +123,7 @@ cd frontend && npm run dev
 | API 文档 | http://localhost:8000/docs |
 | 健康检查 | http://localhost:8000/health |
 | Prometheus | http://localhost:9090 |
-| Grafana | http://localhost:3000 |
+| Grafana | http://localhost:3001 |
 
 ---
 
@@ -132,11 +134,13 @@ sushi_digital_human/
 ├── backend/                    # 后端应用
 │   ├── api/                   # API 路由
 │   │   ├── chat.py           # 聊天接口（流式/SSE）
+│   │   ├── summary.py        # 总结API
 │   │   ├── documents.py      # 文档管理接口
 │   │   ├── auth.py           # 用户认证接口
 │   │   └── ...
 │   ├── chain/                 # RAG 链实现
-│   │   └── rag_chain.py      # LangChain LCEL 链式调用
+│   │   ├── rag_chain.py      # LangChain LCEL 链式调用
+│   │   └── rag_cache.py      # RAG查询缓存
 │   ├── core/                  # 核心配置
 │   │   ├── config.py         # 环境变量配置
 │   │   ├── security.py       # 安全认证
@@ -147,12 +151,15 @@ sushi_digital_human/
 │   │   └── manager.py        # 文档管理服务
 │   ├── database/             # 数据库模型
 │   │   ├── models.py         # SQLAlchemy 模型
-│   │   └── session.py        # 数据库会话
+│   │   ├── session.py        # 数据库会话
+│   │   └── pool.py           # 数据库连接池
 │   ├── memory/                # 会话记忆
 │   │   ├── cache.py          # Redis 缓存
 │   │   ├── redis_client.py   # Redis 连接管理
 │   │   ├── conversation.py   # 对话历史管理
 │   │   └── multi_level_cache.py # 多级缓存
+│   ├── middleware/            # 中间件
+│   │   └── security.py       # 安全中间件
 │   ├── retrieval/             # 检索模块
 │   │   ├── hybrid_retriever.py # 混合检索器
 │   │   └── vector_store.py   # ChromaDB 向量存储
@@ -161,18 +168,24 @@ sushi_digital_human/
 │   │   ├── performance.py    # 性能监控
 │   │   ├── rate_limiter.py   # 限流器
 │   │   ├── circuit_breaker.py # 熔断器
+│   │   ├── llm_fault_tolerance.py # LLM容错机制
+│   │   ├── warnings.py       # 警告过滤器
 │   │   └── ...
 │   └── main.py                # FastAPI 入口
 ├── frontend/                   # Vue 3 前端
-├── config/                     # 配置文件
-│   ├── nginx/                 # Nginx 配置
-│   ├── prometheus/            # Prometheus 配置
-│   └── promtail/              # 日志采集配置
+│   └── src/components/
+│       └── ThemeToggle.vue   # 主题切换组件
+├── monitoring/                # 监控配置
+│   ├── prometheus.yml         # Prometheus配置
+│   └── grafana/              # Grafana配置
 ├── helm/                      # Kubernetes Helm Chart
 ├── docs/                      # 项目文档
 ├── tests/                     # 测试用例
+│   └── performance/
+│       ├── locustfile.py     # Locust性能测试
+│       └── benchmark.py      # 基准测试脚本
 ├── Dockerfile                 # Docker 构建文件
-├── docker-compose.prod.yml    # 生产环境 Docker 配置
+├── docker-compose.monitoring.yml # 监控服务配置
 ├── pyproject.toml             # Python 项目配置
 └── README.md
 ```
@@ -390,6 +403,16 @@ kubectl get pods
 
 # 扩展副本数
 helm upgrade sushi ./helm --set backend.replicaCount=5
+```
+
+### 启动监控服务
+
+```bash
+# 使用 Docker Compose 启动 Prometheus + Grafana
+docker-compose -f docker-compose.monitoring.yml up -d
+
+# 访问 Grafana (默认账号密码: admin/admin)
+# 浏览器打开 http://localhost:3001
 ```
 
 ### 架构说明

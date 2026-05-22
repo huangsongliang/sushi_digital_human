@@ -212,9 +212,7 @@ class HybridRetriever:
                     }
                 )
 
-        sorted_docs = sorted(
-            doc_scores.values(), key=lambda x: x["rrf_score"], reverse=True
-        )
+        sorted_docs = sorted(doc_scores.values(), key=lambda x: x["rrf_score"], reverse=True)
 
         for doc in sorted_docs:
             doc.pop("details", None)
@@ -320,9 +318,7 @@ class HybridRetriever:
             for original, reranked_result in zip(fused_results, reranked):
                 original["rerank_score"] = reranked_result["rerank_score"]
 
-            fused_results = sorted(
-                fused_results, key=lambda x: x.get("rerank_score", 0), reverse=True
-            )
+            fused_results = sorted(fused_results, key=lambda x: x.get("rerank_score", 0), reverse=True)
 
         logger.info(
             f"混合检索完成: query='{query}', results={len(fused_results[:top_k])}, "

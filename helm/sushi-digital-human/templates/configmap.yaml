@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sushi-digital-human.fullname" . }}-config
+  labels:
+    {{- include "sushi-digital-human.labels" . | nindent 4 }}
+data:
+  APP_NAME: {{ .Values.env.appName | quote }}
+  LOG_LEVEL: {{ .Values.env.logLevel | quote }}
+  REDIS_URL: {{ .Values.env.redisUrl | quote }}
+  PROMETHEUS_ENABLED: "true"
+  PROMETHEUS_PORT: "9090"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sushi-digital-human.fullname" . }}-nginx
+  labels:
+    {{- include "sushi-digital-human.labels" . | nindent 4 }}
+data:
+  nginx.conf: |
+    worker_processes auto;
+    events { worker_connections 1024; }
+
+    http {
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+      sendfile on;
+      keepalive_timeout 65;
+      client_max_body_size 50m;
+
+      upstream api_backend {
+        server {{ include "sushi-digital-human.fullname" . }}-api:{{ .Values.service.api.port }};
+      }
+
+      server {
+        listen 80;
+
+        # 前端静态文件
+        location / {
+          root /usr/share/nginx/html;
+          try_files $uri $uri/ /index.html;
+          add_header Cache-Control "no-cache";
+        }
+
+        # API 代理
+        location /api/ {
+          proxy_pass http://api_backend;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_read_timeout 120s;
+          proxy_send_timeout 120s;
+        }
+
+        # 健康检查
+        location /health {
+          proxy_pass http://api_backend;
+        }
+
+        # Prometheus 指标
+        location /metrics {
+          proxy_pass http://api_backend;
+        }
+      }
+    }

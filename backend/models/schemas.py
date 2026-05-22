@@ -47,9 +47,7 @@ class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=5000, description="用户消息")
     session_id: Optional[str] = Field(default=None, description="会话 ID，用于多轮对话")
     stream: bool = Field(default=True, description="是否启用流式输出")
-    temperature: Optional[float] = Field(
-        default=None, ge=0, le=2, description="LLM 温度参数"
-    )
+    temperature: Optional[float] = Field(default=None, ge=0, le=2, description="LLM 温度参数")
     top_k: Optional[int] = Field(default=None, ge=1, le=20, description="检索文档数量")
 
     model_config = ConfigDict(
@@ -78,15 +76,11 @@ class ChatResponse(BaseModel):
     """聊天响应模型"""
 
     answer: str = Field(..., description="AI 生成的答案")
-    references: List[DocumentReference] = Field(
-        default_factory=list, description="引用的文档列表"
-    )
+    references: List[DocumentReference] = Field(default_factory=list, description="引用的文档列表")
     session_id: str = Field(..., description="会话 ID")
     created_at: datetime = Field(default_factory=datetime.now, description="响应时间戳")
     model_name: str = Field(..., description="使用的模型名称")
-    usage: Optional[Dict[str, int]] = Field(
-        default=None, description="Token 使用量统计"
-    )
+    usage: Optional[Dict[str, int]] = Field(default=None, description="Token 使用量统计")
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -118,14 +112,10 @@ class StreamChunk(BaseModel):
 
     content: str = Field(..., description="响应内容片段")
     is_final: bool = Field(default=False, description="是否为最后一个片段")
-    references: Optional[List[DocumentReference]] = Field(
-        default=None, description="最终答案的引用文档"
-    )
+    references: Optional[List[DocumentReference]] = Field(default=None, description="最终答案的引用文档")
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {"content": "《水调歌头", "is_final": False, "references": None}
-        }
+        json_schema_extra={"example": {"content": "《水调歌头", "is_final": False, "references": None}}
     )
 
 
@@ -153,12 +143,8 @@ class ErrorResponse(BaseModel):
 
     error: str = Field(..., description="错误类型")
     message: str = Field(..., description="错误详情")
-    detail: Optional[str] = Field(
-        default=None, description="详细错误信息（仅开发环境）"
-    )
-    timestamp: datetime = Field(
-        default_factory=datetime.now, description="错误发生时间"
-    )
+    detail: Optional[str] = Field(default=None, description="详细错误信息（仅开发环境）")
+    timestamp: datetime = Field(default_factory=datetime.now, description="错误发生时间")
     request_id: Optional[str] = Field(default=None, description="请求追踪 ID")
 
     model_config = ConfigDict(
@@ -178,9 +164,7 @@ class RetrievalResult(BaseModel):
     """检索结果模型"""
 
     query: str = Field(..., description="检索查询")
-    documents: List[DocumentReference] = Field(
-        default_factory=list, description="检索到的文档列表"
-    )
+    documents: List[DocumentReference] = Field(default_factory=list, description="检索到的文档列表")
     total: int = Field(..., description="检索结果总数")
     retrieval_time_ms: float = Field(..., description="检索耗时（毫秒）")
     method: str = Field(..., description="检索方法")
@@ -213,9 +197,7 @@ class Document(BaseModel):
 class EmbeddingRequest(BaseModel):
     """嵌入请求模型"""
 
-    texts: List[str] = Field(
-        ..., min_length=1, max_length=100, description="要嵌入的文本列表"
-    )
+    texts: List[str] = Field(..., min_length=1, max_length=100, description="要嵌入的文本列表")
     model: Optional[str] = Field(default=None, description="嵌入模型名称")
 
     model_config = ConfigDict(

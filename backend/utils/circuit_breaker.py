@@ -124,14 +124,10 @@ class CircuitBreaker:
         current_state = self.state
 
         if current_state == CircuitBreakerState.OPEN:
-            raise CircuitBreakerError(
-                f"Circuit breaker {self.name} is open, request rejected", self.name
-            )
+            raise CircuitBreakerError(f"Circuit breaker {self.name} is open, request rejected", self.name)
 
         if self._concurrent_requests >= self.max_concurrent_requests:
-            raise CircuitBreakerError(
-                f"Circuit breaker {self.name} concurrent limit exceeded", self.name
-            )
+            raise CircuitBreakerError(f"Circuit breaker {self.name} concurrent limit exceeded", self.name)
 
         self._total_requests += 1
         self._concurrent_requests += 1
@@ -192,14 +188,8 @@ class CircuitBreakerManager:
 
 circuit_breaker_manager = CircuitBreakerManager()
 
-llm_breaker = CircuitBreaker(
-    name="llm_api", failure_threshold=10, success_threshold=3, reset_timeout=30
-)
+llm_breaker = CircuitBreaker(name="llm_api", failure_threshold=10, success_threshold=3, reset_timeout=30)
 
-embedding_breaker = CircuitBreaker(
-    name="embedding_api", failure_threshold=15, success_threshold=5, reset_timeout=45
-)
+embedding_breaker = CircuitBreaker(name="embedding_api", failure_threshold=15, success_threshold=5, reset_timeout=45)
 
-redis_breaker = CircuitBreaker(
-    name="redis", failure_threshold=5, success_threshold=3, reset_timeout=10
-)
+redis_breaker = CircuitBreaker(name="redis", failure_threshold=5, success_threshold=3, reset_timeout=10)

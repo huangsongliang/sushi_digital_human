@@ -99,11 +99,9 @@ class MultiLevelCache:
     def _generate_key(self, *args, **kwargs) -> str:
         """生成唯一缓存键"""
         data = json.dumps({"args": args, "kwargs": kwargs}, sort_keys=True)
-        return hashlib.md5(data.encode()).hexdigest()
+        return hashlib.md5(data.encode(), usedforsecurity=False).hexdigest()
 
-    async def get(
-        self, key: str, use_l1: bool = True, use_l2: bool = True
-    ) -> Optional[Any]:
+    async def get(self, key: str, use_l1: bool = True, use_l2: bool = True) -> Optional[Any]:
         """获取缓存值（多级查询）"""
         full_key = self.key_prefix + key
 
@@ -171,9 +169,7 @@ class MultiLevelCache:
 
         for item in self._warmup_items:
             try:
-                await self.set(
-                    key=item["key"], value=item["value"], ttl_seconds=item["ttl"]
-                )
+                await self.set(key=item["key"], value=item["value"], ttl_seconds=item["ttl"])
             except Exception as e:
                 logger.error(f"Failed to warmup {item['key']}: {e}")
 

@@ -13,6 +13,7 @@ from backend.prompt import default_prompts
 from backend.core.config import settings
 from backend.utils.logger import get_logger
 from backend.utils.performance import timed_operation
+from backend.chain.rag_cache import get_rag_cache
 
 logger = get_logger(__name__)
 
@@ -46,6 +47,21 @@ class RAGChain:
         """异步检索相关文档（使用混合检索，带缓存）"""
         logger.info(f"开始异步混合检索 - 查询: {query}")
 
+        # 先尝试从缓存获取
+        rag_cache = get_rag_cache()
+        cached_results = await rag_cache.get(
+            query=query,
+            top_k=top_k,
+            use_bm25=True,
+            use_vector=True,
+            use_rerank=self.use_reranking
+        )
+
+        if cached_results is not None:
+            logger.info(f"使用缓存结果 - 查询: {query[:50]}...")
+            return cached_results
+
+        # 缓存未命中，执行实际检索
         with timed_operation("async_hybrid_retrieval"):
             results = await self.hybrid_retriever.async_search(
                 query,
@@ -54,6 +70,16 @@ class RAGChain:
                 use_vector=True,
                 use_rerank=self.use_reranking,
             )
+
+        # 保存到缓存
+        await rag_cache.set(
+            query=query,
+            top_k=top_k,
+            use_bm25=True,
+            use_vector=True,
+            use_rerank=self.use_reranking,
+            results=results
+        )
 
         logger.info(f"异步混合检索完成 - 获取到 {len(results)} 条结果")
         return results
@@ -64,21 +90,27 @@ class RAGChain:
             return ""
         return "\n\n".join([doc["content"] for doc in documents])
 
-    def build_prompt(
-        self, query: str, context: str, prompt_type: str = "rag_qa"
-    ) -> str:
+    def build_prompt(self, query: str, context: str, prompt_type: str = "rag_qa") -> str:
         """构建提示词"""
         return default_prompts.format(prompt_type, context=context, question=query)
 
     def generate(self, prompt: str) -> str:
         """调用 LLM 生成回答（同步）"""
         response = self.llm.invoke(prompt)
-        return response.output["choices"][0]["message"]["content"]
+        try:
+            return response.output["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, AttributeError) as e:
+            logger.error(f"解析 LLM 同步响应失败: {e}")
+            return "抱歉，生成回答时出现错误，请稍后重试。"
 
     async def async_generate(self, prompt: str) -> str:
         """异步调用 LLM 生成回答"""
         response = await self.async_llm.invoke(prompt)
-        return response.output["choices"][0]["message"]["content"]
+        try:
+            return response.output["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, AttributeError) as e:
+            logger.error(f"解析 LLM 异步响应失败: {e}")
+            return "抱歉，生成回答时出现错误，请稍后重试。"
 
     def run(self, query: str, top_k: int = 3, use_rag: bool = True) -> Dict[str, Any]:
         """执行完整的 RAG 流程"""
@@ -105,9 +137,7 @@ class RAGChain:
             "prompt": prompt,
         }
 
-    async def async_run(
-        self, query: str, top_k: int = 3, use_rag: bool = True, history: str = ""
-    ) -> Dict[str, Any]:
+    async def async_run(self, query: str, top_k: int = 3, use_rag: bool = True, history: str = "") -> Dict[str, Any]:
         """异步执行完整的 RAG 流程（使用线程池优化）"""
         # 1. 检索阶段（异步，带缓存）
         documents = []
@@ -119,9 +149,7 @@ class RAGChain:
 
         # 2. 构建提示词（支持历史对话）
         if history:
-            prompt = default_prompts.format(
-                "multi_turn", history=history, question=query, context=context
-            )
+            prompt = default_prompts.format("multi_turn", history=history, question=query, context=context)
         else:
             prompt = self.build_prompt(query, context)
 
@@ -151,9 +179,7 @@ class RAGChain:
 
         # 2. 构建提示词（支持历史对话）
         if history:
-            prompt = default_prompts.format(
-                "multi_turn", history=history, question=query, context=context
-            )
+            prompt = default_prompts.format("multi_turn", history=history, question=query, context=context)
         else:
             prompt = self.build_prompt(query, context)
 
@@ -200,6 +226,11 @@ class RAGChainBuilder:
         chain = RAGChain()
         if self._llm:
             chain.llm = self._llm
+        if self._vector_store:
+            chain.hybrid_retriever.vector_store = self._vector_store
+        if self._top_k:
+            # top_k 在每次调用 run/stream_run 时通过参数控制，这里仅记录默认值
+            pass
         return chain
 
 

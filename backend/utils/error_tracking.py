@@ -62,9 +62,7 @@ class ErrorTracker:
         endpoint = kwargs.get("endpoint", "unknown")
         method = kwargs.get("method", "GET")
 
-        stack_trace = (
-            traceback.format_exc() if kwargs.get("include_stack", True) else ""
-        )
+        stack_trace = traceback.format_exc() if kwargs.get("include_stack", True) else ""
 
         record_error(error_type, endpoint)
 
@@ -168,9 +166,7 @@ def capture_message(message: str, error_type: str = "CustomError", **kwargs) -> 
     Returns:
         错误 ID
     """
-    return error_tracker.track_error(
-        error_type=error_type, message=message, include_stack=False, **kwargs
-    )
+    return error_tracker.track_error(error_type=error_type, message=message, include_stack=False, **kwargs)
 
 
 def error_handler_middleware(func: Callable) -> Callable:

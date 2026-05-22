@@ -111,9 +111,7 @@ class RedisTokenBucket:
         """
 
         try:
-            result = await client.eval(
-                lua_script, keys=[key], args=[capacity, refill_rate, tokens]
-            )
+            result = await client.eval(lua_script, 1, key, capacity, refill_rate, tokens)
             return result == 1
         except Exception as e:
             logger.error(f"Redis token bucket error: {e}")
@@ -220,11 +218,7 @@ class RateLimiter:
             current = await client.get(key)
             ttl = await client.ttl(key)
 
-            count = (
-                int(current.decode("utf-8") if isinstance(current, bytes) else current)
-                if current
-                else 0
-            )
+            count = int(current.decode("utf-8") if isinstance(current, bytes) else current) if current else 0
 
             return {
                 "remaining": max(0, policy["max_requests"] - count),
@@ -317,9 +311,7 @@ async def rate_limit_middleware(request: Request, call_next):
     response = await call_next(request)
 
     response.headers["X-RateLimit-Remaining"] = str(remaining_info["remaining"])
-    response.headers["X-RateLimit-Limit"] = str(
-        rate_limiter._get_policy(endpoint)["max_requests"]
-    )
+    response.headers["X-RateLimit-Limit"] = str(rate_limiter._get_policy(endpoint)["max_requests"])
     response.headers["X-RateLimit-Reset"] = str(remaining_info["reset_in"])
 
     return response

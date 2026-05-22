@@ -1,0 +1,85 @@
+# ==================== 副本数 ====================
+replicaCount:
+  api: 3
+  nginx: 2
+
+# ==================== 镜像配置 ====================
+image:
+  repository: ghcr.io/sushi-digital-human/backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# ==================== 服务配置 ====================
+service:
+  api:
+    type: ClusterIP
+    port: 8000
+  nginx:
+    type: LoadBalancer
+    port: 80
+
+# ==================== Ingress（默认关闭，需安装 nginx-ingress 后启用）====================
+ingress:
+  enabled: false
+  className: nginx
+  hosts:
+    - host: sushi.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    enabled: false
+    clusterIssuer: letsencrypt-prod
+
+# ==================== 资源配置 ====================
+resources:
+  api:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 3Gi
+  nginx:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# ==================== 自动伸缩 ====================
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+# ==================== 环境变量（非敏感，通过 ConfigMap 注入）====================
+env:
+  appName: "企业智能文档问答系统"
+  logLevel: "info"
+  redisUrl: "redis://sushi-digital-human-redis:6379/0"
+
+# ==================== 外部 Redis ====================
+redis:
+  enabled: true
+  image: redis:7-alpine
+  port: 6379
+
+# ==================== 敏感信息（通过 CI secrets 注入，创建 K8s Secret）====================
+secrets:
+  dashscopeApiKey: ""
+  secretKey: ""
+  mysqlPassword: ""
+
+# ==================== 健康检查 ====================
+healthCheck:
+  liveness:
+    path: /health/liveness
+    initialDelay: 60
+    period: 30
+  readiness:
+    path: /health/readiness
+    initialDelay: 30
+    period: 15

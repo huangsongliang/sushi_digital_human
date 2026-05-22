@@ -92,7 +92,7 @@ class HealthChecker:
         try:
             redis = aioredis.from_url(settings.redis_url)
             await redis.ping()  # type: ignore
-            await redis.close()
+            await redis.aclose()
             latency_ms = (time.time() - start_time) * 1000
             return ComponentHealth(
                 name="redis",
@@ -241,17 +241,13 @@ class HealthChecker:
                     "status": check.status.value,
                     "message": check.message,
                     "latency_ms": check.latency_ms,
-                    "last_checked": (
-                        check.last_checked.isoformat() if check.last_checked else None
-                    ),
+                    "last_checked": (check.last_checked.isoformat() if check.last_checked else None),
                 }
             )
 
         return {
             "status": self.get_overall_status().value,
-            "timestamp": (
-                self._last_check_time.isoformat() if self._last_check_time else None
-            ),
+            "timestamp": (self._last_check_time.isoformat() if self._last_check_time else None),
             "checks": checks_data,
             "service": settings.app_name,
             "version": settings.app_version,
@@ -264,17 +260,18 @@ health_checker = HealthChecker()
 async def perform_health_check() -> Dict[str, Any]:
     """执行健康检查并返回报告"""
     await health_checker.run_all_checks()
-    
+
     # 将健康状态记录到告警系统
     status = health_checker.get_overall_status()
     status_value = 1.0 if status == HealthStatus.HEALTHY else 0.5 if status == HealthStatus.DEGRADED else 0.0
-    
+
     try:
         from backend.utils.alerting import record_alert_metric
+
         record_alert_metric("health_status", status_value)
     except ImportError:
         pass
-    
+
     return health_checker.get_health_report()
 
 

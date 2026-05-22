@@ -4,8 +4,18 @@
 """
 
 from sqlalchemy import (
-    Column, Integer, String, Text, DateTime, ForeignKey, Boolean, Float,
-    Table, Index, JSON, LargeBinary
+    Column,
+    Integer,
+    String,
+    Text,
+    DateTime,
+    ForeignKey,
+    Boolean,
+    Float,
+    Table,
+    Index,
+    JSON,
+    LargeBinary,
 )
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped
@@ -18,7 +28,7 @@ Base = declarative_base()
 # 用户表
 class User(Base):
     __tablename__ = "users"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
@@ -30,7 +40,7 @@ class User(Base):
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
-    
+
     # 关系
     documents = relationship("Document", back_populates="owner")
     conversations = relationship("Conversation", back_populates="user")
@@ -40,12 +50,12 @@ class User(Base):
 # 角色表
 class Role(Base):
     __tablename__ = "roles"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    
+
     # 关系
     permissions = relationship("Permission", secondary="role_permissions", back_populates="roles")
     user_roles = relationship("UserRole", back_populates="role")
@@ -54,11 +64,11 @@ class Role(Base):
 # 用户角色关联表
 class UserRole(Base):
     __tablename__ = "user_roles"
-    
+
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), primary_key=True)
     assigned_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    
+
     # 关系
     user = relationship("User")
     role = relationship("Role", back_populates="user_roles")
@@ -67,13 +77,13 @@ class UserRole(Base):
 # 权限表
 class Permission(Base):
     __tablename__ = "permissions"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text)
     resource_type: Mapped[str] = mapped_column(String(50))
     action: Mapped[str] = mapped_column(String(50))
-    
+
     # 关系
     roles = relationship("Role", secondary="role_permissions", back_populates="permissions")
 
@@ -81,10 +91,10 @@ class Permission(Base):
 # 角色权限关联表
 class RolePermission(Base):
     __tablename__ = "role_permissions"
-    
+
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), primary_key=True)
     permission_id: Mapped[int] = mapped_column(ForeignKey("permissions.id"), primary_key=True)
-    
+
     # 关系
     role = relationship("Role")
     permission = relationship("Permission")
@@ -93,7 +103,7 @@ class RolePermission(Base):
 # 文档表
 class Document(Base):
     __tablename__ = "documents"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     filename: Mapped[str] = mapped_column(String(500), nullable=False)
@@ -106,12 +116,12 @@ class Document(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
     metadata: Mapped[Optional[dict]] = mapped_column(JSON)
-    
+
     # 关系
     owner = relationship("User", back_populates="documents")
     chunks = relationship("DocumentChunk", back_populates="document")
     access_permissions = relationship("DocumentPermission", back_populates="document")
-    
+
     __table_args__ = (
         Index("idx_documents_status", "status"),
         Index("idx_documents_owner", "owner_id"),
@@ -121,7 +131,7 @@ class Document(Base):
 # 文档分块表
 class DocumentChunk(Base):
     __tablename__ = "document_chunks"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     document_id: Mapped[int] = mapped_column(ForeignKey("documents.id"))
     chunk_index: Mapped[int] = mapped_column(Integer)
@@ -129,7 +139,7 @@ class DocumentChunk(Base):
     embedding: Mapped[Optional[bytes]] = mapped_column(LargeBinary)
     metadata: Mapped[Optional[dict]] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    
+
     # 关系
     document = relationship("Document", back_populates="chunks")
 
@@ -137,13 +147,13 @@ class DocumentChunk(Base):
 # 文档权限表（细粒度权限）
 class DocumentPermission(Base):
     __tablename__ = "document_permissions"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     document_id: Mapped[int] = mapped_column(ForeignKey("documents.id"))
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"))
     role_id: Mapped[Optional[int]] = mapped_column(ForeignKey("roles.id"))
     permission_type: Mapped[str] = mapped_column(String(20))  # read, write, edit, delete
-    
+
     # 关系
     document = relationship("Document", back_populates="access_permissions")
     user = relationship("User")
@@ -153,7 +163,7 @@ class DocumentPermission(Base):
 # 对话表
 class Conversation(Base):
     __tablename__ = "conversations"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     title: Mapped[str] = mapped_column(String(500))
@@ -161,7 +171,7 @@ class Conversation(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
     metadata: Mapped[Optional[dict]] = mapped_column(JSON)
-    
+
     # 关系
     user = relationship("User", back_populates="conversations")
     messages = relationship("Message", back_populates="conversation")
@@ -170,7 +180,7 @@ class Conversation(Base):
 # 消息表
 class Message(Base):
     __tablename__ = "messages"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id"))
     role: Mapped[str] = mapped_column(String(20))  # user, assistant, system
@@ -178,7 +188,7 @@ class Message(Base):
     token_count: Mapped[Optional[int]] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     metadata: Mapped[Optional[dict]] = mapped_column(JSON)
-    
+
     # 关系
     conversation = relationship("Conversation", back_populates="messages")
 
@@ -186,7 +196,7 @@ class Message(Base):
 # 审计日志表
 class AuditLog(Base):
     __tablename__ = "audit_logs"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"))
     action: Mapped[str] = mapped_column(String(100))
@@ -198,10 +208,10 @@ class AuditLog(Base):
     success: Mapped[bool] = mapped_column(Boolean, default=True)
     error_message: Mapped[Optional[str]] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    
+
     # 关系
     user = relationship("User", back_populates="audit_logs")
-    
+
     __table_args__ = (
         Index("idx_audit_user", "user_id"),
         Index("idx_audit_action", "action"),
@@ -212,7 +222,7 @@ class AuditLog(Base):
 # 告警日志表
 class AlertLog(Base):
     __tablename__ = "alert_logs"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     rule_name: Mapped[str] = mapped_column(String(100))
     severity: Mapped[str] = mapped_column(String(20))
@@ -222,7 +232,7 @@ class AlertLog(Base):
     acknowledged_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
     resolved_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    
+
     __table_args__ = (
         Index("idx_alert_severity", "severity"),
         Index("idx_alert_status", "status"),
@@ -232,7 +242,7 @@ class AlertLog(Base):
 # 系统配置表
 class SystemConfig(Base):
     __tablename__ = "system_configs"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     key: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     value: Mapped[str] = mapped_column(Text)
@@ -245,12 +255,12 @@ class SystemConfig(Base):
 # 统计数据表
 class Statistics(Base):
     __tablename__ = "statistics"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     metric_type: Mapped[str] = mapped_column(String(50))
     value: Mapped[float] = mapped_column(Float)
     timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    
+
     __table_args__ = (
         Index("idx_stats_metric", "metric_type"),
         Index("idx_stats_time", "timestamp"),
@@ -260,12 +270,10 @@ class Statistics(Base):
 # 索引向量表（用于存储嵌入向量）
 class VectorIndex(Base):
     __tablename__ = "vector_index"
-    
+
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     document_chunk_id: Mapped[int] = mapped_column(ForeignKey("document_chunks.id"))
     embedding: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    
-    __table_args__ = (
-        Index("idx_vector_chunk", "document_chunk_id"),
-    )
+
+    __table_args__ = (Index("idx_vector_chunk", "document_chunk_id"),)

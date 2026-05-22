@@ -1,0 +1,80 @@
+{
+  "name": "企业级文档问答平台知识库",
+  "description": "项目代码和文档索引",
+  "index_rules": {
+    "include": [
+      "**/*.py",
+      "**/*.vue",
+      "**/*.ts",
+      "**/*.md",
+      "**/*.json",
+      "**/*.yaml",
+      "**/*.yml"
+    ],
+    "exclude": [
+      "node_modules/**",
+      "__pycache__/**",
+      ".git/**",
+      "*.pyc",
+      "dist/**",
+      "build/**",
+      ".trae/**"
+    ]
+  },
+  "document_sets": [
+    {
+      "name": "项目文档",
+      "files": [
+        "README.md",
+        "CODING_STANDARDS.md",
+        "docs/requirements_v2.0.md",
+        "docs/API.md",
+        "CHANGELOG.md"
+      ]
+    },
+    {
+      "name": "后端核心代码",
+      "files": [
+        "backend/main.py",
+        "backend/api/auth.py",
+        "backend/api/chat.py",
+        "backend/api/document.py",
+        "backend/core/config.py",
+        "backend/core/auth_manager.py",
+        "backend/database/models.py",
+        "backend/database/pool.py",
+        "backend/chain/rag_chain.py",
+        "backend/utils/rate_limiter.py"
+      ]
+    },
+    {
+      "name": "前端核心代码",
+      "files": [
+        "frontend/src/App.vue",
+        "frontend/src/main.ts",
+        "frontend/src/router/index.ts",
+        "frontend/src/stores/index.ts",
+        "frontend/src/stores/chat.ts",
+        "frontend/src/components/ChatPage.vue",
+        "frontend/src/components/AuthPage.vue",
+        "frontend/src/components/SettingsPanel.vue",
+        "frontend/src/components/ChatSidebar.vue"
+      ]
+    },
+    {
+      "name": "配置文件",
+      "files": [
+        "docker-compose.yml",
+        ".env.example",
+        "pyproject.toml",
+        "frontend/package.json",
+        ".pre-commit-config.yaml"
+      ]
+    }
+  ],
+  "embedding_config": {
+    "model": "text-embedding-3-small",
+    "chunk_size": 512,
+    "chunk_overlap": 50
+  }
+}

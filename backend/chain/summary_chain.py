@@ -21,16 +21,18 @@ logger = get_logger(__name__)
 
 class SummaryType(Enum):
     """总结类型枚举"""
-    BRIEF = "brief"           # 简短摘要（3-5句话）
-    DETAILED = "detailed"     # 详细摘要（1-2段落）
-    KEY_POINTS = "key_points" # 要点列表
-    STRUCTURED = "structured" # 结构化摘要
-    CONCISE = "concise"       # 极简摘要（1句话）
+
+    BRIEF = "brief"  # 简短摘要（3-5句话）
+    DETAILED = "detailed"  # 详细摘要（1-2段落）
+    KEY_POINTS = "key_points"  # 要点列表
+    STRUCTURED = "structured"  # 结构化摘要
+    CONCISE = "concise"  # 极简摘要（1句话）
 
 
 @dataclass
 class SummaryResult:
     """总结结果"""
+
     content: str
     type: SummaryType
     token_count: Optional[int] = None
@@ -105,50 +107,33 @@ class SummaryChain:
 1. 极其简洁
 2. 包含核心信息
 3. 用中文回复
-"""
+""",
         }
 
     async def summarize_text(self, content: str, summary_type: SummaryType = SummaryType.BRIEF) -> SummaryResult:
         """总结文本内容"""
         if not content or len(content.strip()) == 0:
-            return SummaryResult(
-                content="内容为空，无法生成总结",
-                type=summary_type,
-                source_count=0,
-                confidence=0.0
-            )
+            return SummaryResult(content="内容为空，无法生成总结", type=summary_type, source_count=0, confidence=0.0)
 
         prompt = self._prompts[summary_type].format(content=content[:8000])
-        
+
         try:
-            response = await self._llm.generate([prompt])
-            result = response.generations[0][0].text.strip()
-            
+            response = await self._llm.invoke(prompt)
+            result = self._parse_llm_response(response)
+
             return SummaryResult(
-                content=result,
-                type=summary_type,
-                token_count=len(result),
-                source_count=1,
-                confidence=0.9
+                content=result, type=summary_type, token_count=len(result), source_count=1, confidence=0.9
             )
         except Exception as e:
             logger.error(f"总结生成失败: {str(e)}")
-            return SummaryResult(
-                content=f"总结生成失败: {str(e)}",
-                type=summary_type,
-                source_count=1,
-                confidence=0.0
-            )
+            return SummaryResult(content=f"总结生成失败: {str(e)}", type=summary_type, source_count=1, confidence=0.0)
 
-    async def summarize_documents(self, documents: List[Dict[str, Any]], summary_type: SummaryType = SummaryType.DETAILED) -> SummaryResult:
+    async def summarize_documents(
+        self, documents: List[Dict[str, Any]], summary_type: SummaryType = SummaryType.DETAILED
+    ) -> SummaryResult:
         """总结多个文档"""
         if not documents or len(documents) == 0:
-            return SummaryResult(
-                content="没有文档可总结",
-                type=summary_type,
-                source_count=0,
-                confidence=0.0
-            )
+            return SummaryResult(content="没有文档可总结", type=summary_type, source_count=0, confidence=0.0)
 
         # 合并文档内容
         content = ""
@@ -159,15 +144,12 @@ class SummaryChain:
 
         return await self.summarize_text(content, summary_type)
 
-    async def summarize_conversation(self, messages: List[Dict[str, Any]], summary_type: SummaryType = SummaryType.BRIEF) -> SummaryResult:
+    async def summarize_conversation(
+        self, messages: List[Dict[str, Any]], summary_type: SummaryType = SummaryType.BRIEF
+    ) -> SummaryResult:
         """总结对话历史"""
         if not messages or len(messages) == 0:
-            return SummaryResult(
-                content="对话为空，无法生成总结",
-                type=summary_type,
-                source_count=0,
-                confidence=0.0
-            )
+            return SummaryResult(content="对话为空，无法生成总结", type=summary_type, source_count=0, confidence=0.0)
 
         # 构建对话文本
         conversation_text = ""
@@ -189,23 +171,16 @@ class SummaryChain:
 """
 
         try:
-            response = await self._llm.generate([prompt])
-            result = response.generations[0][0].text.strip()
-            
+            response = await self._llm.invoke(prompt)
+            result = self._parse_llm_response(response)
+
             return SummaryResult(
-                content=result,
-                type=summary_type,
-                token_count=len(result),
-                source_count=len(messages),
-                confidence=0.9
+                content=result, type=summary_type, token_count=len(result), source_count=len(messages), confidence=0.9
             )
         except Exception as e:
             logger.error(f"对话总结失败: {str(e)}")
             return SummaryResult(
-                content=f"对话总结失败: {str(e)}",
-                type=summary_type,
-                source_count=len(messages),
-                confidence=0.0
+                content=f"对话总结失败: {str(e)}", type=summary_type, source_count=len(messages), confidence=0.0
             )
 
     async def extract_key_points(self, content: str, max_points: int = 10) -> List[str]:
@@ -223,11 +198,11 @@ class SummaryChain:
 """
 
         try:
-            response = await self._llm.generate([prompt])
-            result = response.generations[0][0].text.strip()
-            
+            response = await self._llm.invoke(prompt)
+            result = self._parse_llm_response(response)
+
             # 解析结果
-            points = [p.strip() for p in result.split('\n') if p.strip()]
+            points = [p.strip() for p in result.split("\n") if p.strip()]
             return points[:max_points]
         except Exception as e:
             logger.error(f"提取要点失败: {str(e)}")
@@ -248,18 +223,29 @@ class SummaryChain:
 """
 
         try:
-            response = await self._llm.generate([prompt])
-            title = response.generations[0][0].text.strip()
-            
+            response = await self._llm.invoke(prompt)
+            title = self._parse_llm_response(response)
+
             # 清理标题
-            title = title.replace('"', '').replace("'", "").strip()
+            title = title.replace('"', "").replace("'", "").strip()
             if len(title) > max_length:
                 title = title[:max_length]
-            
+
             return title
         except Exception as e:
             logger.error(f"生成标题失败: {str(e)}")
             return "未命名"
+
+    @staticmethod
+    def _parse_llm_response(response: Any) -> str:
+        """解析 DashScope LLM 响应，提取文本内容"""
+        if response is None:
+            return ""
+        try:
+            return response.output["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, AttributeError, TypeError) as e:
+            logger.error(f"解析 LLM 响应失败: {e}, response type: {type(response)}")
+            return ""
 
 
 # 全局总结链实例
@@ -274,14 +260,14 @@ async def summarize_text(content: str, summary_type: str = "brief") -> Dict[str,
         summary_type_enum = SummaryType.BRIEF
 
     result = await summary_chain.summarize_text(content, summary_type_enum)
-    
+
     return {
         "content": result.content,
         "type": result.type.value,
         "token_count": result.token_count,
         "source_count": result.source_count,
         "confidence": result.confidence,
-        "created_at": result.created_at.isoformat() if result.created_at else None
+        "created_at": result.created_at.isoformat(),
     }
 
 
@@ -293,28 +279,28 @@ async def summarize_documents(documents: List[Dict[str, Any]], summary_type: str
         summary_type_enum = SummaryType.DETAILED
 
     result = await summary_chain.summarize_documents(documents, summary_type_enum)
-    
+
     return {
         "content": result.content,
         "type": result.type.value,
         "token_count": result.token_count,
         "source_count": result.source_count,
         "confidence": result.confidence,
-        "created_at": result.created_at.isoformat() if result.created_at else None
+        "created_at": result.created_at.isoformat(),
     }
 
 
 async def summarize_conversation(messages: List[Dict[str, Any]]) -> Dict[str, Any]:
     """总结对话历史（对外接口）"""
     result = await summary_chain.summarize_conversation(messages)
-    
+
     return {
         "content": result.content,
         "type": result.type.value,
         "token_count": result.token_count,
         "source_count": result.source_count,
         "confidence": result.confidence,
-        "created_at": result.created_at.isoformat() if result.created_at else None
+        "created_at": result.created_at.isoformat(),
     }
 
 

@@ -14,6 +14,7 @@ router = APIRouter(prefix="/api/documents", tags=["documents"])
 
 class DocumentUploadResponse(BaseModel):
     """文档上传响应"""
+
     success: bool
     document_id: Optional[str] = None
     file_name: Optional[str] = None
@@ -22,6 +23,7 @@ class DocumentUploadResponse(BaseModel):
 
 class DocumentInfo(BaseModel):
     """文档信息"""
+
     id: int
     document_id: str
     name: str
@@ -35,12 +37,14 @@ class DocumentInfo(BaseModel):
 
 class DocumentListResponse(BaseModel):
     """文档列表响应"""
+
     documents: List[DocumentInfo]
     total: int
 
 
 class DocumentVersionInfo(BaseModel):
     """文档版本信息"""
+
     version: int
     file_size: int
     change_log: Optional[str] = None
@@ -49,6 +53,7 @@ class DocumentVersionInfo(BaseModel):
 
 class SimpleResponse(BaseModel):
     """简单响应"""
+
     success: bool
     error: Optional[str] = None
 
@@ -153,8 +158,15 @@ async def delete_document(
             soft_delete=soft_delete,
         )
 
+        if not result.get("success"):
+            if "not found" in result.get("error", "").lower():
+                raise HTTPException(status_code=404, detail=result.get("error"))
+            raise HTTPException(status_code=500, detail=result.get("error"))
+
         return SimpleResponse(**result)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"删除文档失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -179,4 +191,39 @@ async def get_document_versions(document_id: str):
 
     except Exception as e:
         logger.error(f"获取文档版本历史失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class DocumentContentResponse(BaseModel):
+    """文档内容响应"""
+
+    success: bool
+    content: Optional[str] = None
+    name: Optional[str] = None
+    error: Optional[str] = None
+
+
+@router.get("/{document_id}/content", response_model=DocumentContentResponse)
+async def get_document_content(document_id: str):
+    """
+    获取文档内容
+
+    Args:
+        document_id: 文档ID
+    """
+    try:
+        doc_manager = get_document_manager()
+        result = await doc_manager.get_document_content(document_id)
+
+        if not result.get("success"):
+            if "not found" in result.get("error", "").lower():
+                raise HTTPException(status_code=404, detail=result.get("error"))
+            raise HTTPException(status_code=500, detail=result.get("error"))
+
+        return DocumentContentResponse(**result)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"获取文档内容失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))

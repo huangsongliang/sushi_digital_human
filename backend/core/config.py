@@ -13,12 +13,6 @@ from typing import List, Optional
 from pathlib import Path
 
 
-class SettingsModelConfig(SettingsConfigDict):
-    """Settings 配置字典的子类，用于类型注解"""
-
-    pass
-
-
 class Settings(BaseSettings):
     """
     应用配置类
@@ -30,16 +24,12 @@ class Settings(BaseSettings):
     dashscope_api_key: str = Field(default="", description="DashScope API 密钥")
 
     # 模型配置
-    embedding_model: str = Field(
-        default="text-embedding-v2", description="嵌入模型名称"
-    )
+    embedding_model: str = Field(default="text-embedding-v2", description="嵌入模型名称")
     llm_model: str = Field(default="qwen-max", description="大语言模型名称")
     embedding_dimension: int = Field(default=1536, description="嵌入向量维度")
 
     # Redis 配置
-    redis_url: str = Field(
-        default="redis://localhost:6379/0", description="Redis 连接地址"
-    )
+    redis_url: str = Field(default="redis://localhost:6379/0", description="Redis 连接地址")
     redis_max_connections: int = Field(default=50, description="Redis 最大连接数")
 
     # MySQL 配置（可选）
@@ -59,25 +49,17 @@ class Settings(BaseSettings):
     top_k: int = Field(default=5, ge=1, le=20, description="检索返回的最相似文档数量")
     vector_weight: float = Field(default=0.7, ge=0, le=1, description="向量检索权重")
     bm25_weight: float = Field(default=0.3, ge=0, le=1, description="BM25 检索权重")
-    rerank_top_k: int = Field(
-        default=3, ge=1, le=10, description="重排序后返回的文档数量"
-    )
+    rerank_top_k: int = Field(default=3, ge=1, le=10, description="重排序后返回的文档数量")
     enable_reranking: bool = Field(default=True, description="是否启用重排序")
 
     # 安全配置
-    secret_key: str = Field(
-        default="change-this-secret-key-in-production", description="JWT 签名密钥"
-    )
-    access_token_expire_minutes: int = Field(
-        default=30, ge=1, description="访问令牌过期时间（分钟）"
-    )
+    secret_key: str = Field(default="change-this-secret-key-in-production", description="JWT 签名密钥")
+    access_token_expire_minutes: int = Field(default=30, ge=1, description="访问令牌过期时间（分钟）")
     allowed_origins: List[str] = Field(
         default=["http://localhost:3000", "http://localhost:5173"],
         description="允许的跨域来源",
     )
-    rate_limit_per_minute: int = Field(
-        default=60, ge=1, description="每分钟 API 调用限制"
-    )
+    rate_limit_per_minute: int = Field(default=60, ge=1, description="每分钟 API 调用限制")
 
     # 应用配置
     app_name: str = Field(default="企业级智能文档问答平台", description="应用名称")
@@ -86,18 +68,12 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", description="日志级别")
 
     # 数据处理配置
-    chunk_size: int = Field(
-        default=500, ge=100, le=2000, description="文档分块大小（字符数）"
-    )
-    chunk_overlap: int = Field(
-        default=50, ge=0, le=500, description="文档分块重叠大小（字符数）"
-    )
+    chunk_size: int = Field(default=500, ge=100, le=2000, description="文档分块大小（字符数）")
+    chunk_overlap: int = Field(default=50, ge=0, le=500, description="文档分块重叠大小（字符数）")
 
     # LLM 调用配置
     llm_temperature: float = Field(default=0.7, ge=0, le=2, description="LLM 温度参数")
-    llm_max_tokens: int = Field(
-        default=2000, ge=100, le=8000, description="LLM 最大生成 token 数"
-    )
+    llm_max_tokens: int = Field(default=2000, ge=100, le=8000, description="LLM 最大生成 token 数")
     llm_timeout: int = Field(default=60, ge=10, description="LLM 调用超时时间（秒）")
     llm_max_retries: int = Field(default=3, ge=0, description="LLM 调用最大重试次数")
 
@@ -111,10 +87,19 @@ class Settings(BaseSettings):
     sms_sign_name: str = Field(default="", description="短信签名名称")
     sms_template_code: str = Field(default="", description="短信模板CODE")
 
+    # 前端配置
+    frontend_url: str = Field(default="http://localhost:5173", description="前端 URL")
+
     # GitHub OAuth 配置
     github_client_id: str = Field(default="", description="GitHub OAuth Client ID")
     github_client_secret: str = Field(default="", description="GitHub OAuth Client Secret")
-    github_redirect_uri: str = Field(default="http://localhost:8000/api/auth/github/callback", description="GitHub 回调地址")
+    github_redirect_uri: str = Field(
+        default="http://localhost:8000/api/auth/github/callback", description="GitHub 回调地址"
+    )
+
+    # 登录限流配置
+    login_max_attempts: int = Field(default=5, ge=1, description="登录最大失败次数")
+    login_lockout_minutes: int = Field(default=15, ge=1, description="登录锁定时间（分钟）")
 
     @field_validator("log_level")
     @classmethod
@@ -142,8 +127,9 @@ class Settings(BaseSettings):
         if self.mysql_host and self.mysql_user and self.mysql_database:
             password_part = f":{self.mysql_password}" if self.mysql_password else ""
             return (
-                f"mysql+asyncmy://{self.mysql_user}{password_part}"
+                f"mysql+aiomysql://{self.mysql_user}{password_part}"
                 f"@{self.mysql_host}:{self.mysql_port}/{self.mysql_database}"
+                "?charset=utf8mb4"
             )
         return None
 
@@ -157,9 +143,7 @@ class Settings(BaseSettings):
         data_dir.mkdir(parents=True, exist_ok=True)
         return f"sqlite+aiosqlite:///{data_dir / 'enterprise_doc_qa.db'}"
 
-    model_config = SettingsModelConfig(
-        env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore")
 
 
 # 全局配置实例

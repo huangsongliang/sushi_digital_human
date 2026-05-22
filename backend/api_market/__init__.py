@@ -12,7 +12,7 @@ from typing import List, Dict, Any, Optional, Callable
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import uuid
 
@@ -23,26 +23,29 @@ logger = get_logger(__name__)
 
 class APICategory(Enum):
     """API 分类枚举"""
-    CHAT = "chat"                     # 对话接口
-    DOCUMENT = "document"             # 文档接口
-    RETRIEVAL = "retrieval"           # 检索接口
-    SUMMARY = "summary"               # 总结接口
-    INTEGRATION = "integration"       # 集成接口
-    SYSTEM = "system"                 # 系统接口
-    OTHER = "other"                   # 其他
+
+    CHAT = "chat"  # 对话接口
+    DOCUMENT = "document"  # 文档接口
+    RETRIEVAL = "retrieval"  # 检索接口
+    SUMMARY = "summary"  # 总结接口
+    INTEGRATION = "integration"  # 集成接口
+    SYSTEM = "system"  # 系统接口
+    OTHER = "other"  # 其他
 
 
 class APIStatus(Enum):
     """API 状态枚举"""
-    ACTIVE = "active"                 # 活跃
-    DEPRECATED = "deprecated"         # 已弃用
-    TESTING = "testing"               # 测试中
-    INTERNAL = "internal"             # 内部使用
+
+    ACTIVE = "active"  # 活跃
+    DEPRECATED = "deprecated"  # 已弃用
+    TESTING = "testing"  # 测试中
+    INTERNAL = "internal"  # 内部使用
 
 
 @dataclass
 class APIEndpoint:
     """API 端点定义"""
+
     id: str
     name: str
     path: str
@@ -71,6 +74,7 @@ class APIEndpoint:
 @dataclass
 class APIKey:
     """API 密钥"""
+
     key: str
     name: str
     user_id: Optional[int] = None
@@ -107,6 +111,7 @@ class APIKey:
 @dataclass
 class APIUsage:
     """API 使用统计"""
+
     endpoint_id: str
     api_key: str
     request_count: int = 0
@@ -175,8 +180,14 @@ class APIMarket:
         """获取所有端点"""
         return list(self._endpoints.values())
 
-    def create_api_key(self, name: str, user_id: Optional[int] = None, expires_at: Optional[datetime] = None,
-                       rate_limit: Optional[int] = None, allowed_endpoints: Optional[List[str]] = None) -> APIKey:
+    def create_api_key(
+        self,
+        name: str,
+        user_id: Optional[int] = None,
+        expires_at: Optional[datetime] = None,
+        rate_limit: Optional[int] = None,
+        allowed_endpoints: Optional[List[str]] = None,
+    ) -> APIKey:
         """创建 API 密钥"""
         api_key = APIKey(
             key="",
@@ -184,7 +195,7 @@ class APIMarket:
             user_id=user_id,
             expires_at=expires_at,
             rate_limit=rate_limit,
-            allowed_endpoints=allowed_endpoints
+            allowed_endpoints=allowed_endpoints,
         )
         self._api_keys[api_key.key] = api_key
         self._key_usage[api_key.key] = APIUsage(endpoint_id="", api_key=api_key.key)
@@ -255,9 +266,9 @@ class APIMarket:
             "info": {
                 "title": "企业级智能文档问答平台 API",
                 "version": "1.0.0",
-                "description": "提供文档问答、检索、总结等功能的 RESTful API"
+                "description": "提供文档问答、检索、总结等功能的 RESTful API",
             },
-            "paths": {}
+            "paths": {},
         }
 
         for endpoint in self._endpoints.values():
@@ -272,26 +283,16 @@ class APIMarket:
                 "responses": {
                     "200": {
                         "description": "成功",
-                        "content": {
-                            "application/json": {
-                                "schema": endpoint.response_schema
-                            }
-                        }
+                        "content": {"application/json": {"schema": endpoint.response_schema}},
                     }
-                }
+                },
             }
 
             if endpoint.requires_auth:
                 path[endpoint.method.lower()]["security"] = [{"ApiKeyAuth": []}]
 
         spec["components"] = {
-            "securitySchemes": {
-                "ApiKeyAuth": {
-                    "type": "apiKey",
-                    "in": "header",
-                    "name": "X-API-Key"
-                }
-            }
+            "securitySchemes": {"ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "X-API-Key"}}
         }
 
         return spec
@@ -299,7 +300,7 @@ class APIMarket:
     def generate_api_documentation(self) -> str:
         """生成 API 文档（Markdown 格式）"""
         markdown = "# API 文档\n\n"
-        
+
         # 按分类分组
         categories = {}
         for endpoint in self._endpoints.values():
@@ -309,21 +310,21 @@ class APIMarket:
 
         for category, endpoints in categories.items():
             markdown += f"## {category.value.capitalize()}\n\n"
-            
+
             for endpoint in endpoints:
                 status_badge = {
                     APIStatus.ACTIVE: "🟢",
                     APIStatus.DEPRECATED: "🔴",
                     APIStatus.TESTING: "🟡",
-                    APIStatus.INTERNAL: "⚫"
+                    APIStatus.INTERNAL: "⚫",
                 }.get(endpoint.status, "⚪")
-                
+
                 markdown += f"### {status_badge} {endpoint.name}\n\n"
                 markdown += f"**路径**: `{endpoint.method} {endpoint.path}`\n\n"
                 markdown += f"**版本**: {endpoint.version}\n\n"
                 if endpoint.description:
                     markdown += f"**描述**: {endpoint.description}\n\n"
-                
+
                 if endpoint.parameters:
                     markdown += "**参数**:\n\n"
                     for param in endpoint.parameters:
@@ -331,7 +332,7 @@ class APIMarket:
                         required_mark = "*" if required else ""
                         markdown += f"- `{param['name']}`{required_mark}: {param.get('description', '')}\n"
                     markdown += "\n"
-                
+
                 markdown += "---\n\n"
 
         return markdown
@@ -346,10 +347,18 @@ def get_api_market() -> APIMarket:
     return api_market
 
 
-def register_endpoint(name: str, path: str, method: str, category: str, description: str = "",
-                      version: str = "1.0", parameters: Optional[List[Dict[str, Any]]] = None,
-                      response_schema: Optional[Dict[str, Any]] = None, rate_limit: Optional[int] = None,
-                      requires_auth: bool = False):
+def register_endpoint(
+    name: str,
+    path: str,
+    method: str,
+    category: str,
+    description: str = "",
+    version: str = "1.0",
+    parameters: Optional[List[Dict[str, Any]]] = None,
+    response_schema: Optional[Dict[str, Any]] = None,
+    rate_limit: Optional[int] = None,
+    requires_auth: bool = False,
+):
     """注册 API 端点（对外接口）"""
     try:
         category_enum = APICategory[category.upper()]
@@ -370,25 +379,26 @@ def register_endpoint(name: str, path: str, method: str, category: str, descript
         parameters=parameters,
         response_schema=response_schema,
         rate_limit=rate_limit,
-        requires_auth=requires_auth
+        requires_auth=requires_auth,
     )
 
     api_market.register_endpoint(endpoint)
 
 
-def create_api_key(name: str, user_id: Optional[int] = None, expires_days: Optional[int] = None,
-                   rate_limit: Optional[int] = None, allowed_endpoints: Optional[List[str]] = None) -> Dict[str, Any]:
+def create_api_key(
+    name: str,
+    user_id: Optional[int] = None,
+    expires_days: Optional[int] = None,
+    rate_limit: Optional[int] = None,
+    allowed_endpoints: Optional[List[str]] = None,
+) -> Dict[str, Any]:
     """创建 API 密钥（对外接口）"""
     expires_at = None
     if expires_days:
         expires_at = datetime.now() + timedelta(days=expires_days)
 
     api_key = api_market.create_api_key(
-        name=name,
-        user_id=user_id,
-        expires_at=expires_at,
-        rate_limit=rate_limit,
-        allowed_endpoints=allowed_endpoints
+        name=name, user_id=user_id, expires_at=expires_at, rate_limit=rate_limit, allowed_endpoints=allowed_endpoints
     )
 
     return {
@@ -396,7 +406,7 @@ def create_api_key(name: str, user_id: Optional[int] = None, expires_days: Optio
         "name": api_key.name,
         "created_at": api_key.created_at.isoformat(),
         "expires_at": api_key.expires_at.isoformat() if api_key.expires_at else None,
-        "rate_limit": api_key.rate_limit
+        "rate_limit": api_key.rate_limit,
     }
 
 
@@ -418,7 +428,3 @@ def get_openapi_spec() -> Dict[str, Any]:
 def get_api_documentation() -> str:
     """获取 API 文档（对外接口）"""
     return api_market.generate_api_documentation()
-
-
-# 添加 timedelta 导入
-from datetime import timedelta

@@ -1,0 +1,8 @@
+# Patterns to ignore when building packages.
+# Supports shell glob matching (relative to this directory).
+.git/
+.gitignore
+.bck/
+.tests/
+README.md
+values-production.yaml
