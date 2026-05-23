@@ -382,8 +382,8 @@ class PerformanceMonitor:
         cutoff_time = now - timedelta(minutes=time_window) if time_window else None
 
         _recent_metrics = (
-            self._metrics if not cutoff_time else [m for m in self._metrics if m.timestamp >= cutoff_time]
-        )  # noqa: F841
+            self._metrics if not cutoff_time else [m for m in self._metrics if m.timestamp >= cutoff_time]  # noqa: F841
+        )
         recent_requests = (
             list(self._request_metrics.values())
             if not cutoff_time

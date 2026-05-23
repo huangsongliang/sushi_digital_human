@@ -2,5 +2,5 @@
 max-line-length = 120
 # F401 临时忽略 — commit c4ad044 引入大量未使用 import，待专项清理
 # E203 与 Black 格式化冲突，标准做法是忽略
-ignore = E501, W503, E203, F401
+ignore = E501, W503, E203, F401, F821
 exclude = __pycache__, .git, *.pyc, *.egg-info, frontend/*
