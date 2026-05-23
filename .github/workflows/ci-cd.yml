@@ -102,21 +102,24 @@ jobs:
       - name: Create virtual environment
         run: uv venv
 
-      - name: Install test dependencies
+      - name: Install dependencies (minimal)
         run: |
-          uv pip install pytest pytest-cov pytest-asyncio pytest-timeout httpx
+          uv pip install fastapi uvicorn pydantic pydantic-settings langchain langchain-core langchain-community httpx requests redis sqlalchemy alembic aiomysql aiosqlite loguru jieba rank-bm25 chromadb dashscope python-jose passlib argon2-cffi email-validator python-dotenv prometheus-client psutil
 
-      - name: Install backend package (lightweight)
+      - name: Install test dependencies
+        run: uv pip install pytest pytest-cov pytest-asyncio pytest-timeout httpx
+
+      - name: Install backend package
         run: uv pip install -e . --no-deps
 
       - name: Run unit tests
-        run: uv run pytest tests/unit/ -v --tb=short --cov=backend --cov-report=xml --timeout=60 || true
+        run: .venv/bin/pytest tests/unit/ -v --tb=short --cov=backend --cov-report=xml --timeout=60 || true
         env:
           REDIS_URL: redis://localhost:6379/0
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
 
       - name: Run integration tests
-        run: uv run pytest tests/integration/ -v --tb=short --timeout=60 || true
+        run: .venv/bin/pytest tests/integration/ -v --tb=short --timeout=60 || true
         env:
           REDIS_URL: redis://localhost:6379/0
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
