@@ -1,322 +1,320 @@
-"""
-PDF 处理模块
-支持 PDF OCR、表格提取、图表解析等功能
+"""PDF 文档处理模块
+支持 PDF 文本提取、OCR 识别、表格提取
 """
 
-import asyncio
 import io
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-try:
-    import camelot
-    import fitz  # PyMuPDF
-    import pdfplumber
-    import pytesseract
-    from PIL import Image
-
-    TESSERACT_AVAILABLE = True
-except ImportError:
-    TESSERACT_AVAILABLE = False
+from typing import Any, Dict, List, Optional, Tuple
 
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 
-@dataclass
-class TableData:
-    """表格数据结构"""
-
-    page_num: int
-    table_index: int
-    data: List[List[str]]
-    bbox: Optional[tuple] = None
-    confidence: float = 1.0
-
-
-@dataclass
-class TextBlock:
-    """文本块数据结构"""
-
-    page_num: int
-    text: str
-    bbox: tuple
-    font_size: float = 0.0
-    font_name: str = ""
-
-
-@dataclass
-class PDFContent:
-    """PDF 内容结构"""
-
-    text: str
-    tables: List[TableData]
-    images: List[Dict[str, Any]]
-    metadata: Dict[str, Any]
-
-
 class PDFProcessor:
-    """PDF 处理器"""
+    """PDF 文档处理器"""
 
-    def __init__(self):
-        self._tesseract_config = r"--oem 3 --psm 6"
+    def __init__(
+        self,
+        use_ocr: bool = True,
+        ocr_lang: str = "ch+eng",
+        table_detection: bool = True,
+    ):
+        """
+        Args:
+            use_ocr: 是否使用 OCR 识别扫描件
+            ocr_lang: OCR 语言设置
+            table_detection: 是否启用表格检测
+        """
+        self.use_ocr = use_ocr
+        self.ocr_lang = ocr_lang
+        self.table_detection = table_detection
+        self._ocr_engine = None
+        self._pdf_engine = None
 
-    async def extract_text(self, file_path: str) -> str:
-        """提取 PDF 文本内容"""
-        loop = asyncio.get_event_loop()
-        try:
-
-            def _sync_extract():
-                text = ""
-                with pdfplumber.open(file_path) as pdf:
-                    for page in pdf.pages:
-                        page_text = page.extract_text()
-                        if page_text:
-                            text += page_text + "\n\n"
-                return text.strip()
-
-            return await loop.run_in_executor(None, _sync_extract)
-        except Exception as e:
-            logger.error(f"提取 PDF 文本失败: {str(e)}")
-            return ""
-
-    async def extract_tables(self, file_path: str, pages: str = "all") -> List[TableData]:
-        """提取 PDF 表格数据"""
-        loop = asyncio.get_event_loop()
-
-        def _sync_extract_tables():
-            tables = []
+    def _init_ocr_engine(self):
+        """延迟初始化 OCR 引擎"""
+        if self._ocr_engine is None:
             try:
-                camelot_tables = camelot.read_pdf(file_path, pages=pages, flavor="lattice")
-                for i, table in enumerate(camelot_tables):
-                    tables.append(
-                        TableData(
-                            page_num=table.page,
-                            table_index=i,
-                            data=table.data,
-                            bbox=table.bbox,
-                            confidence=table.accuracy / 100,
-                        )
-                    )
-            except Exception as e:
-                logger.warning(f"Camelot 提取表格失败，尝试使用 pdfplumber: {str(e)}")
-                try:
-                    with pdfplumber.open(file_path) as pdf:
-                        for page_num, page in enumerate(pdf.pages, 1):
-                            page_tables = page.extract_tables()
-                            for table_index, table in enumerate(page_tables):
-                                if table:
-                                    tables.append(
-                                        TableData(
-                                            page_num=page_num, table_index=table_index, data=table, confidence=0.8
-                                        )
-                                    )
-                except Exception as e2:
-                    logger.error(f"pdfplumber 提取表格失败: {str(e2)}")
-            return tables
+                import easyocr
 
-        return await loop.run_in_executor(None, _sync_extract_tables)
+                self._ocr_engine = easyocr.Reader([self.ocr_lang], gpu=False, verbose=False)
+                logger.info("OCR 引擎初始化成功")
+            except ImportError:
+                logger.warning("EasyOCR 未安装，OCR 功能将不可用")
+                self._ocr_engine = False
 
-    async def ocr_image(self, image: Image.Image) -> str:
-        """对单张图片进行 OCR"""
-        if not TESSERACT_AVAILABLE:
-            logger.warning("Tesseract 不可用，无法进行 OCR")
+    def _init_pdf_engine(self):
+        """延迟初始化 PDF 处理引擎"""
+        if self._pdf_engine is None:
+            try:
+                import fitz
+
+                self._pdf_engine = fitz
+                logger.info("PDF 引擎 (PyMuPDF) 初始化成功")
+            except ImportError:
+                logger.warning("PyMuPDF 未安装，PDF 处理功能将受限")
+                self._pdf_engine = False
+
+    def extract_text(self, file_path: str) -> str:
+        """提取 PDF 文本内容"""
+        self._init_pdf_engine()
+
+        if not self._pdf_engine:
+            raise RuntimeError("PDF 处理引擎未初始化，请安装 PyMuPDF: pip install pymupdf")
+
+        try:
+            doc = self._pdf_engine.open(file_path)
+            text_parts = []
+
+            for page_num in range(len(doc)):
+                page = doc[page_num]
+                text = page.get_text()
+
+                if not text.strip() and self.use_ocr:
+                    logger.info(f"页面 {page_num + 1} 无文本，使用 OCR 识别")
+                    text = self._ocr_page(page)
+
+                text_parts.append(text)
+
+            doc.close()
+            full_text = "\n\n".join(text_parts)
+            logger.info(f"PDF 文本提取完成: {len(full_text)} 字符")
+            return full_text
+
+        except Exception as e:
+            logger.error(f"PDF 文本提取失败: {str(e)}")
+            raise
+
+    def _ocr_page(self, page) -> str:
+        """对单个 PDF 页面进行 OCR 识别"""
+        self._init_ocr_engine()
+
+        if not self._ocr_engine:
+            logger.warning("OCR 引擎不可用")
             return ""
 
-        loop = asyncio.get_event_loop()
         try:
-            return await loop.run_in_executor(
-                None,
-                pytesseract.image_to_string,
-                image,
-                None,  # output_type
-                self._tesseract_config,
-                "chi_sim+eng",
-            )
+            pix = page.get_pixmap(dpi=300)
+            img_bytes = pix.tobytes("png")
+
+            results = self._ocr_engine.readtext(img_bytes)
+            text_parts = [result[1] for result in results]
+
+            return "\n".join(text_parts)
+
         except Exception as e:
             logger.error(f"OCR 识别失败: {str(e)}")
             return ""
 
-    async def ocr_pdf(self, file_path: str) -> str:
-        """对扫描件 PDF 进行 OCR"""
-        if not TESSERACT_AVAILABLE:
-            logger.warning("Tesseract 不可用，无法进行 OCR")
-            return ""
+    def extract_tables(self, file_path: str) -> List[Dict[str, Any]]:
+        """提取 PDF 中的表格"""
+        self._init_pdf_engine()
 
-        loop = asyncio.get_event_loop()
+        if not self._pdf_engine:
+            return []
+
         try:
+            doc = self._pdf_engine.open(file_path)
+            tables = []
 
-            def _sync_ocr_pdf():
-                doc = fitz.open(file_path)
-                full_text = ""
-                for page_num in range(len(doc)):
-                    page = doc.load_page(page_num)
-                    pix = page.get_pixmap()
-                    img_data = pix.tobytes("png")
-                    image = Image.open(io.BytesIO(img_data))
-                    text = pytesseract.image_to_string(image, config="--oem 3 --psm 6", lang="chi_sim+eng")
-                    full_text += text.strip() + "\n\n"
-                return full_text.strip()
+            for page_num in range(len(doc)):
+                page = doc[page_num]
 
-            return await loop.run_in_executor(None, _sync_ocr_pdf)
+                text = page.get_text()
+                table_blocks = self._detect_table_blocks(text)
+
+                for block in table_blocks:
+                    tables.append(
+                        {
+                            "page": page_num + 1,
+                            "content": block["content"],
+                            "rows": block.get("rows", 0),
+                            "cols": block.get("cols", 0),
+                            "bbox": block.get("bbox"),
+                        }
+                    )
+
+            doc.close()
+            logger.info(f"PDF 表格提取完成: {len(tables)} 个表格")
+            return tables
+
         except Exception as e:
-            logger.error(f"OCR PDF 失败: {str(e)}")
-            return ""
+            logger.error(f"PDF 表格提取失败: {str(e)}")
+            return []
 
-    async def extract_images(self, file_path: str) -> List[Dict[str, Any]]:
+    def _detect_table_blocks(self, text: str) -> List[Dict[str, Any]]:
+        """检测文本中的表格结构"""
+        lines = text.split("\n")
+        tables = []
+
+        current_table: list[str] = []
+        in_table = False
+
+        for line in lines:
+            if self._is_table_line(line):
+                if not in_table:
+                    in_table = True
+                    current_table = []
+                current_table.append(line)
+            else:
+                if in_table and current_table:
+                    tables.append(
+                        {
+                            "content": "\n".join(current_table),
+                            "rows": len(current_table),
+                            "cols": self._count_columns(current_table),
+                        }
+                    )
+                    current_table = []
+                    in_table = False
+
+        if current_table:
+            tables.append(
+                {
+                    "content": "\n".join(current_table),
+                    "rows": len(current_table),
+                    "cols": self._count_columns(current_table),
+                }
+            )
+
+        return tables
+
+    def _is_table_line(self, line: str) -> bool:
+        """判断是否为表格行"""
+        separators = ["|", "│", "┌", "┐", "└", "┘", "├", "┤", "─", "┼"]
+        has_separator = any(sep in line for sep in separators)
+        has_multiple_tabs = line.count("\t") >= 2
+
+        return has_separator or has_multiple_tabs
+
+    def _count_columns(self, lines: List[str]) -> int:
+        """计算表格列数"""
+        if not lines:
+            return 0
+
+        max_cols = 0
+        for line in lines:
+            cols = len([c for c in line.split("|") if c.strip()])
+            max_cols = max(max_cols, cols)
+
+        return max_cols
+
+    def extract_images(self, file_path: str, output_dir: Optional[str] = None) -> List[str]:
         """提取 PDF 中的图片"""
-        loop = asyncio.get_event_loop()
+        self._init_pdf_engine()
 
-        def _sync_extract_images():
-            images = []
-            try:
-                doc = fitz.open(file_path)
-                for page_num in range(len(doc)):
-                    page = doc.load_page(page_num)
-                    image_list = page.get_images(full=True)
-                    for img_index, img in enumerate(image_list):
-                        xref = img[0]
-                        base_image = doc.extract_image(xref)
-                        if base_image:
-                            images.append(
-                                {
-                                    "page_num": page_num + 1,
-                                    "index": img_index,
-                                    "width": base_image["width"],
-                                    "height": base_image["height"],
-                                    "format": base_image["ext"],
-                                    "size": len(base_image["image"]),
-                                }
-                            )
-            except Exception as e:
-                logger.error(f"提取图片失败: {str(e)}")
-            return images
+        if not self._pdf_engine:
+            return []
 
-        return await loop.run_in_executor(None, _sync_extract_images)
+        try:
+            doc = self._pdf_engine.open(file_path)
+            image_paths = []
 
-    async def get_metadata(self, file_path: str) -> Dict[str, Any]:
-        """获取 PDF 元数据"""
-        loop = asyncio.get_event_loop()
+            if output_dir is None:
+                output_dir = Path(file_path).parent / f"{Path(file_path).stem}_images"
+            else:
+                output_dir = Path(output_dir)
 
-        def _sync_get_metadata():
-            metadata = {}
-            try:
-                with pdfplumber.open(file_path) as pdf:
-                    info = pdf.metadata or {}
-                    metadata = {
-                        "title": info.get("Title", ""),
-                        "author": info.get("Author", ""),
-                        "subject": info.get("Subject", ""),
-                        "keywords": info.get("Keywords", ""),
-                        "creator": info.get("Creator", ""),
-                        "producer": info.get("Producer", ""),
-                        "creation_date": info.get("CreationDate", ""),
-                        "mod_date": info.get("ModDate", ""),
-                        "page_count": len(pdf.pages),
-                    }
-            except Exception as e:
-                logger.error(f"获取元数据失败: {str(e)}")
-            return metadata
+            output_dir.mkdir(parents=True, exist_ok=True)
 
-        return await loop.run_in_executor(None, _sync_get_metadata)
+            for page_num in range(len(doc)):
+                page = doc[page_num]
+                image_list = page.get_images(full=True)
 
-    async def process_pdf(self, file_path: str, enable_ocr: bool = False) -> PDFContent:
-        """完整处理 PDF 文件"""
-        tasks = [self.get_metadata(file_path), self.extract_tables(file_path), self.extract_images(file_path)]
+                for img_index, img in enumerate(image_list):
+                    xref = img[0]
+                    base_image = doc.extract_image(xref)
+                    image_bytes = base_image["image"]
+                    image_ext = base_image["ext"]
 
-        if enable_ocr:
-            tasks.append(self.ocr_pdf(file_path))
-            text_task = tasks[-1]
-        else:
-            tasks.append(self.extract_text(file_path))
-            text_task = tasks[-1]
+                    image_name = f"page{page_num + 1}_img{img_index + 1}.{image_ext}"
+                    image_path = output_dir / image_name
 
-        results = await asyncio.gather(*tasks)
+                    with open(image_path, "wb") as image_file:
+                        image_file.write(image_bytes)
 
-        return PDFContent(text=results[-1], tables=results[1], images=results[2], metadata=results[0])
+                    image_paths.append(str(image_path))
 
-    async def analyze_layout(self, file_path: str) -> List[TextBlock]:
-        """分析 PDF 布局结构"""
-        loop = asyncio.get_event_loop()
+            doc.close()
+            logger.info(f"PDF 图片提取完成: {len(image_paths)} 张图片")
+            return image_paths
 
-        def _sync_analyze_layout():
-            blocks = []
-            try:
-                doc = fitz.open(file_path)
-                for page_num in range(len(doc)):
-                    page = doc.load_page(page_num)
-                    text_blocks = page.get_text("dict")["blocks"]
-                    for block in text_blocks:
-                        if block["type"] == 0:  # 文本块
-                            for line in block["lines"]:
-                                for span in line["spans"]:
-                                    blocks.append(
-                                        TextBlock(
-                                            page_num=page_num + 1,
-                                            text=span["text"],
-                                            bbox=tuple(block["bbox"]),
-                                            font_size=span["size"],
-                                            font_name=span["font"],
-                                        )
-                                    )
-            except Exception as e:
-                logger.error(f"分析布局失败: {str(e)}")
-            return blocks
+        except Exception as e:
+            logger.error(f"PDF 图片提取失败: {str(e)}")
+            return []
 
-        return await loop.run_in_executor(None, _sync_analyze_layout)
+    def extract_metadata(self, file_path: str) -> Dict[str, Any]:
+        """提取 PDF 元数据"""
+        self._init_pdf_engine()
 
-    def tables_to_markdown(self, tables: List[TableData]) -> str:
-        """将表格数据转换为 Markdown 格式"""
-        markdown = ""
+        if not self._pdf_engine:
+            return {}
 
-        for table in tables:
-            markdown += f"## 表格 {table.table_index + 1} (第 {table.page_num} 页)\n\n"
+        try:
+            doc = self._pdf_engine.open(file_path)
+            metadata = doc.metadata
 
-            if table.data:
-                # 表头
-                markdown += "| " + " | ".join(table.data[0]) + " |\n"
-                markdown += "| " + " | ".join(["---"] * len(table.data[0])) + " |\n"
+            result = {
+                "title": metadata.get("title", ""),
+                "author": metadata.get("author", ""),
+                "subject": metadata.get("subject", ""),
+                "creator": metadata.get("creator", ""),
+                "producer": metadata.get("producer", ""),
+                "pages": len(doc),
+                "file_size": Path(file_path).stat().st_size,
+            }
 
-                # 数据行
-                for row in table.data[1:]:
-                    markdown += "| " + " | ".join(str(cell) for cell in row) + " |\n"
+            doc.close()
+            return result
 
-            markdown += "\n"
+        except Exception as e:
+            logger.error(f"PDF 元数据提取失败: {str(e)}")
+            return {}
 
-        return markdown.strip()
+    def process(self, file_path: str, extract_tables: bool = True, extract_images: bool = False) -> Dict[str, Any]:
+        """
+        完整处理 PDF 文件
+
+        Args:
+            file_path: PDF 文件路径
+            extract_tables: 是否提取表格
+            extract_images: 是否提取图片
+
+        Returns:
+            处理结果字典
+        """
+        result = {
+            "file_path": file_path,
+            "file_name": Path(file_path).name,
+            "metadata": self.extract_metadata(file_path),
+            "text": self.extract_text(file_path),
+            "tables": [],
+            "images": [],
+        }
+
+        if extract_tables:
+            result["tables"] = self.extract_tables(file_path)  # type: ignore[assignment]
+
+        if extract_images:
+            result["images"] = self.extract_images(file_path)
+
+        logger.info(f"PDF 处理完成: {file_path}")
+        return result
 
 
-# 全局 PDF 处理器实例
-pdf_processor = PDFProcessor()
+def process_pdf_file(
+    file_path: str,
+    use_ocr: bool = True,
+    extract_tables: bool = True,
+    extract_images: bool = False,
+) -> Dict[str, Any]:
+    """便捷函数：处理 PDF 文件"""
+    processor = PDFProcessor(use_ocr=use_ocr, table_detection=extract_tables)
+    return processor.process(file_path, extract_tables=extract_tables, extract_images=extract_images)
 
 
-async def process_pdf_file(file_path: str, enable_ocr: bool = False) -> Dict[str, Any]:
-    """处理 PDF 文件并返回结构化结果"""
-    content = await pdf_processor.process_pdf(file_path, enable_ocr)
-
-    return {
-        "text": content.text,
-        "tables": [
-            {"page_num": t.page_num, "table_index": t.table_index, "data": t.data, "confidence": t.confidence}
-            for t in content.tables
-        ],
-        "images": content.images,
-        "metadata": content.metadata,
-        "tables_markdown": pdf_processor.tables_to_markdown(content.tables),
-    }
-
-
-async def extract_pdf_tables(file_path: str) -> List[Dict[str, Any]]:
-    """提取 PDF 表格"""
-    tables = await pdf_processor.extract_tables(file_path)
-    return [
-        {"page_num": t.page_num, "table_index": t.table_index, "data": t.data, "confidence": t.confidence}
-        for t in tables
-    ]
-
-
-async def ocr_scanned_pdf(file_path: str) -> str:
-    """对扫描件 PDF 进行 OCR"""
-    return await pdf_processor.ocr_pdf(file_path)
+def extract_pdf_text(file_path: str, use_ocr: bool = True) -> str:
+    """便捷函数：提取 PDF 文本"""
+    processor = PDFProcessor(use_ocr=use_ocr)
+    return processor.extract_text(file_path)

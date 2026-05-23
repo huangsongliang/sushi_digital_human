@@ -8,11 +8,34 @@ from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.openapi.models import OAuthFlows, SecurityScheme
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer
 
-from backend.api import ab_test_router, alerts_router, auth_router, chat_router, dify_router, documents_router
-from backend.api.agent import router as agent_router
-from backend.api.summary import router as summary_router
+from backend.api import (
+    ab_test_router,
+    agent_router,
+    agents_router,
+    alerts_router,
+    audit_router,
+    auth_router,
+    chart_router,
+    chat_router,
+    cicd_router,
+    debug_router,
+    deployment_router,
+    dify_router,
+    document_router,
+    documents_router,
+    knowledge_graph_router,
+    multimodal_router,
+    permission_router,
+    summary_router,
+    tracing_router,
+    versioning_router,
+    workflow_router,
+)
+from backend.api.versioning import VersionMiddleware
 from backend.core.config import settings
 from backend.database.session import async_initialize_database
 from backend.middleware.security import (
@@ -102,15 +125,112 @@ async def lifespan(app: FastAPI):
     logger.info("应用已优雅关闭")
 
 
+# OpenAPI 安全方案配置
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token", auto_error=False)
+
+openapi_tags = [
+    {"name": "认证", "description": "用户认证相关接口，包括登录、注册、令牌管理"},
+    {"name": "聊天", "description": "文档问答聊天接口，支持 RAG 检索增强"},
+    {"name": "文档管理", "description": "文档上传、管理、检索相关接口"},
+    {"name": "文档处理", "description": "文档处理、解析、分块相关接口"},
+    {"name": "多模态问答", "description": "支持图片理解的多模态问答接口"},
+    {"name": "工作流", "description": "工作流定义、执行、管理接口"},
+    {"name": "Agent", "description": "智能代理相关接口"},
+    {"name": "权限管理", "description": "权限授予、检查、角色管理接口"},
+    {"name": "审计日志", "description": "系统操作审计、安全事件追踪接口"},
+    {"name": "监控告警", "description": "系统监控、告警、错误追踪接口"},
+    {"name": "追踪", "description": "性能追踪、错误分析、链路追踪接口"},
+    {"name": "部署", "description": "模型部署、版本管理、流量控制接口"},
+    {"name": "A/B测试", "description": "A/B测试配置、流量分配接口"},
+    {"name": "图表", "description": "图表解析、数据提取接口"},
+    {"name": "CICD", "description": "测试、验证、部署流水线接口"},
+    {"name": "调试", "description": "调试工具、断点管理接口"},
+    {"name": "Dify集成", "description": "Dify 平台集成接口"},
+    {"name": "知识图谱", "description": "知识图谱查询、构建接口"},
+    {"name": "总结", "description": "文档摘要、总结生成接口"},
+    {"name": "健康检查", "description": "服务健康状态检查接口"},
+]
+
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="企业级智能文档问答平台 API - 基于 RAG 的企业级知识库问答系统",
+    description="""
+# 企业级智能文档问答平台 API
+
+基于 RAG（检索增强生成）技术的企业级知识库问答系统，提供以下核心能力：
+
+## 核心功能模块
+
+### 文档问答
+- 支持多种文档格式（PDF、Word、Excel、Markdown等）
+- 智能分块与向量检索
+- 混合检索（向量+BM25）与重排序
+
+### 多模态能力
+- 图片理解与描述
+- OCR文字提取
+- 多模态问答
+
+### 工作流引擎
+- 可视化工作流定义
+- 任务编排与执行
+- 条件分支与循环
+
+### 智能代理
+- 角色化 Agent
+- 多 Agent 协作
+- 任务拆分与并行执行
+
+### 监控与运维
+- 性能追踪与分析
+- 错误追踪与聚合
+- 实时告警系统
+
+## 安全特性
+- JWT 身份认证
+- 细粒度权限控制
+- 审计日志记录
+- 请求限流与并发控制
+
+## API 版本
+当前版本: v1
+
+## 认证方式
+使用 OAuth2 Bearer Token 进行认证，获取令牌后在请求头中添加:
+```
+Authorization: Bearer <token>
+```
+""",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
     lifespan=lifespan,
+    openapi_tags=openapi_tags,
 )
+
+# OpenAPI 安全方案配置
+app.openapi_schema = None
+
+
+def custom_openapi():
+    """自定义 OpenAPI schema，添加安全方案"""
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = app.openapi()
+    openapi_schema["components"]["securitySchemes"] = {
+        "BearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+            "description": "使用 JWT Token 进行认证，格式: Bearer <token>",
+        }
+    }
+    openapi_schema["security"] = [{"BearerAuth": []}]
+    app.openapi_schema = openapi_schema
+    return openapi_schema
+
+
+app.openapi = custom_openapi
 
 # 请求体大小限制
 app.state.max_request_size = 10 * 1024 * 1024  # 10MB
@@ -139,6 +259,9 @@ app.add_middleware(SQLInjectionProtectionMiddleware)
 # XSS防护中间件
 app.add_middleware(XSSProtectionMiddleware)
 
+# API 版本管理中间件
+app.add_middleware(VersionMiddleware)
+
 
 # 限流中间件（性能保护）
 @app.middleware("http")
@@ -165,12 +288,26 @@ async def add_request_count_middleware(request, call_next):
 # 注册路由
 app.include_router(chat_router)
 app.include_router(ab_test_router)
+app.include_router(agents_router)
+app.include_router(deployment_router)
 app.include_router(dify_router)
 app.include_router(documents_router)
 app.include_router(auth_router)
 app.include_router(alerts_router)
 app.include_router(agent_router)
 app.include_router(summary_router)
+app.include_router(knowledge_graph_router)
+app.include_router(chart_router)
+app.include_router(workflow_router)
+app.include_router(debug_router)
+app.include_router(cicd_router)
+# 新增路由注册
+app.include_router(audit_router)
+app.include_router(document_router)
+app.include_router(multimodal_router)
+app.include_router(permission_router)
+app.include_router(tracing_router)
+app.include_router(versioning_router)
 
 # 设置全局异常处理器
 setup_exception_handlers(app)

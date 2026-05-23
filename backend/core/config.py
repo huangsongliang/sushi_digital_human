@@ -102,6 +102,23 @@ class Settings(BaseSettings):
     login_max_attempts: int = Field(default=5, ge=1, description="登录最大失败次数")
     login_lockout_minutes: int = Field(default=15, ge=1, description="登录锁定时间（分钟）")
 
+    # API 版本管理配置
+    api_default_version: str = Field(default="v1", description="默认 API 版本")
+    api_supported_versions: List[str] = Field(default=["v1"], description="支持的 API 版本列表")
+    api_version_header: str = Field(default="X-API-Version", description="版本头名称")
+
+    # 权限控制配置
+    enable_rbac: bool = Field(default=True, description="是否启用 RBAC 权限控制")
+    permission_cache_ttl: int = Field(default=300, description="权限缓存过期时间（秒）")
+
+    # 审计日志配置
+    audit_log_enabled: bool = Field(default=True, description="是否启用审计日志")
+    audit_log_retention_days: int = Field(default=90, description="审计日志保留天数")
+
+    # 追踪配置
+    tracing_enabled: bool = Field(default=True, description="是否启用分布式追踪")
+    tracing_sample_rate: float = Field(default=1.0, ge=0, le=1, description="追踪采样率")
+
     @field_validator("log_level")
     @classmethod
     def validate_log_level(cls, v: str) -> str:
