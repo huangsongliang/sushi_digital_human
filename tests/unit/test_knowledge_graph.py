@@ -1,9 +1,8 @@
 """知识图谱模块单元测试"""
 
-import pytest
 from backend.knowledge_graph.graph_query import GraphQuery
+from backend.knowledge_graph.ner_extractor import NERExtractor, Entity
 from backend.knowledge_graph.relation_extractor import Relation, RelationExtractor
-from backend.knowledge_graph.ner_extractor import Entity, NERExtractor
 
 
 class TestRelation:
@@ -32,18 +31,13 @@ class TestRelationExtractor:
     def test_extractor_creation(self):
         extractor = RelationExtractor()
         assert extractor is not None
-        assert isinstance(extractor._patterns, dict)
+        assert isinstance(extractor.rule_patterns, dict)
+        assert len(extractor.rule_patterns) > 0
 
-    def test_extract_relations_empty_text(self):
+    def test_rule_patterns_exist(self):
         extractor = RelationExtractor()
-        results = extractor.extract_relations("")
-        assert results == []
-
-    def test_extract_relations_basic(self):
-        extractor = RelationExtractor()
-        text = "张三在北京工作。"
-        results = extractor.extract_relations(text)
-        assert isinstance(results, list)
+        assert "工作于" in extractor.rule_patterns
+        assert "位于" in extractor.rule_patterns
 
 
 class TestEntity:

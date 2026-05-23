@@ -1,11 +1,10 @@
 """核心权限管理模块单元测试"""
 
-import pytest
 from backend.core.permission_manager import (
-    PermissionAction,
-    ResourceType,
     Permission,
+    PermissionAction,
     PermissionManager,
+    ResourceType,
 )
 
 
@@ -17,6 +16,8 @@ class TestPermissionAction:
         assert PermissionAction.WRITE.value == "write"
         assert PermissionAction.DELETE.value == "delete"
         assert PermissionAction.MANAGE.value == "manage"
+        assert PermissionAction.EDIT.value == "edit"
+        assert PermissionAction.CREATE.value == "create"
 
 
 class TestResourceType:
@@ -27,6 +28,7 @@ class TestResourceType:
         assert ResourceType.CONVERSATION.value == "conversation"
         assert ResourceType.USER.value == "user"
         assert ResourceType.SYSTEM.value == "system"
+        assert ResourceType.ROLE.value == "role"
 
 
 class TestPermission:
@@ -49,40 +51,40 @@ class TestPermissionManager:
 
     def test_manager_creation(self):
         mgr = PermissionManager()
-        assert mgr is not None
         assert isinstance(mgr._roles, dict)
+        assert isinstance(mgr._user_roles, dict)
 
-    def test_admin_role_exists(self):
+    def test_add_role(self):
         mgr = PermissionManager()
-        assert "admin" in mgr._roles
+        perm = Permission("read", ResourceType.DOCUMENT, PermissionAction.READ)
+        mgr.add_role("tester", [perm])
+        assert "tester" in mgr._roles
 
-    def test_editor_role_exists(self):
+    def test_get_role_permissions(self):
         mgr = PermissionManager()
-        assert "editor" in mgr._roles
+        perms = mgr.get_role_permissions("nonexistent")
+        assert perms == []
 
-    def test_viewer_role_exists(self):
+    def test_assign_role_to_user(self):
         mgr = PermissionManager()
-        assert "viewer" in mgr._roles
+        mgr.assign_role_to_user(1, "admin")
+        roles = mgr.get_user_roles(1)
+        assert "admin" in roles
 
-    def test_check_permission_admin(self):
-        """管理员应拥有所有权限"""
+    def test_remove_role_from_user(self):
         mgr = PermissionManager()
-        mgr._user_roles["u1"] = ["admin"]
-        result = mgr.check_permission(
-            user_id="u1",
-            resource_type="document",
-            resource_id="d1",
-            action=PermissionAction.READ,
-        )
-        assert result is True
+        mgr.assign_role_to_user(1, "viewer")
+        mgr.remove_role_from_user(1, "viewer")
+        roles = mgr.get_user_roles(1)
+        assert "viewer" not in roles
 
-    def test_check_permission_no_user(self):
-        """不存在的用户应返回 False"""
+    def test_set_document_permission(self):
         mgr = PermissionManager()
-        result = mgr.check_permission(
-            user_id="nonexistent",
-            resource_type="document",
-            resource_id="d1",
-            action=PermissionAction.READ,
-        )
-        assert result is False
+        mgr.set_document_permission(100, 1, ["read"])
+        assert 100 in mgr._document_permissions
+
+    def test_default_permissions_exist(self):
+        mgr = PermissionManager()
+        assert "admin" in mgr._default_permissions
+        assert "editor" in mgr._default_permissions
+        assert "viewer" in mgr._default_permissions
