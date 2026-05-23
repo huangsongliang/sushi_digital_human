@@ -35,14 +35,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Create virtual environment
-        run: uv venv
-
       - name: Install lint dependencies
-        run: uv pip install flake8
+        run: pip install flake8
 
       - name: Run flake8
-        run: uv run flake8 backend/
+        run: flake8 backend/
 
   # ==================== 前端代码质量 ====================
   frontend-lint:
