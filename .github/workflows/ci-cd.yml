@@ -31,6 +31,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Create virtual environment
+        run: uv venv
+
       - name: Install lint dependencies only
         run: uv pip install flake8 mypy
 
