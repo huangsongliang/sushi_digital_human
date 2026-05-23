@@ -233,23 +233,37 @@ jobs:
           name: frontend-dist
           path: frontend/dist/
 
+      - name: Check KUBE_CONFIG secret
+        id: check-kubeconfig
+        run: |
+          if [ -z "${{ secrets.KUBE_CONFIG }}" ]; then
+            echo "available=false" >> $GITHUB_OUTPUT
+            echo "⚠️ KUBE_CONFIG secret not configured, skipping deploy"
+          else
+            echo "available=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Set up kubectl
+        if: steps.check-kubeconfig.outputs.available == 'true'
         uses: azure/setup-kubectl@v4
         with:
           version: 'latest'
 
       - name: Configure kubeconfig
+        if: steps.check-kubeconfig.outputs.available == 'true'
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
       - name: Set up Helm
+        if: steps.check-kubeconfig.outputs.available == 'true'
         uses: azure/setup-helm@v4
         with:
           version: 'latest'
 
       - name: Helm Deploy
+        if: steps.check-kubeconfig.outputs.available == 'true'
         run: |
           helm upgrade --install sushi-digital-human helm/sushi-digital-human \
             --namespace sushi-prod \
@@ -263,6 +277,7 @@ jobs:
             --timeout 10m
 
       - name: Verify deployment
+        if: steps.check-kubeconfig.outputs.available == 'true'
         run: |
           kubectl rollout status deployment/sushi-digital-human-api -n sushi-prod --timeout=5m
           kubectl rollout status deployment/sushi-digital-human-nginx -n sushi-prod --timeout=5m
@@ -285,7 +300,7 @@ jobs:
 
       - name: Start services
         run: |
-          docker compose -f docker-compose.prod.yml up -d redis api
+          docker compose -f docker-compose.prod.yml up -d --scale api=1 redis api
           sleep 30
 
       - name: Health check
