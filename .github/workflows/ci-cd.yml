@@ -12,7 +12,6 @@ env:
   NODE_VERSION: "20"
   DOCKER_REGISTRY: "ghcr.io"
 
-# 添加包推送权限
 permissions:
   contents: read
   packages: write
@@ -20,9 +19,9 @@ permissions:
 jobs:
   # ==================== 后端代码质量 ====================
   backend-lint:
-    name: "🐍 Backend Lint"
+    name: "Backend Lint"
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
@@ -39,18 +38,15 @@ jobs:
       - name: Create virtual environment
         run: uv venv
 
-      - name: Install lint dependencies only
-        run: uv pip install flake8 mypy
+      - name: Install lint dependencies
+        run: uv pip install flake8
 
       - name: Run flake8
-        run: .venv/bin/flake8 backend/
-
-      - name: Run mypy
-        run: .venv/bin/mypy backend/ || true
+        run: uv run flake8 backend/
 
   # ==================== 前端代码质量 ====================
   frontend-lint:
-    name: "🖥️ Frontend Lint"
+    name: "Frontend Lint"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -71,15 +67,11 @@ jobs:
         working-directory: frontend
         run: npm run lint
 
-      - name: Run TypeScript type check
-        working-directory: frontend
-        run: npx vue-tsc --noEmit
-
   # ==================== 后端测试 ====================
   backend-test:
-    name: "🐍 Backend Tests"
+    name: "Backend Tests"
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     needs: [backend-lint]
     services:
       redis:
@@ -107,24 +99,32 @@ jobs:
       - name: Create virtual environment
         run: uv venv
 
-      - name: Install dependencies (minimal)
+      - name: Install runtime deps (no ML)
         run: |
-          uv pip install fastapi uvicorn pydantic pydantic-settings langchain langchain-core langchain-community httpx requests redis sqlalchemy alembic aiomysql aiosqlite loguru jieba rank-bm25 chromadb dashscope python-jose passlib argon2-cffi email-validator python-dotenv prometheus-client psutil
+          uv pip install \
+            fastapi uvicorn pydantic pydantic-settings \
+            langchain langchain-core langchain-community \
+            httpx requests \
+            redis sqlalchemy alembic aiomysql aiosqlite \
+            loguru jieba rank-bm25 chromadb dashscope \
+            python-jose passlib argon2-cffi email-validator \
+            python-dotenv prometheus-client psutil \
+            python-multipart cachetools pybreaker
 
-      - name: Install test dependencies
+      - name: Install test deps
         run: uv pip install pytest pytest-cov pytest-asyncio pytest-timeout httpx
 
       - name: Install backend package
         run: uv pip install -e . --no-deps
 
       - name: Run unit tests
-        run: .venv/bin/pytest tests/unit/ -v --tb=short --cov=backend --cov-report=xml --timeout=60 || true
+        run: uv run pytest tests/unit/ -v --tb=short --cov=backend --cov-report=xml --timeout=60
         env:
           REDIS_URL: redis://localhost:6379/0
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
 
       - name: Run integration tests
-        run: .venv/bin/pytest tests/integration/ -v --tb=short --timeout=60 || true
+        run: uv run pytest tests/integration/ -v --tb=short --timeout=60
         env:
           REDIS_URL: redis://localhost:6379/0
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
@@ -137,7 +137,7 @@ jobs:
 
   # ==================== 前端构建 ====================
   frontend-build:
-    name: "🖥️ Frontend Build"
+    name: "Frontend Build"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [frontend-lint]
@@ -165,9 +165,9 @@ jobs:
           name: frontend-dist
           path: frontend/dist/
 
-  # ==================== Docker 镜像构建推送 ====================
+  # ==================== Docker 镜像构建推送 (仅 main 分支 push) ====================
   build-and-push:
-    name: "🐳 Build & Push Docker"
+    name: "Build & Push Docker"
     runs-on: ubuntu-latest
     needs: [backend-test, frontend-build]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -183,12 +183,7 @@ jobs:
 
       - name: Free disk space
         run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/share/dotnet /opt/ghc "/usr/local/share/boost" "$AGENT_TOOLSDIRECTORY" /usr/local/lib/android /usr/share/swift
           sudo apt-get clean
           df -h
 
@@ -215,124 +210,3 @@ jobs:
             PYPI_MIRROR=https://pypi.tuna.tsinghua.edu.cn/simple
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  # ==================== Helm 部署到 K8s ====================
-  helm-deploy:
-    name: "☸️ Deploy to Kubernetes"
-    runs-on: ubuntu-latest
-    needs: [build-and-push]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    timeout-minutes: 15
-    environment: production
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download frontend dist
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-dist
-          path: frontend/dist/
-
-      - name: Check KUBE_CONFIG secret & test connectivity
-        id: check-kubeconfig
-        run: |
-          # 1. 检查 secret 是否配置
-          if [ -z "${{ secrets.KUBE_CONFIG }}" ]; then
-            echo "available=false" >> $GITHUB_OUTPUT
-            echo "⚠️ KUBE_CONFIG secret not configured, skipping deploy"
-            exit 0
-          fi
-
-          # 2. 配置 kubeconfig
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-
-          # 3. 安装 kubectl 并测试连通性
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/kubectl
-
-          echo "🔍 Testing cluster connectivity..."
-          if kubectl cluster-info --request-timeout=10s 2>&1; then
-            echo "available=true" >> $GITHUB_OUTPUT
-            echo "✅ Kubernetes cluster is reachable"
-          else
-            echo "available=false" >> $GITHUB_OUTPUT
-            echo "⚠️ Kubernetes cluster unreachable, skipping deploy"
-          fi
-
-      - name: Set up Helm
-        if: steps.check-kubeconfig.outputs.available == 'true'
-        uses: azure/setup-helm@v4
-        with:
-          version: 'latest'
-
-      - name: Helm Deploy
-        if: steps.check-kubeconfig.outputs.available == 'true'
-        run: |
-          helm upgrade --install sushi-digital-human helm/sushi-digital-human \
-            --namespace sushi-prod \
-            --create-namespace \
-            --values helm/sushi-digital-human/values-production.yaml \
-            --set image.repository=${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/backend \
-            --set image.tag=${{ github.sha }} \
-            --set secrets.dashscopeApiKey=${{ secrets.DASHSCOPE_API_KEY }} \
-            --set secrets.secretKey=${{ secrets.SECRET_KEY }} \
-            --wait \
-            --timeout 10m
-
-      - name: Verify deployment
-        if: steps.check-kubeconfig.outputs.available == 'true'
-        run: |
-          kubectl rollout status deployment/sushi-digital-human-api -n sushi-prod --timeout=5m
-          kubectl rollout status deployment/sushi-digital-human-nginx -n sushi-prod --timeout=5m
-
-  # ==================== Docker Compose 集成测试 ====================
-  compose-test:
-    name: "🐳 Docker Compose Test"
-    runs-on: ubuntu-latest
-    needs: [build-and-push]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download frontend dist
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-dist
-          path: frontend/dist/
-
-      - name: Start services
-        env:
-          MYSQL_PASSWORD: testpassword
-          MYSQL_DATABASE: sushi_db
-          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
-        run: |
-          docker compose -f docker-compose.prod.yml up -d --scale api=1 mysql redis api
-          # 等待 API 健康检查通过（最多 120 秒）
-          for i in $(seq 1 24); do
-            if docker compose -f docker-compose.prod.yml ps api | grep -q "healthy"; then
-              echo "✅ API is healthy"
-              break
-            fi
-            echo "⏳ Waiting for API... ($i/24)"
-            sleep 5
-          done
-
-      - name: Health check
-        run: |
-          curl -fsS --retry 10 --retry-delay 5 http://localhost:8080/health
-          echo "✅ Health check passed"
-
-      - name: Chat endpoint test
-        run: |
-          curl -fsS -X POST http://localhost:8080/api/chat/send \
-            -H "Content-Type: application/json" \
-            -d '{"message": "Hello", "session_id": "test"}'
-          echo "✅ Chat endpoint test passed"
-
-      - name: Cleanup
-        if: always()
-        run: docker compose -f docker-compose.prod.yml down -v

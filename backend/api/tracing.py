@@ -116,7 +116,7 @@ async def list_errors(
 @router.get("/errors/aggregated")
 async def get_aggregated_errors(
     min_count: int = Query(default=1, ge=1),
-    sort_by: str = Query(default="count", regex="^(count|frequency|last_occurrence)$"),
+    sort_by: str = Query(default="count", pattern="^(count|frequency|last_occurrence)$"),
 ):
     """获取聚合后的错误信息
 
@@ -207,7 +207,7 @@ async def get_request_trace(request_id: str):
 
 
 @router.get("/performance/bottlenecks")
-async def get_performance_bottlenecks(severity: Optional[str] = Query(default=None, regex="^(warning|critical)$")):
+async def get_performance_bottlenecks(severity: Optional[str] = Query(default=None, pattern="^(warning|critical)$")):
     """获取性能瓶颈列表
 
     Args:

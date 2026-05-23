@@ -144,10 +144,14 @@ async def extract_entities(request: EntityExtractRequest):
     从文本中抽取命名实体
     """
     try:
+        logger.info(f"收到实体抽取请求: text_length={len(request.text)}, text={request.text[:100]}...")
+
         extractor = get_ner_extractor()
         entities = extractor.extract_entities(request.text, request.entities_filter)
 
         stats = extractor.get_entity_stats(entities)
+
+        logger.info(f"实体抽取完成: count={len(entities)}, stats={stats}")
 
         return EntityExtractResponse(entities=entities, count=len(entities), stats=stats)
 

@@ -2,15 +2,69 @@
 实现基于 RBAC + ABAC 的细粒度权限控制
 """
 
+import functools
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 from uuid import uuid4
 
 from backend.models.database import db
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+
+def require_permission(
+    resource_type: PermissionResource,
+    action: PermissionAction,
+    resource_id_param: str = "resource_id",
+):
+    """权限检查装饰器"""
+
+    def decorator(func: Callable):
+        @functools.wraps(func)
+        async def wrapper(*args, **kwargs):
+            from fastapi import HTTPException, Request
+
+            request = None
+            for arg in args:
+                if isinstance(arg, Request):
+                    request = arg
+                    break
+
+            if not request:
+                for key, value in kwargs.items():
+                    if isinstance(value, Request):
+                        request = value
+                        break
+
+            if not request:
+                raise HTTPException(status_code=500, detail="无法获取请求对象")
+
+            user_id = getattr(request.state, "user_id", None)
+            if not user_id:
+                raise HTTPException(status_code=401, detail="未认证")
+
+            resource_id = kwargs.get(resource_id_param)
+            if not resource_id:
+                raise HTTPException(status_code=400, detail=f"缺少参数: {resource_id_param}")
+
+            perm_manager = get_permission_manager()
+            has_permission = perm_manager.check_permission(
+                user_id=str(user_id),
+                resource_type=resource_type,
+                resource_id=str(resource_id),
+                action=action,
+            )
+
+            if not has_permission:
+                raise HTTPException(status_code=403, detail=f"权限不足: 需要 {resource_type.value}:{action.value} 权限")
+
+            return await func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 class PermissionAction(str, Enum):
@@ -67,7 +121,80 @@ class PermissionManager:
             self.cache[cache_key] = True
             return True
 
+        if resource_type == PermissionResource.DOCUMENT:
+            if self._check_folder_inheritance(user_id, resource_id, action):
+                self.cache[cache_key] = True
+                return True
+
         self.cache[cache_key] = False
+        return False
+
+    def _check_folder_inheritance(
+        self,
+        user_id: str,
+        document_id: str,
+        action: PermissionAction,
+    ) -> bool:
+        """检查文件夹继承权限"""
+        try:
+            result = db.execute(
+                """
+                SELECT f.parent_folder_id
+                FROM documents d
+                JOIN folders f ON d.folder_id = f.id
+                WHERE d.id = %s
+                """,
+                (document_id,),
+            )
+
+            folder_id = result.fetchone()
+            if not folder_id:
+                return False
+
+            folder_id = folder_id[0]
+
+            return self._check_folder_acl_recursive(user_id, folder_id, action)
+
+        except Exception as e:
+            logger.error(f"检查文件夹继承权限失败: {str(e)}")
+            return False
+
+    def _check_folder_acl_recursive(
+        self,
+        user_id: str,
+        folder_id: str,
+        action: PermissionAction,
+        visited: set = None,
+    ) -> bool:
+        """递归检查文件夹及其父文件夹的 ACL"""
+        if visited is None:
+            visited = set()
+
+        if folder_id in visited:
+            return False
+
+        visited.add(folder_id)
+
+        if self._check_resource_acl(user_id, PermissionResource.FOLDER, folder_id, action):
+            return True
+
+        try:
+            result = db.execute(
+                """
+                SELECT parent_folder_id
+                FROM folders
+                WHERE id = %s
+                """,
+                (folder_id,),
+            )
+
+            parent_id = result.fetchone()
+            if parent_id and parent_id[0]:
+                return self._check_folder_acl_recursive(user_id, parent_id[0], action, visited)
+
+        except Exception as e:
+            logger.error(f"递归检查文件夹权限失败: {str(e)}")
+
         return False
 
     def _get_user_roles(self, user_id: str) -> List[str]:
@@ -85,9 +212,7 @@ class PermissionManager:
             logger.error(f"获取用户角色失败: {str(e)}")
             return []
 
-    def _role_has_permission(
-        self, role_id: str, resource_type: PermissionResource, action: PermissionAction
-    ) -> bool:
+    def _role_has_permission(self, role_id: str, resource_type: PermissionResource, action: PermissionAction) -> bool:
         """检查角色是否有权限"""
         try:
             result = db.execute(
@@ -279,9 +404,7 @@ class PermissionManager:
             )
 
             for perm in permissions:
-                perm_id = self._get_or_create_permission(
-                    perm["resource_type"], perm["action"]
-                )
+                perm_id = self._get_or_create_permission(perm["resource_type"], perm["action"])
 
                 if perm_id:
                     db.execute(
@@ -301,9 +424,7 @@ class PermissionManager:
             db.rollback()
             return None
 
-    def _get_or_create_permission(
-        self, resource_type: str, action: str
-    ) -> Optional[str]:
+    def _get_or_create_permission(self, resource_type: str, action: str) -> Optional[str]:
         """获取或创建权限"""
         try:
             result = db.execute(

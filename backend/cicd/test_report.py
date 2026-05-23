@@ -232,13 +232,26 @@ class TestReportGenerator:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{report.report_name}</title>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0; padding: 20px; background: #f5f5f5;
+        }}
         .container {{ max-width: 1200px; margin: 0 auto; }}
-        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; }}
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px;
+        }}
         .header h1 {{ margin: 0; font-size: 28px; }}
         .header p {{ margin: 10px 0 0; opacity: 0.9; }}
-        .summary-cards {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }}
-        .summary-card {{ background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+        .summary-cards {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px; margin-bottom: 20px;
+        }}
+        .summary-card {{
+            background: white; padding: 20px;
+            border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
         .summary-card .label {{ color: #666; font-size: 14px; margin-bottom: 8px; }}
         .summary-card .value {{ font-size: 28px; font-weight: bold; }}
         .summary-card.pass {{ color: #10b981; }}
@@ -256,7 +269,11 @@ class TestReportGenerator:
         .score-fill.high {{ background: #10b981; }}
         .score-fill.medium {{ background: #f59e0b; }}
         .score-fill.low {{ background: #ef4444; }}
-        .trend-section {{ background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 20px; margin-top: 20px; }}
+        .trend-section {{
+            background: white; border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px; margin-top: 20px;
+        }}
         .trend-section h2 {{ margin: 0 0 16px; color: #333; }}
         .trend-chart {{ height: 200px; background: #f8f9fa; border-radius: 8px; position: relative; }}
         .generated-time {{ text-align: center; color: #999; font-size: 14px; margin-top: 20px; }}
@@ -402,8 +419,12 @@ class TestReportGenerator:
             <polyline points="{score_fill_points}" fill="url(#scoreGradient)" />
             <text x="2" y="12" font-size="8" fill="#666">通过率</text>
             <text x="2" y="24" font-size="8" fill="#666">平均分</text>
-            <line x1="0" y1="{chart_height - (80/100)*chart_height}" x2="{chart_width}" y2="{chart_height - (80/100)*chart_height}" stroke="#ddd" stroke-width="0.5" stroke-dasharray="2,2" />
-            <line x1="0" y1="{chart_height - (60/100)*chart_height}" x2="{chart_width}" y2="{chart_height - (60/100)*chart_height}" stroke="#ddd" stroke-width="0.5" stroke-dasharray="2,2" />
+            <line x1="0" y1="{chart_height - (80/100)*chart_height}"
+                  x2="{chart_width}" y2="{chart_height - (80/100)*chart_height}"
+                  stroke="#ddd" stroke-width="0.5" stroke-dasharray="2,2" />
+            <line x1="0" y1="{chart_height - (60/100)*chart_height}"
+                  x2="{chart_width}" y2="{chart_height - (60/100)*chart_height}"
+                  stroke="#ddd" stroke-width="0.5" stroke-dasharray="2,2" />
             <text x="2" y="{chart_height - (80/100)*chart_height + 4}" font-size="6" fill="#999">80</text>
             <text x="2" y="{chart_height - (60/100)*chart_height + 4}" font-size="6" fill="#999">60</text>
         </svg>
