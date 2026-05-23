@@ -7,7 +7,7 @@ services:
     image: mysql:8.0
     container_name: sushi-mysql
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-7531188}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-sushi_db}
@@ -92,7 +92,7 @@ services:
       - 8.8.8.8
       - 1.1.1.1
     ports:
-      - "8080:8000"
+      - "8082:8000"
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -102,7 +102,7 @@ services:
       redis:
         condition: service_healthy
     deploy:
-      replicas: 3
+      replicas: 1  # 非 Swarm 模式仅支持单副本
       resources:
         limits:
           cpus: '2'
@@ -120,7 +120,7 @@ services:
         delay: 30s
         order: start-first
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health/readiness"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 15s
       timeout: 10s
       retries: 3
