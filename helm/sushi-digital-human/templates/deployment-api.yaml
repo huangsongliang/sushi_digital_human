@@ -45,7 +45,11 @@ spec:
                   key: secret-key
             {{- if .Values.mysql.enabled }}
             - name: MYSQL_PASSWORD
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "sushi-digital-human.fullname" . }}-mysql
+                  key: mysql-root-password
+                  optional: true
             {{- end }}
           resources:
             {{- toYaml .Values.resources.api | nindent 12 }}

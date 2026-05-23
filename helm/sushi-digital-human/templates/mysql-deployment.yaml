@@ -1,3 +1,4 @@
+{{- if .Values.mysql.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -9,10 +10,9 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 8Gi
+      storage: {{ .Values.mysql.primary.persistence.size | default "8Gi" }}
   storageClassName: hostpath
 ---
-{{- if .Values.mysql.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

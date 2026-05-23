@@ -87,6 +87,8 @@ secrets:
   dashscopeApiKey: ""
   secretKey: ""
   mysqlPassword: ""
+  githubClientId: ""
+  githubClientSecret: ""
 
 # ==================== 健康检查 ====================
 healthCheck:
