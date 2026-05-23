@@ -2,6 +2,36 @@
 # 包含：Redis + API (多实例) + Nginx 负载均衡 + 监控 + 日志收集
 
 services:
+  # ==================== MySQL 数据库 ====================
+  mysql:
+    image: mysql:8.0
+    container_name: sushi-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-7531188}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-sushi_db}
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD:-7531188}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - sushi-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
   # ==================== Redis 缓存 ====================
   redis:
     image: redis:7-alpine
@@ -42,7 +72,11 @@ services:
       dockerfile: Dockerfile
       target: production
     environment:
-      - DATABASE_URL=${DATABASE_URL:-mysql+pymysql://root:7531188@host.docker.internal:3306/sushi_db}
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-7531188}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-sushi_db}
       - ENV=production
       - REDIS_URL=redis://redis:6379/0
       - USE_REDIS_STORAGE=true
@@ -63,6 +97,8 @@ services:
       - ./data:/app/data
       - ./logs:/app/logs
     depends_on:
+      mysql:
+        condition: service_healthy
       redis:
         condition: service_healthy
     deploy:
@@ -210,6 +246,8 @@ networks:
 
 # ==================== 数据卷 ====================
 volumes:
+  mysql-data:
+    driver: local
   redis-data:
     driver: local
   nginx-logs:
