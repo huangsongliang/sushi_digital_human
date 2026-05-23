@@ -2,6 +2,8 @@
 实现基于 RBAC + ABAC 的细粒度权限控制
 """
 
+from __future__ import annotations
+
 import functools
 from datetime import datetime
 from enum import Enum
