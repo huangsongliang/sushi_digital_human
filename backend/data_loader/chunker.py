@@ -1,8 +1,8 @@
 """文档分块模块 - 实现多种智能分块策略"""
 
 import re
-from typing import List, Dict, Any, Optional
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from backend.utils.logger import get_logger
 

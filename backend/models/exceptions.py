@@ -3,7 +3,7 @@
 提供应用特定的异常类型，便于错误处理和日志记录
 """
 
-from typing import Optional, Any, Dict
+from typing import Any, Dict, Optional
 
 
 class AppException(Exception):

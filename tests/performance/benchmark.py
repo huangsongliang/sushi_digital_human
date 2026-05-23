@@ -70,7 +70,7 @@ def analyze_results(results: List[Dict], test_name: str) -> Dict:
     success_count = sum(1 for r in results if r["success"])
     failed_count = len(results) - success_count
     latencies = [r["latency"] for r in results if r["success"]]
-    
+
     if latencies:
         avg_latency = statistics.mean(latencies)
         p50_latency = statistics.median(latencies)
@@ -80,7 +80,7 @@ def analyze_results(results: List[Dict], test_name: str) -> Dict:
         min_latency = min(latencies)
     else:
         avg_latency = p50_latency = p95_latency = max_latency = min_latency = 0
-    
+
     return {
         "test_name": test_name,
         "total_requests": len(results),
@@ -100,26 +100,26 @@ async def main():
     print("[START] System Performance Benchmark")
     print("=" * 70)
     print()
-    
+
     print("[1] Health Check Endpoint (Low Concurrency)")
     health_results = await run_concurrent_tests(test_health, concurrency=3, iterations=10)
     health_analysis = analyze_results(health_results, "Health Check")
-    
+
     print()
     print("[2] Health Check Endpoint (High Concurrency)")
     health_results_high = await run_concurrent_tests(test_health, concurrency=10, iterations=5)
     health_analysis_high = analyze_results(health_results_high, "Health Check (High)")
-    
+
     print()
     print("[3] Chat API Endpoint (Low Concurrency)")
     chat_results = await run_concurrent_tests(test_chat, concurrency=2, iterations=5)
     chat_analysis = analyze_results(chat_results, "Chat API")
-    
+
     print()
     print("=" * 70)
     print("[RESULTS] Summary")
     print("=" * 70)
-    
+
     for analysis in [health_analysis, health_analysis_high, chat_analysis]:
         print()
         print(f"[+] {analysis['test_name']}")
@@ -131,7 +131,7 @@ async def main():
         print(f"  Max Latency:    {analysis['max_latency_ms']}ms")
         print(f"  Min Latency:    {analysis['min_latency_ms']}ms")
         print(f"  Success:        {analysis['success_count']}, Failed: {analysis['failed_count']}")
-    
+
     print()
     print("=" * 70)
     print("[DONE] Benchmark Completed!")

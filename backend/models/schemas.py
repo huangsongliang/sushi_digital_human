@@ -9,10 +9,11 @@ Pydantic 数据模型定义
 - 错误响应模型
 """
 
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional, Dict, Any
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class MessageRole(str, Enum):

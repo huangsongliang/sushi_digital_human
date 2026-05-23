@@ -4,11 +4,13 @@
 """
 
 import re
-from typing import Optional, Set, Callable
-from fastapi import Request, HTTPException, status
+from typing import Callable, Optional, Set
+
+from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
+
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -33,22 +35,22 @@ DANGEROUS_SQL_PATTERNS = [
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """安全头中间件 - 添加安全响应头"""
-    
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         response = await call_next(request)
-        
+
         # 防止点击劫持
         response.headers["X-Frame-Options"] = "DENY"
-        
+
         # 防止MIME类型嗅探
         response.headers["X-Content-Type-Options"] = "nosniff"
-        
+
         # XSS防护
         response.headers["X-XSS-Protection"] = "1; mode=block"
-        
+
         # 强制使用HTTPS (HSTS) - 建议生产环境使用
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        
+
         # 内容安全策略
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
@@ -58,35 +60,32 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "font-src 'self' data:; "
             "connect-src 'self';"
         )
-        
+
         # 引用策略
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        
+
         # 权限策略
-        response.headers["Permissions-Policy"] = (
-            "geolocation=(), microphone=(), camera=(), autoplay=()"
-        )
-        
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=(), autoplay=()"
+
         return response
 
 
 class SQLInjectionProtectionMiddleware(BaseHTTPMiddleware):
     """SQL注入防护中间件"""
-    
+
     def __init__(self, app):
         super().__init__(app)
         self._sql_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in DANGEROUS_SQL_PATTERNS]
-    
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # 检查查询参数
         for key, value in request.query_params.items():
             if self._has_suspicious_pattern(value):
                 logger.warning(f"潜在的SQL注入尝试: {key}={value}")
                 return JSONResponse(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    content={"detail": "Request contains suspicious patterns"}
+                    status_code=status.HTTP_400_BAD_REQUEST, content={"detail": "Request contains suspicious patterns"}
                 )
-        
+
         # 检查请求体
         if request.method in ["POST", "PUT", "PATCH"]:
             try:
@@ -98,14 +97,14 @@ class SQLInjectionProtectionMiddleware(BaseHTTPMiddleware):
                             logger.warning(f"潜在的SQL注入尝试: {key}={value}")
                             return JSONResponse(
                                 status_code=status.HTTP_400_BAD_REQUEST,
-                                content={"detail": "Request contains suspicious patterns"}
+                                content={"detail": "Request contains suspicious patterns"},
                             )
             except Exception:
                 pass
-        
+
         response = await call_next(request)
         return response
-    
+
     def _has_suspicious_pattern(self, text: str) -> bool:
         """检查文本是否包含可疑的SQL模式"""
         text_lower = text.lower()
@@ -117,16 +116,16 @@ class SQLInjectionProtectionMiddleware(BaseHTTPMiddleware):
 
 class XSSProtectionMiddleware(BaseHTTPMiddleware):
     """XSS防护中间件"""
-    
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # 对查询参数进行验证
         for key, value in request.query_params.items():
             if self._has_xss_pattern(value):
                 logger.warning(f"潜在的XSS尝试: {key}={value}")
-        
+
         response = await call_next(request)
         return response
-    
+
     def _has_xss_pattern(self, text: str) -> bool:
         """检查XSS模式"""
         xss_patterns = [
@@ -140,7 +139,7 @@ class XSSProtectionMiddleware(BaseHTTPMiddleware):
             r"iframe",
             r"alert\(",
         ]
-        
+
         text_lower = text.lower()
         for pattern in xss_patterns:
             if re.search(pattern, text_lower):
@@ -150,22 +149,23 @@ class XSSProtectionMiddleware(BaseHTTPMiddleware):
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """限流中间件 - 基于Redis的令牌桶算法"""
-    
+
     def __init__(self, app):
         super().__init__(app)
         # 使用现有的rate_limiter
         from backend.utils.rate_limiter import rate_limiter
+
         self._limiter = rate_limiter
-    
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # 对特殊路径跳过限流
         skip_paths = ["/health", "/docs", "/redoc", "/openapi.json"]
         if request.url.path in skip_paths:
             return await call_next(request)
-        
+
         # 获取客户端信息
         client_ip = request.headers.get("X-Forwarded-For", request.client.host if request.client else "unknown")
-        
+
         # 检查限流
         allowed = await self._limiter.check(client_ip, request.url.path)
         if not allowed:
@@ -182,9 +182,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 headers={
                     "Retry-After": str(remaining_info["reset_in"]),
                     "X-RateLimit-Remaining": str(remaining_info["remaining"]),
-                }
+                },
             )
-        
+
         response = await call_next(request)
         return response
 
@@ -193,15 +193,15 @@ def sanitize_input(text: str) -> str:
     """清洗用户输入，防止XSS和SQL注入"""
     if not text or not isinstance(text, str):
         return text
-    
+
     # 移除危险字符
     text = text.replace("<", "&lt;").replace(">", "&gt;")
     text = text.replace('"', "&quot;").replace("'", "&#x27;")
     text = text.replace("/", "&#x2F;").replace("\\", "&#x5C;")
-    
+
     # 移除多余的空格
     text = re.sub(r"\s+", " ", text).strip()
-    
+
     return text
 
 
@@ -213,12 +213,8 @@ def validate_email(email: str) -> bool:
 
 def validate_password(password: str) -> dict:
     """验证密码强度"""
-    result = {
-        "valid": False,
-        "errors": [],
-        "strength": "weak"
-    }
-    
+    result = {"valid": False, "errors": [], "strength": "weak"}
+
     if len(password) < 8:
         result["errors"].append("密码长度至少8位")
     if not re.search(r"[a-z]", password):
@@ -229,7 +225,7 @@ def validate_password(password: str) -> dict:
         result["errors"].append("密码需要包含数字")
     if not re.search(r"[!@#$%^&*()_+=-]", password):
         result["errors"].append("密码需要包含特殊字符")
-    
+
     if not result["errors"]:
         result["valid"] = True
         # 计算强度
@@ -246,10 +242,10 @@ def validate_password(password: str) -> dict:
             strength_score += 1
         if re.search(r"[!@#$%^&*()_+=-]", password):
             strength_score += 2
-        
+
         if strength_score >= 6:
             result["strength"] = "strong"
         elif strength_score >= 4:
             result["strength"] = "medium"
-    
+
     return result

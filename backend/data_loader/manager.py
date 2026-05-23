@@ -1,23 +1,19 @@
 """文档管理服务层 - 处理文档上传、索引、版本管理等"""
 
 import hashlib
-import uuid
 import json
-from typing import List, Dict, Any, Optional, Tuple
-from pathlib import Path
+import uuid
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.database.models import (
-    Document,
-    DocumentLibrary,
-    DocumentVersion,
-)
-from backend.database.session import get_db_session
-from backend.data_loader.loader import DocumentLoader
 from backend.data_loader.chunker import get_chunker
+from backend.data_loader.loader import DocumentLoader
+from backend.database.models import Document, DocumentLibrary, DocumentVersion
+from backend.database.session import get_db_session
 from backend.retrieval import get_vector_store, reload_hybrid_retriever
 from backend.utils.logger import get_logger
 

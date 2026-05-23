@@ -3,35 +3,30 @@
 import signal
 import time
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Response, HTTPException
-from fastapi.responses import JSONResponse
+
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.responses import JSONResponse
 
-from backend.utils.warnings import *  # noqa: F401, F403
-from backend.api import chat_router, ab_test_router, dify_router, documents_router, alerts_router, auth_router
+from backend.api import ab_test_router, alerts_router, auth_router, chat_router, dify_router, documents_router
 from backend.api.agent import router as agent_router
 from backend.api.summary import router as summary_router
 from backend.core.config import settings
 from backend.database.session import async_initialize_database
-from backend.utils.rate_limiter import (
-    rate_limit_middleware,
-    concurrency_limit_middleware,
-)
 from backend.middleware.security import (
     SecurityHeadersMiddleware,
     SQLInjectionProtectionMiddleware,
     XSSProtectionMiddleware,
 )
-from backend.utils.performance import (
-    generate_prometheus_metrics,
-    get_prometheus_content_type,
-)
-from backend.utils.error_tracking import setup_exception_handlers
-from backend.utils.logger import get_logger
-from backend.utils.health import perform_health_check, shutdown_manager, health_checker
 from backend.utils.alerting import start_alerting, stop_alerting
+from backend.utils.error_tracking import setup_exception_handlers
+from backend.utils.health import health_checker, perform_health_check, shutdown_manager
+from backend.utils.logger import get_logger
+from backend.utils.performance import generate_prometheus_metrics, get_prometheus_content_type
+from backend.utils.rate_limiter import concurrency_limit_middleware, rate_limit_middleware
+from backend.utils.warnings import *  # noqa: F401, F403
 
 logger = get_logger(__name__)
 
@@ -143,6 +138,7 @@ app.add_middleware(SQLInjectionProtectionMiddleware)
 
 # XSS防护中间件
 app.add_middleware(XSSProtectionMiddleware)
+
 
 # 限流中间件（性能保护）
 @app.middleware("http")

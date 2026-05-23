@@ -2,10 +2,10 @@
 支持 Prometheus 指标暴露和自定义指标注册
 """
 
-import time
 import asyncio
-from typing import Dict, List, Any, Callable
+import time
 from contextlib import contextmanager
+from typing import Any, Callable, Dict, List
 
 from backend.utils.logger import get_logger
 
@@ -13,13 +13,13 @@ logger = get_logger(__name__)
 
 try:
     from prometheus_client import (
+        CONTENT_TYPE_LATEST,
+        CollectorRegistry,
         Counter,
         Gauge,
         Histogram,
         Summary,
         generate_latest,
-        CONTENT_TYPE_LATEST,
-        CollectorRegistry,
     )
 
     PROMETHEUS_AVAILABLE = True

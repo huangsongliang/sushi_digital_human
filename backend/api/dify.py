@@ -3,16 +3,12 @@ Dify 集成 API 接口
 """
 
 import asyncio
-from typing import Optional, Dict, Any
-from fastapi import APIRouter, HTTPException, Header, Depends
+from typing import Any, Dict, Optional
+
+from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel, Field
 
-from backend.core.dify import (
-    DifyIntegration,
-    DifyToolCall,
-    get_dify_integration,
-    get_webhook_handler,
-)
+from backend.core.dify import DifyIntegration, DifyToolCall, get_dify_integration, get_webhook_handler
 
 router = APIRouter(prefix="/api/dify", tags=["Dify 集成"])
 
@@ -168,9 +164,7 @@ async def create_application(
     dify = get_dify_integration()
 
     loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(
-        None, dify.create_application, request.name, request.description
-    )
+    result = await loop.run_in_executor(None, dify.create_application, request.name, request.description)
 
     if not result.get("success"):
         raise HTTPException(status_code=500, detail=result.get("error"))

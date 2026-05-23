@@ -4,15 +4,16 @@
 支持高并发场景
 """
 
-import threading
-import uuid
-import time
 import json
+import os
+import threading
+import time
+import uuid
 from concurrent.futures import ThreadPoolExecutor
-from typing import Dict, Any, Optional, Callable, Union
 from dataclasses import dataclass, field
 from enum import Enum
-import os
+from typing import Any, Callable, Dict, Optional, Union
+
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -171,9 +172,10 @@ class TaskManager:
 
     def _register_functions(self):
         """注册可执行的函数"""
+        import asyncio
+
         from backend.chain import get_rag_chain
         from backend.memory import ConversationMemory
-        import asyncio
 
         async def async_process_chat(
             query: str, session_id: str, top_k: int = 3, user_id: Optional[str] = None

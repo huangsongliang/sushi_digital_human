@@ -1,8 +1,8 @@
 """向量存储模块 - 使用 ChromaDB 实现"""
 
 from functools import lru_cache
-from typing import List, Dict, Any, Optional
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from chromadb import Client, Settings
 from chromadb.api.types import QueryResult

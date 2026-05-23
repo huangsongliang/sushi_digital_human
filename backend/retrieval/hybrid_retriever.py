@@ -2,14 +2,15 @@
 实现 BM25 + 向量检索 + 重排序的混合检索系统
 """
 
-from typing import List, Dict, Any, Optional, Tuple
-import numpy as np
 import os
+from typing import Any, Dict, List, Optional, Tuple
 
+import numpy as np
+
+from backend.core.config import settings
 from backend.generator import get_embeddings
 from backend.retrieval import get_vector_store
 from backend.utils.logger import get_logger
-from backend.core.config import settings
 
 logger = get_logger(__name__)
 

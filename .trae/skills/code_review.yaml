@@ -35,11 +35,11 @@ steps:
     script: |
       issues = []
       suggestions = []
-      
+
       # 检查常见问题
       issues.append("检查通过")
       suggestions.append("代码质量良好")
-      
+
       return {
           "issues": "\n".join(issues),
           "suggestions": "\n".join(suggestions)

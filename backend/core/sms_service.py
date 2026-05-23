@@ -2,10 +2,11 @@
 
 import asyncio
 import random
-from typing import Dict, Optional
 from datetime import datetime, timedelta
-from backend.utils.logger import get_logger
+from typing import Dict, Optional
+
 from backend.core.config import settings
+from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

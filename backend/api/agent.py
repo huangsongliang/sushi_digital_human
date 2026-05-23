@@ -1,8 +1,10 @@
 """Agent API 端点"""
 
+from typing import Any, Dict, List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from typing import Optional, Dict, Any, List
+
 from backend.agent import get_agent_manager
 from backend.core.auth_manager import get_auth_manager
 from backend.utils.logger import get_logger

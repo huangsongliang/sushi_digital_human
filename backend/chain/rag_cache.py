@@ -5,8 +5,9 @@ RAG 查询缓存模块
 
 import hashlib
 import json
-from typing import Optional, Dict, Any, List
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 from backend.memory.cache import cache_manager
 from backend.utils.logger import get_logger
 
@@ -37,7 +38,9 @@ class RAGQueryCache:
         key_str = json.dumps(key_data, sort_keys=True)
         return f"rag_query:{hashlib.md5(key_str.encode(), usedforsecurity=False).hexdigest()}"
 
-    async def get(self, query: str, top_k: int, use_bm25: bool, use_vector: bool, use_rerank: bool) -> Optional[List[Dict]]:
+    async def get(
+        self, query: str, top_k: int, use_bm25: bool, use_vector: bool, use_rerank: bool
+    ) -> Optional[List[Dict]]:
         """获取缓存的检索结果"""
         cache_key = self._generate_cache_key(query, top_k, use_bm25, use_vector, use_rerank)
 
@@ -53,7 +56,9 @@ class RAGQueryCache:
         self._cache_misses += 1
         return None
 
-    async def set(self, query: str, top_k: int, use_bm25: bool, use_vector: bool, use_rerank: bool, results: List[Dict]):
+    async def set(
+        self, query: str, top_k: int, use_bm25: bool, use_vector: bool, use_rerank: bool, results: List[Dict]
+    ):
         """设置缓存的检索结果"""
         cache_key = self._generate_cache_key(query, top_k, use_bm25, use_vector, use_rerank)
 

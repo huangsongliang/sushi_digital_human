@@ -1,7 +1,8 @@
 """文档管理 API 路由"""
 
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
 from backend.data_loader.manager import get_document_manager

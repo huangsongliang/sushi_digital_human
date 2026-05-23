@@ -3,18 +3,18 @@ PDF 处理模块
 支持 PDF OCR、表格提取、图表解析等功能
 """
 
-import io
 import asyncio
-from typing import List, Dict, Any, Optional
-from pathlib import Path
+import io
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 try:
-    import pytesseract
-    from PIL import Image
-    import pdfplumber
     import camelot
     import fitz  # PyMuPDF
+    import pdfplumber
+    import pytesseract
+    from PIL import Image
 
     TESSERACT_AVAILABLE = True
 except ImportError:
@@ -67,6 +67,7 @@ class PDFProcessor:
         """提取 PDF 文本内容"""
         loop = asyncio.get_event_loop()
         try:
+
             def _sync_extract():
                 text = ""
                 with pdfplumber.open(file_path) as pdf:
@@ -108,7 +109,9 @@ class PDFProcessor:
                             for table_index, table in enumerate(page_tables):
                                 if table:
                                     tables.append(
-                                        TableData(page_num=page_num, table_index=table_index, data=table, confidence=0.8)
+                                        TableData(
+                                            page_num=page_num, table_index=table_index, data=table, confidence=0.8
+                                        )
                                     )
                 except Exception as e2:
                     logger.error(f"pdfplumber 提取表格失败: {str(e2)}")
@@ -144,6 +147,7 @@ class PDFProcessor:
 
         loop = asyncio.get_event_loop()
         try:
+
             def _sync_ocr_pdf():
                 doc = fitz.open(file_path)
                 full_text = ""

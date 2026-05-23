@@ -4,9 +4,9 @@ Dify 平台集成模块
 """
 
 import json
-from typing import Dict, Any, Optional, List
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 import requests
 

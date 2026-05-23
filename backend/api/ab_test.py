@@ -2,17 +2,12 @@
 A/B 测试 API 接口
 """
 
-from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, HTTPException, Header, Query
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from backend.core.ab_test import (
-    ABTestManager,
-    ExperimentType,
-    ExperimentStatus,
-    ExperimentResult,
-    get_ab_test_manager,
-)
+from backend.core.ab_test import ABTestManager, ExperimentResult, ExperimentStatus, ExperimentType, get_ab_test_manager
 
 router = APIRouter(prefix="/api/ab-test", tags=["A/B 测试"])
 

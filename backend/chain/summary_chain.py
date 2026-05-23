@@ -8,10 +8,10 @@
 - 摘要生成
 """
 
-from typing import List, Dict, Any, Optional
-from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 from backend.generator import get_async_llm
 from backend.utils.logger import get_logger

@@ -4,16 +4,16 @@
 使用混合检索器（BM25 + 向量 + RRF + 重排序）提升检索质量
 """
 
-from typing import List, Dict, Any, Optional, AsyncGenerator
 import asyncio
+from typing import Any, AsyncGenerator, Dict, List, Optional
 
-from backend.generator import get_llm, get_async_llm
-from backend.retrieval import get_hybrid_retriever
-from backend.prompt import default_prompts
+from backend.chain.rag_cache import get_rag_cache
 from backend.core.config import settings
+from backend.generator import get_async_llm, get_llm
+from backend.prompt import default_prompts
+from backend.retrieval import get_hybrid_retriever
 from backend.utils.logger import get_logger
 from backend.utils.performance import timed_operation
-from backend.chain.rag_cache import get_rag_cache
 
 logger = get_logger(__name__)
 
@@ -50,11 +50,7 @@ class RAGChain:
         # 先尝试从缓存获取
         rag_cache = get_rag_cache()
         cached_results = await rag_cache.get(
-            query=query,
-            top_k=top_k,
-            use_bm25=True,
-            use_vector=True,
-            use_rerank=self.use_reranking
+            query=query, top_k=top_k, use_bm25=True, use_vector=True, use_rerank=self.use_reranking
         )
 
         if cached_results is not None:
@@ -73,12 +69,7 @@ class RAGChain:
 
         # 保存到缓存
         await rag_cache.set(
-            query=query,
-            top_k=top_k,
-            use_bm25=True,
-            use_vector=True,
-            use_rerank=self.use_reranking,
-            results=results
+            query=query, top_k=top_k, use_bm25=True, use_vector=True, use_rerank=self.use_reranking, results=results
         )
 
         logger.info(f"异步混合检索完成 - 获取到 {len(results)} 条结果")

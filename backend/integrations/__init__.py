@@ -7,11 +7,11 @@
 - Webhook 集成
 """
 
-from typing import List, Dict, Any, Optional
+import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-import json
+from typing import Any, Dict, List, Optional
 
 from backend.utils.logger import get_logger
 
@@ -114,12 +114,13 @@ class DingTalkIntegration(BaseIntegration):
     async def send_text(self, content: str, at_users: Optional[List[str]] = None, **kwargs) -> MessageResult:
         """发送文本消息"""
         try:
-            import aiohttp
-            import hmac
-            import hashlib
             import base64
-            import urllib.parse
+            import hashlib
+            import hmac
             import time
+            import urllib.parse
+
+            import aiohttp
 
             timestamp = str(round(time.time() * 1000))
             webhook_url = self._config.webhook_url
@@ -156,12 +157,13 @@ class DingTalkIntegration(BaseIntegration):
     async def send_markdown(self, content: str, title: Optional[str] = None, **kwargs) -> MessageResult:
         """发送 Markdown 消息"""
         try:
-            import aiohttp
-            import hmac
-            import hashlib
             import base64
-            import urllib.parse
+            import hashlib
+            import hmac
             import time
+            import urllib.parse
+
+            import aiohttp
 
             timestamp = str(round(time.time() * 1000))
             webhook_url = self._config.webhook_url
@@ -191,12 +193,13 @@ class DingTalkIntegration(BaseIntegration):
     async def send_link(self, title: str, text: str, url: str, pic_url: Optional[str] = None) -> MessageResult:
         """发送链接消息"""
         try:
-            import aiohttp
-            import hmac
-            import hashlib
             import base64
-            import urllib.parse
+            import hashlib
+            import hmac
             import time
+            import urllib.parse
+
+            import aiohttp
 
             timestamp = str(round(time.time() * 1000))
             webhook_url = self._config.webhook_url
@@ -229,12 +232,13 @@ class DingTalkIntegration(BaseIntegration):
     async def send_card(self, card_data: Dict[str, Any]) -> MessageResult:
         """发送卡片消息"""
         try:
-            import aiohttp
-            import hmac
-            import hashlib
             import base64
-            import urllib.parse
+            import hashlib
+            import hmac
             import time
+            import urllib.parse
+
+            import aiohttp
 
             timestamp = str(round(time.time() * 1000))
             webhook_url = self._config.webhook_url
@@ -376,10 +380,12 @@ class SlackIntegration(BaseIntegration):
         """发送 Markdown 消息"""
         return await self.send_text(content, **kwargs)
 
-    async def send_link(self, title: str, text: str, url: str, pic_url: Optional[str] = None) -> MessageResult:
+    async def send_link(
+        self, title: str, text: str, url: str, pic_url: Optional[str] = None, **kwargs
+    ) -> MessageResult:
         """发送链接消息"""
         content = f"**{title}**\n{text}\n{url}"
-        return await self.send_text(content, **kwargs)
+        return await self.send_text(content)
 
     async def send_card(self, card_data: Dict[str, Any]) -> MessageResult:
         """发送卡片消息"""

@@ -1,15 +1,17 @@
 """总结 API 路由"""
 
+from typing import List, Optional
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional
+
 from backend.chain.summary_chain import (
     SummaryType,
-    summarize_text,
-    summarize_documents,
-    summarize_conversation,
     extract_key_points,
     generate_title,
+    summarize_conversation,
+    summarize_documents,
+    summarize_text,
 )
 from backend.utils.logger import get_logger
 

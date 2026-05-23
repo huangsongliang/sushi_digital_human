@@ -32,46 +32,46 @@ def run_command(cmd, cwd=None):
 def fix_python_code():
     """修复Python代码风格"""
     print("[INFO] 正在修复Python代码...")
-    
+
     print("  - 运行black格式化...")
     code, stdout, stderr = run_command("uv run black backend/ --line-length=120")
     if code != 0:
         print("  [WARN] black警告:", stderr[:500] if stderr else "")
-    
+
     print("  - 运行isort排序导入...")
     code, stdout, stderr = run_command("uv run isort backend/ --profile=black --line-length=120")
     if code != 0:
         print("  [WARN] isort警告:", stderr[:500] if stderr else "")
-    
+
     print("[OK] Python代码修复完成")
 
 
 def fix_vue_code():
     """修复Vue代码风格"""
     print("[INFO] 正在修复Vue代码...")
-    
+
     frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend")
     if not os.path.exists(frontend_path):
         print("  [WARN] 未找到frontend目录")
         return
-    
+
     print("  - 运行ESLint自动修复...")
     code, stdout, stderr = run_command("npm run lint -- --fix", cwd=frontend_path)
     if code != 0:
         print("  [WARN] ESLint警告:", stderr[:500] if stderr else "")
-    
+
     print("[OK] Vue代码修复完成")
 
 
 def check_after_fix():
     """修复后检查"""
     print("\n[INFO] 修复后检查...")
-    
+
     print("  - 检查flake8...")
     code, stdout, stderr = run_command(
         "uv run flake8 backend/ --max-line-length=120 --ignore=E501,W503,W291,W293,F401,F841,E302,F821"
     )
-    
+
     if code == 0:
         print("  [OK] flake8检查通过")
         return True
@@ -85,10 +85,10 @@ def main():
     """主函数"""
     print("[START] 开始自动修复代码规范...")
     print()
-    
+
     fix_python_code()
     fix_vue_code()
-    
+
     print()
     print("="*50)
     if check_after_fix():

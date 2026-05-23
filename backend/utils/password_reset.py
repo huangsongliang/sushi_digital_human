@@ -1,9 +1,9 @@
 """用户密码重置模块"""
 
 import uuid
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Optional
-from dataclasses import dataclass
 
 
 @dataclass
@@ -18,10 +18,7 @@ class PasswordResetToken:
 
     def is_valid(self) -> bool:
         """检查令牌是否有效"""
-        return (
-            not self.used
-            and datetime.now() < self.expires_at
-        )
+        return not self.used and datetime.now() < self.expires_at
 
     def is_expired(self) -> bool:
         """检查令牌是否过期"""
@@ -50,11 +47,7 @@ class PasswordResetService:
         expires_at = created_at + timedelta(hours=self.TOKEN_EXPIRE_HOURS)
 
         reset_token = PasswordResetToken(
-            token=token,
-            user_id=user_id,
-            created_at=created_at,
-            expires_at=expires_at,
-            used=False
+            token=token, user_id=user_id, created_at=created_at, expires_at=expires_at, used=False
         )
 
         self._tokens[token] = reset_token

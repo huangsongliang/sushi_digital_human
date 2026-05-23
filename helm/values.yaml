@@ -116,29 +116,24 @@ redis:
   metrics:
     enabled: true
 
-# Nginx Ingress 配置
+# Nginx Ingress 配置（本地开发用 sushi.local，无 TLS）
 ingress:
   enabled: true
   className: "nginx"
 
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 
   hosts:
-    - host: sushi.example.com
+    - host: sushi.local
       paths:
         - path: /
           pathType: Prefix
 
-  tls:
-    - secretName: sushi-tls
-      hosts:
-        - sushi.example.com
+  tls: []
 
 # 监控配置
 monitoring:

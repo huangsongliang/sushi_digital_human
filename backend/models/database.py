@@ -3,24 +3,25 @@
 定义所有数据库表结构和数据模型
 """
 
+from datetime import datetime
+from typing import List, Optional
+
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Text,
-    DateTime,
-    ForeignKey,
-    Boolean,
-    Float,
-    Table,
-    Index,
     JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
     LargeBinary,
+    String,
+    Table,
+    Text,
 )
 from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.orm import declarative_base, relationship, mapped_column, Mapped
-from datetime import datetime
-from typing import Optional, List
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 
 Base = declarative_base()
 

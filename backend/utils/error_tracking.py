@@ -8,12 +8,12 @@
 - 错误上报
 """
 
-import traceback
 import time
-from typing import Dict, Any, Optional, Callable
-from uuid import uuid4
+import traceback
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Callable, Dict, Optional
+from uuid import uuid4
 
 from backend.utils.logger import get_logger, set_request_id
 from backend.utils.performance import record_error
@@ -240,7 +240,7 @@ def setup_exception_handlers(app):
     Args:
         app: FastAPI 应用实例
     """
-    from fastapi import Request, HTTPException
+    from fastapi import HTTPException, Request
     from fastapi.responses import JSONResponse
 
     @app.exception_handler(Exception)

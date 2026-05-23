@@ -2,8 +2,9 @@
 
 import asyncio
 import time
-from typing import Callable, Any, Dict
 from enum import Enum
+from typing import Any, Callable, Dict
+
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)

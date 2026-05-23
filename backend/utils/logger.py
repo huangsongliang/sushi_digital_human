@@ -12,11 +12,11 @@
 
 import json
 import sys
-from pathlib import Path
-from typing import Optional, Dict, Any
-from uuid import uuid4
-from contextvars import ContextVar
 from contextlib import contextmanager
+from contextvars import ContextVar
+from pathlib import Path
+from typing import Any, Dict, Optional
+from uuid import uuid4
 
 from loguru import logger
 

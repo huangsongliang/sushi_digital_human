@@ -3,16 +3,12 @@
 提供告警查询、管理和配置功能
 """
 
-from fastapi import APIRouter, HTTPException, Query, Body
-from typing import List, Optional, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from backend.utils.alerting import (
-    alert_manager,
-    AlertRule,
-    AlertSeverity,
-    AlertStatus,
-)
+from fastapi import APIRouter, Body, HTTPException, Query
+
+from backend.utils.alerting import AlertRule, AlertSeverity, AlertStatus, alert_manager
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)

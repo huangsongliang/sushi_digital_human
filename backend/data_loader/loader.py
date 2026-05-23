@@ -4,7 +4,7 @@
 
 import os
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 from backend.retrieval import get_vector_store
 from backend.utils.logger import get_logger

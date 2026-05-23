@@ -26,9 +26,9 @@
 
       <div class="document-filters">
         <div class="search-box">
-          <input 
-            v-model="searchQuery" 
-            type="text" 
+          <input
+            v-model="searchQuery"
+            type="text"
             placeholder="搜索文档名称..."
             class="search-input"
           />
@@ -41,9 +41,9 @@
       </div>
 
       <div class="document-list" v-if="documents.length > 0">
-        <div 
-          v-for="doc in filteredDocuments" 
-          :key="doc.document_id" 
+        <div
+          v-for="doc in filteredDocuments"
+          :key="doc.document_id"
           class="document-card"
           :class="{ inactive: !doc.is_active }"
         >
@@ -64,22 +64,22 @@
             </div>
           </div>
           <div class="doc-actions">
-            <button 
-              class="action-btn view-btn" 
+            <button
+              class="action-btn view-btn"
               @click="viewDocument(doc)"
               title="查看详情"
             >
               👁️
             </button>
-            <button 
-              class="action-btn history-btn" 
+            <button
+              class="action-btn history-btn"
               @click="showVersionHistory(doc)"
               title="版本历史"
             >
               📜
             </button>
-            <button 
-              class="action-btn delete-btn" 
+            <button
+              class="action-btn delete-btn"
               @click="confirmDelete(doc)"
               title="删除"
             >
@@ -108,9 +108,9 @@
           <div class="form-group">
             <label>选择文件</label>
             <div class="file-upload" @click="triggerFileInput">
-              <input 
-                ref="fileInput" 
-                type="file" 
+              <input
+                ref="fileInput"
+                type="file"
                 class="file-input"
                 accept=".txt,.md,.json,.csv"
                 @change="handleFileSelect"
@@ -125,8 +125,8 @@
           </div>
           <div class="form-group">
             <label>文档描述（可选）</label>
-            <textarea 
-              v-model="uploadDescription" 
+            <textarea
+              v-model="uploadDescription"
               placeholder="输入文档描述..."
               class="form-textarea"
               rows="3"
@@ -135,9 +135,9 @@
           <div class="form-row">
             <div class="form-group">
               <label>分块大小</label>
-              <input 
-                v-model.number="chunkSize" 
-                type="number" 
+              <input
+                v-model.number="chunkSize"
+                type="number"
                 class="form-input small"
                 min="100"
                 max="2000"
@@ -145,9 +145,9 @@
             </div>
             <div class="form-group">
               <label>分块重叠</label>
-              <input 
-                v-model.number="chunkOverlap" 
-                type="number" 
+              <input
+                v-model.number="chunkOverlap"
+                type="number"
                 class="form-input small"
                 min="0"
                 max="500"
@@ -174,9 +174,9 @@
           <button class="close-btn" @click="showVersionModal = false">✕</button>
         </div>
         <div class="version-list" v-if="versions.length > 0">
-          <div 
-            v-for="ver in versions" 
-            :key="ver.version" 
+          <div
+            v-for="ver in versions"
+            :key="ver.version"
             class="version-item"
           >
             <div class="version-info">
@@ -260,7 +260,7 @@
             <label>更新时间</label>
             <span>{{ formatDate(detailDocument.updated_at) }}</span>
           </div>
-          
+
           <div class="preview-section">
             <button class="preview-toggle-btn" @click="togglePreview">
               {{ showPreview ? '收起内容' : '预览内容' }}
@@ -328,18 +328,18 @@ const stats = computed(() => {
 
 const filteredDocuments = computed(() => {
   let result = documents.value
-  
+
   if (filterActive.value === 'active') {
     result = result.filter(d => d.is_active)
   } else if (filterActive.value === 'inactive') {
     result = result.filter(d => !d.is_active)
   }
-  
+
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(d => d.name.toLowerCase().includes(query))
   }
-  
+
   return result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 })
 
@@ -359,10 +359,10 @@ const handleFileSelect = (event: Event) => {
 
 const handleUpload = async () => {
   if (!selectedFile.value) return
-  
+
   isUploading.value = true
   uploadError.value = ''
-  
+
   try {
     const formData = new FormData()
     formData.append('file', selectedFile.value)
@@ -371,14 +371,14 @@ const handleUpload = async () => {
     }
     formData.append('chunk_size', chunkSize.value.toString())
     formData.append('chunk_overlap', chunkOverlap.value.toString())
-    
+
     const response = await fetch('/api/documents/upload', {
       method: 'POST',
       body: formData
     })
-    
+
     const result = await response.json()
-    
+
     if (result.success) {
       showUploadModal.value = false
       selectedFile.value = null
@@ -422,9 +422,9 @@ const togglePreview = async () => {
     showPreview.value = false
     return
   }
-  
+
   if (!detailDocument.value) return
-  
+
   isLoadingPreview.value = true
   try {
     const response = await fetch(`/api/documents/${detailDocument.value.document_id}/content`)
@@ -462,14 +462,14 @@ const confirmDelete = (doc: Document) => {
 
 const handleDelete = async () => {
   if (!documentToDelete.value) return
-  
+
   try {
     const response = await fetch(`/api/documents/${documentToDelete.value.document_id}?soft_delete=${!hardDelete.value}`, {
       method: 'DELETE'
     })
-    
+
     const result = await response.json()
-    
+
     if (result.success) {
       showDeleteModal.value = false
       documentToDelete.value = null

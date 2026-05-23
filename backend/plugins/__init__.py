@@ -7,15 +7,15 @@
 - 插件配置和依赖管理
 """
 
-from typing import List, Dict, Any, Optional, Type, Callable
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from enum import Enum
 import asyncio
 import importlib
 import os
 import sys
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Type
 
 from backend.utils.logger import get_logger
 

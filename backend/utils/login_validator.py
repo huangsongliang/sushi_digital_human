@@ -13,9 +13,7 @@ class LoginValidationError(Exception):
 class LoginValidator:
     """用户登录验证器"""
 
-    EMAIL_PATTERN = re.compile(
-        r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    )
+    EMAIL_PATTERN = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 
     MIN_PASSWORD_LENGTH = 8
     MAX_PASSWORD_LENGTH = 128
@@ -48,16 +46,10 @@ class LoginValidator:
             return False, "密码不能为空"
 
         if len(password) < cls.MIN_PASSWORD_LENGTH:
-            return (
-                False,
-                f"密码长度至少{cls.MIN_PASSWORD_LENGTH}个字符"
-            )
+            return (False, f"密码长度至少{cls.MIN_PASSWORD_LENGTH}个字符")
 
         if len(password) > cls.MAX_PASSWORD_LENGTH:
-            return (
-                False,
-                f"密码长度不能超过{cls.MAX_PASSWORD_LENGTH}个字符"
-            )
+            return (False, f"密码长度不能超过{cls.MAX_PASSWORD_LENGTH}个字符")
 
         if not re.search(r"[A-Z]", password):
             return False, "密码必须包含至少一个大写字母"
@@ -71,11 +63,7 @@ class LoginValidator:
         return True, None
 
     @classmethod
-    def validate_login(
-        cls,
-        email: str,
-        password: str
-    ) -> tuple[bool, Optional[str]]:
+    def validate_login(cls, email: str, password: str) -> tuple[bool, Optional[str]]:
         """验证登录信息
 
         Args:
@@ -95,10 +83,7 @@ class LoginValidator:
         return True, None
 
 
-def validate_user_login(
-    email: str,
-    password: str
-) -> dict:
+def validate_user_login(email: str, password: str) -> dict:
     """用户登录验证接口
 
     Args:
@@ -111,8 +96,4 @@ def validate_user_login(
     validator = LoginValidator()
     is_valid, error_msg = validator.validate_login(email, password)
 
-    return {
-        "valid": is_valid,
-        "error": error_msg,
-        "email": email if is_valid else None
-    }
+    return {"valid": is_valid, "error": error_msg, "email": email if is_valid else None}

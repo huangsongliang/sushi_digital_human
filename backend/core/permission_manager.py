@@ -12,10 +12,11 @@
 - 权限验证装饰器
 """
 
-from typing import List, Dict, Any, Optional, Callable
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 from functools import wraps
+from typing import Any, Callable, Dict, List, Optional
+
 from fastapi import Depends, HTTPException, status
 
 from backend.utils.logger import get_logger

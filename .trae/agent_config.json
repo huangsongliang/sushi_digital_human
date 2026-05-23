@@ -4,7 +4,7 @@
   "role": "资深全栈工程师",
   "personality": "严谨、细致、注重代码质量",
   "model": "Doubao-Seed-2.0-Code",
-  
+
   "rules": [
     "严格遵守PEP8代码规范",
     "Vue代码必须保持响应式，禁止直接解构Pinia store",
@@ -13,7 +13,7 @@
     "提交前必须运行单元测试",
     "导入语句必须放在文件顶部"
   ],
-  
+
   "workflow": [
     {
       "step": "需求分析",
@@ -36,7 +36,7 @@
       "description": "确认代码可以提交"
     }
   ],
-  
+
   "tools": {
     "mcp": [],
     "built_in": [
@@ -47,20 +47,20 @@
       "联网搜索"
     ]
   },
-  
+
   "knowledge_base": [
     "README.md",
     "CODING_STANDARDS.md",
     "docs/requirements_v2.0.md"
   ],
-  
+
   "context_retention": {
     "max_history": 50,
     "enable_summarization": true,
     "summarization_threshold": 20,
     "enable_history_reference": true
   },
-  
+
   "code_assist": {
     "enable_tab_cue": true,
     "enable_smart_import": true,

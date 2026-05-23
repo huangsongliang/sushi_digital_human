@@ -1,6 +1,7 @@
 """数据库会话管理"""
 
 from typing import Any, AsyncGenerator, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -26,7 +27,7 @@ class DatabaseSessionManager:
                 pool_timeout=30,
                 pool_recycle=1800,
                 pool_pre_ping=False,  # aiomysql 兼容性问题，禁用心跳检查
-                pool_reset_on_return='rollback',  # 归还连接时回滚
+                pool_reset_on_return="rollback",  # 归还连接时回滚
             )
             self._session_factory = sessionmaker(
                 bind=self._engine,

@@ -1,14 +1,16 @@
 """Agent 核心模块 - 支持多轮对话和工具调用"""
 
-from typing import List, Dict, Any, Optional, Union
-from langchain_core.tools import Tool
+from typing import Any, Dict, List, Optional, Union
+
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, BaseMessage
+from langchain_core.tools import Tool
+
 from backend.chain.rag_chain import get_rag_chain
+from backend.chain.summary_chain import SummaryType
 from backend.generator import get_async_llm
 from backend.memory.conversation import ConversationMemory as RedisConversationMemory
 from backend.utils.logger import get_logger
-from backend.chain.summary_chain import SummaryType
 
 logger = get_logger(__name__)
 
@@ -65,7 +67,7 @@ class CalculatorTool:
                         return -eval_expr(node.operand)
                 raise ValueError(f"不支持的操作: {ast.dump(node)}")
 
-            tree = ast.parse(expression, mode='eval')
+            tree = ast.parse(expression, mode="eval")
             result = eval_expr(tree.body)
             return f"{expression} = {result}"
         except Exception as e:

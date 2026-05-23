@@ -2,10 +2,10 @@
 
 import os
 import uuid
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-from dataclasses import dataclass
 
 
 @dataclass
@@ -27,7 +27,7 @@ class FileInfo:
             "size": self.size,
             "content_type": self.content_type,
             "upload_time": self.upload_time.isoformat(),
-            "path": self.path
+            "path": self.path,
         }
 
 
@@ -59,21 +59,16 @@ class FileUploadService:
             max_size_mb = self.MAX_FILE_SIZE // (1024 * 1024)
             return False, f"文件大小超过限制（最大{max_size_mb}MB）"
 
-        allowed_types = [
-            "image/jpeg",
-            "image/png",
-            "image/gif",
-            "application/pdf",
-            "text/plain",
-            "application/json"
-        ]
+        allowed_types = ["image/jpeg", "image/png", "image/gif", "application/pdf", "text/plain", "application/json"]
 
         if content_type not in allowed_types:
             return False, f"不支持的文件类型：{content_type}"
 
         return True, None
 
-    def save_file(self, filename: str, content: bytes, content_type: str) -> tuple[bool, Optional[FileInfo], Optional[str]]:
+    def save_file(
+        self, filename: str, content: bytes, content_type: str
+    ) -> tuple[bool, Optional[FileInfo], Optional[str]]:
         """保存文件
 
         Args:
@@ -104,7 +99,7 @@ class FileUploadService:
             size=len(content),
             content_type=content_type,
             upload_time=upload_time,
-            path=str(file_path)
+            path=str(file_path),
         )
 
         self._files[file_id] = file_info

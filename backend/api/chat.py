@@ -3,19 +3,19 @@
 import json
 import time
 import traceback
-from typing import List, Optional, AsyncGenerator
+from typing import AsyncGenerator, List, Optional
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, ValidationError, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from backend.chain import get_rag_chain
-from backend.retrieval import get_vector_store
 from backend.memory import ConversationMemory
-from backend.utils.performance import performance_monitor, timed_operation
-from backend.utils.logger import get_logger
 from backend.models.schemas import ErrorResponse
+from backend.retrieval import get_vector_store
+from backend.utils.logger import get_logger
+from backend.utils.performance import performance_monitor, timed_operation
 
 logger = get_logger(__name__)
 

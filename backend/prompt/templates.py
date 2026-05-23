@@ -2,7 +2,7 @@
 集中管理所有提示词模板，支持动态配置和多语言
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 class PromptTemplate:

@@ -3,21 +3,22 @@
 import asyncio
 import re
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, Depends, status, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.responses import RedirectResponse
-from pydantic import BaseModel, Field, EmailStr, field_validator
-from sqlalchemy import select
-import requests
-import certifi
 from urllib.parse import urlencode
 
+import certifi
+import requests
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import RedirectResponse
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel, EmailStr, Field, field_validator
+from sqlalchemy import select
+
 from backend.core.auth_manager import get_auth_manager, get_permission_manager
+from backend.core.config import settings
 from backend.core.security import verify_token
 from backend.core.sms_service import get_sms_service
-from backend.core.config import settings
+from backend.database.models import Permission, Role
 from backend.database.session import get_db_session
-from backend.database.models import Role, Permission
 from backend.memory.redis_client import redis_conn
 from backend.utils.logger import get_logger
 

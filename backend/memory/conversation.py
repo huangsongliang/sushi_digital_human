@@ -1,8 +1,9 @@
 """对话记忆模块 - Redis 实现"""
 
 import json
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
 from backend.memory.redis_client import redis_conn
 from backend.utils.logger import get_logger
 

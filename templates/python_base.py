@@ -8,7 +8,7 @@ import json
 
 class BaseClass(Enum):
     """类文档字符串 - 请替换为实际描述"""
-    
+
     OPTION_ONE = "option_one"
     OPTION_TWO = "option_two"
 
@@ -16,7 +16,7 @@ class BaseClass(Enum):
 @dataclass
 class DataStructure:
     """数据结构文档字符串 - 请替换为实际描述"""
-    
+
     field_one: str
     field_two: int
     field_three: Optional[List[str]] = None
@@ -24,11 +24,11 @@ class DataStructure:
 
 def example_function(param_one: str, param_two: Optional[int] = None) -> Dict[str, Any]:
     """函数文档字符串 - 请替换为实际描述
-    
+
     Args:
         param_one: 参数一的说明
         param_two: 参数二的说明（可选）
-    
+
     Returns:
         返回值的说明
     """

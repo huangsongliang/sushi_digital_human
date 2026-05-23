@@ -4,16 +4,17 @@ LLM 依赖模块
 直接使用 DashScope SDK，简洁高效
 """
 
-import os
-from functools import lru_cache
-from typing import Annotated, List, Any, AsyncGenerator
 import asyncio
-from asyncio import Queue
+import os
 import threading
+from asyncio import Queue
 from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
+from typing import Annotated, Any, AsyncGenerator, List
 
-from fastapi import Depends
 from dashscope import Generation, TextEmbedding
+from fastapi import Depends
+
 from backend.core.config import settings
 
 # 确保 API Key 已设置

@@ -9,16 +9,16 @@
 """
 
 import asyncio
-import time
-from typing import Dict, List, Any, Optional, Callable
-from datetime import datetime, timedelta
-from enum import Enum
-from dataclasses import dataclass
-from collections import defaultdict
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import json
+import smtplib
+import time
+from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 from backend.core.config import settings
 from backend.utils.logger import get_logger
@@ -246,10 +246,11 @@ class AlertManager:
     def _notify_dingtalk(self, alert: AlertInstance, webhook_url: str) -> bool:
         """钉钉机器人通知通道"""
         try:
-            import aiohttp
-            import hmac
-            import hashlib
             import base64
+            import hashlib
+            import hmac
+
+            import aiohttp
 
             async def send_dingtalk():
                 timestamp = str(round(time.time() * 1000))
