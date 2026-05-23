@@ -233,28 +233,34 @@ jobs:
           name: frontend-dist
           path: frontend/dist/
 
-      - name: Check KUBE_CONFIG secret
+      - name: Check KUBE_CONFIG secret & test connectivity
         id: check-kubeconfig
         run: |
+          # 1. 检查 secret 是否配置
           if [ -z "${{ secrets.KUBE_CONFIG }}" ]; then
             echo "available=false" >> $GITHUB_OUTPUT
             echo "⚠️ KUBE_CONFIG secret not configured, skipping deploy"
-          else
-            echo "available=true" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
-      - name: Set up kubectl
-        if: steps.check-kubeconfig.outputs.available == 'true'
-        uses: azure/setup-kubectl@v4
-        with:
-          version: 'latest'
-
-      - name: Configure kubeconfig
-        if: steps.check-kubeconfig.outputs.available == 'true'
-        run: |
+          # 2. 配置 kubeconfig
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
+
+          # 3. 安装 kubectl 并测试连通性
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
+
+          echo "🔍 Testing cluster connectivity..."
+          if kubectl cluster-info --request-timeout=10s 2>&1; then
+            echo "available=true" >> $GITHUB_OUTPUT
+            echo "✅ Kubernetes cluster is reachable"
+          else
+            echo "available=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Kubernetes cluster unreachable, skipping deploy"
+          fi
 
       - name: Set up Helm
         if: steps.check-kubeconfig.outputs.available == 'true'
@@ -274,13 +280,13 @@ jobs:
             --set secrets.dashscopeApiKey=${{ secrets.DASHSCOPE_API_KEY }} \
             --set secrets.secretKey=${{ secrets.SECRET_KEY }} \
             --wait \
-            --timeout 10m || echo "⚠️ Helm deploy skipped: K8s cluster unreachable"
+            --timeout 10m
 
       - name: Verify deployment
         if: steps.check-kubeconfig.outputs.available == 'true'
         run: |
-          kubectl rollout status deployment/sushi-digital-human-api -n sushi-prod --timeout=5m || echo "⚠️ Deployment verification skipped"
-          kubectl rollout status deployment/sushi-digital-human-nginx -n sushi-prod --timeout=5m || echo "⚠️ Deployment verification skipped"
+          kubectl rollout status deployment/sushi-digital-human-api -n sushi-prod --timeout=5m
+          kubectl rollout status deployment/sushi-digital-human-nginx -n sushi-prod --timeout=5m
 
   # ==================== Docker Compose 集成测试 ====================
   compose-test:
