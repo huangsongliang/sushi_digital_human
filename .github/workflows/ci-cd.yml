@@ -38,10 +38,10 @@ jobs:
         run: uv pip install flake8 mypy
 
       - name: Run flake8
-        run: uv run flake8 backend/
+        run: .venv/bin/flake8 backend/
 
       - name: Run mypy
-        run: uv run mypy backend/ || true
+        run: .venv/bin/mypy backend/ || true
 
   # ==================== 前端代码质量 ====================
   frontend-lint:
