@@ -29,13 +29,10 @@ export default defineConfig({
         }
       }
     },
-    // 启用压缩
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
+    // 启用压缩（esbuild 内置，无需额外依赖）
+    minify: 'esbuild',
+    esbuild: {
+      drop: ['console', 'debugger'],
     }
   }
 })
