@@ -21,11 +21,12 @@ export const useNotificationStore = defineStore('notification', () => {
       duration: notification.duration || 4500
     }
     notifications.value.push(newNotification)
-    
-    if (newNotification.duration > 0) {
+
+    const duration = newNotification.duration ?? 0
+    if (duration > 0) {
       setTimeout(() => {
         remove(id)
-      }, newNotification.duration)
+      }, duration)
     }
   }
 
