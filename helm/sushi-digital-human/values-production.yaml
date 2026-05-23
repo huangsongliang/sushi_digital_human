@@ -27,16 +27,12 @@ autoscaling:
   maxReplicas: 20
   targetCPUUtilizationPercentage: 80
 
-# Ingress 暂不启用（需预先安装 nginx-ingress + cert-manager）
-# 启用步骤：
-#   1. helm install ingress-nginx ingress-nginx/ingress-nginx
-#   2. helm install cert-manager jetstack/cert-manager
-#   3. 将下面 enabled 改为 true，并修改域名
+# Ingress（本地开发用 sushi.local，生产环境替换为真实域名）
 ingress:
-  enabled: false
+  enabled: true
   className: nginx
   hosts:
-    - host: your-domain.com
+    - host: sushi.local
       paths:
         - path: /
           pathType: Prefix
@@ -52,6 +48,19 @@ redis:
   enabled: true
   image: redis:7-alpine
   port: 6379
+
+mysql:
+  enabled: true
+  auth:
+    database: "sushi"
+  primary:
+    persistence:
+      enabled: true
+      size: 20Gi
+  secondary:
+    persistence:
+      enabled: true
+      size: 20Gi
 
 healthCheck:
   liveness:

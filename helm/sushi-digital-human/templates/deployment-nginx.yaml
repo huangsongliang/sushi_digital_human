@@ -56,7 +56,19 @@ spec:
         - name: copy-frontend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["cp", "-r", "/app/frontend/dist/", "/shared/"]
+          command:
+            - sh
+            - -c
+            - |
+              if [ -d /app/frontend/dist ] && [ "$(ls /app/frontend/dist 2>/dev/null | head -1)" ]; then
+                echo "Copying frontend dist..."
+                cp -r /app/frontend/dist/* /shared/
+                echo "Frontend dist copied successfully"
+                ls -la /shared/
+              else
+                echo "WARNING: No frontend/dist found in image, creating empty index.html"
+                echo "<h1>Frontend not built</h1><p>Run: cd frontend && npm run build</p>" > /shared/index.html
+              fi
           volumeMounts:
             - name: frontend-dist
               mountPath: /shared

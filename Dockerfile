@@ -28,11 +28,12 @@ RUN pip install --upgrade pip setuptools wheel
 # 配置清华镜像源（加速下载）
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-# 复制依赖文件
+# 复制依赖文件与包目录
 COPY pyproject.toml uv.lock ./
+COPY backend/ ./backend/
 
-# 使用 uv 安装依赖
-RUN pip install uv && uv pip install --system -e .
+# 使用 uv 安装依赖到虚拟环境
+RUN pip install uv && uv pip install .
 
 # ==================== 第二阶段：运行（开发）====================
 FROM python:3.11-slim AS development

@@ -18,12 +18,12 @@ service:
     type: LoadBalancer
     port: 80
 
-# ==================== Ingress（默认关闭，需安装 nginx-ingress 后启用）====================
+# ==================== Ingress（已启用 nginx-ingress，本地开发用 sushi.local）====================
 ingress:
-  enabled: false
+  enabled: true
   className: nginx
   hosts:
-    - host: sushi.example.com
+    - host: sushi.local
       paths:
         - path: /
           pathType: Prefix
@@ -59,13 +59,28 @@ autoscaling:
 env:
   appName: "企业智能文档问答系统"
   logLevel: "info"
-  redisUrl: "redis://sushi-digital-human-redis:6379/0"
+  redisUrl: "redis://sushi-digital-human-sushi-digital-human-redis:6379/0"
 
 # ==================== 外部 Redis ====================
 redis:
   enabled: true
   image: redis:7-alpine
   port: 6379
+
+# ==================== MySQL ====================
+mysql:
+  enabled: true
+  auth:
+    rootPassword: ""
+    database: "sushi"
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+  secondary:
+    persistence:
+      enabled: true
+      size: 8Gi
 
 # ==================== 敏感信息（通过 CI secrets 注入，创建 K8s Secret）====================
 secrets:
@@ -77,9 +92,9 @@ secrets:
 healthCheck:
   liveness:
     path: /health/liveness
-    initialDelay: 60
+    initialDelay: 120
     period: 30
   readiness:
     path: /health/readiness
-    initialDelay: 30
+    initialDelay: 60
     period: 15

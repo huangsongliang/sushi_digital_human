@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "sushi-digital-human.fullname" . }}-mysql-data
+  labels:
+    {{- include "sushi-digital-human.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: hostpath
+---
+{{- if .Values.mysql.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sushi-digital-human.fullname" . }}-mysql
+  labels:
+    {{- include "sushi-digital-human.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: mysql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          env:
+            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+              value: "yes"
+            - name: MYSQL_DATABASE
+              value: {{ .Values.mysql.auth.database | quote }}
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
+                    mysql -h 127.0.0.1 -u root -e "SELECT 1"
+                  else
+                    mysql -h 127.0.0.1 -u root -p$(MYSQL_ROOT_PASSWORD) -e "SELECT 1"
+                  fi
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "sushi-digital-human.fullname" . }}-mysql-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sushi-digital-human.fullname" . }}-mysql
+  labels:
+    {{- include "sushi-digital-human.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/component: mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
+  clusterIP: None
+{{- end }}

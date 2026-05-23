@@ -8,6 +8,14 @@ data:
   APP_NAME: {{ .Values.env.appName | quote }}
   LOG_LEVEL: {{ .Values.env.logLevel | quote }}
   REDIS_URL: {{ .Values.env.redisUrl | quote }}
+  {{- if .Values.mysql.enabled }}
+  MYSQL_HOST: "{{ include "sushi-digital-human.fullname" . }}-mysql"
+  MYSQL_PORT: "3306"
+  MYSQL_USER: "root"
+  MYSQL_DATABASE: {{ .Values.mysql.auth.database | quote }}
+  {{- else }}
+  MYSQL_HOST: ""
+  {{- end }}
   PROMETHEUS_ENABLED: "true"
   PROMETHEUS_PORT: "9090"
 ---
