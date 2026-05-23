@@ -11,13 +11,13 @@ class _TestPlugin(Plugin):
     description = "A test plugin"
     author = "test"
 
-    async def initialize(self, config: dict) -> bool:
+    def initialize(self, config: dict) -> bool:
         return True
 
-    async def execute(self, *args, **kwargs):
+    def execute(self, *args, **kwargs):
         return {"result": "ok"}
 
-    async def shutdown(self):
+    def shutdown(self):
         pass
 
 
@@ -32,22 +32,19 @@ class TestPlugin:
         assert plugin.author == "test"
         assert plugin.dependencies == []
 
-    @pytest.mark.asyncio
-    async def test_plugin_initialize(self):
+    def test_plugin_initialize(self):
         plugin = _TestPlugin()
-        result = await plugin.initialize({})
+        result = plugin.initialize({})
         assert result is True
 
-    @pytest.mark.asyncio
-    async def test_plugin_execute(self):
+    def test_plugin_execute(self):
         plugin = _TestPlugin()
-        result = await plugin.execute()
+        result = plugin.execute()
         assert result == {"result": "ok"}
 
-    @pytest.mark.asyncio
-    async def test_plugin_shutdown(self):
+    def test_plugin_shutdown(self):
         plugin = _TestPlugin()
-        await plugin.shutdown()  # no exception
+        plugin.shutdown()  # no exception
 
 
 class TestHook:
@@ -57,7 +54,7 @@ class TestHook:
         hook = Hook("test_hook", priority=5)
         assert hook.name == "test_hook"
         assert hook.priority == 5
-        assert hook._callbacks == []
+        assert hook.callbacks == []
 
     def test_hook_register(self):
         hook = Hook("test_hook")
@@ -66,7 +63,7 @@ class TestHook:
             return "hi"
 
         hook.register(cb)
-        assert len(hook._callbacks) == 1
+        assert len(hook.callbacks) == 1
 
     def test_hook_unregister(self):
         hook = Hook("test_hook")
@@ -76,7 +73,7 @@ class TestHook:
 
         hook.register(cb)
         hook.unregister(cb)
-        assert len(hook._callbacks) == 0
+        assert len(hook.callbacks) == 0
 
     @pytest.mark.asyncio
     async def test_hook_call(self):
@@ -97,13 +94,13 @@ class TestPluginManager:
 
     def test_manager_creation(self):
         mgr = PluginManager()
-        assert isinstance(mgr._plugins, dict)
-        assert isinstance(mgr._hooks, dict)
+        assert isinstance(mgr.plugins, dict)
+        assert isinstance(mgr.hooks, dict)
 
     def test_register_hook(self):
         mgr = PluginManager()
         hook = mgr.register_hook("my_hook", priority=10)
-        assert "my_hook" in mgr._hooks
+        assert "my_hook" in mgr.hooks
         assert hook.priority == 10
 
     @pytest.mark.asyncio
