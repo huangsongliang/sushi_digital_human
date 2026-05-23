@@ -31,7 +31,10 @@ class TestAuditRecord:
             resource_type="user",
             resource_id=1,
             details={"ip": "127.0.0.1"},
+            ip_address="127.0.0.1",
+            user_agent="test-agent",
             success=True,
+            error_message=None,
             created_at=datetime.now(),
         )
         assert record.record_id == "r1"
@@ -48,7 +51,10 @@ class TestAuditRecord:
             resource_type="user",
             resource_id=1,
             details={"ip": "127.0.0.1"},
+            ip_address="127.0.0.1",
+            user_agent="test-agent",
             success=True,
+            error_message=None,
             created_at=datetime.now(),
         )
         data = record.to_dict()
@@ -65,6 +71,8 @@ class TestAuditRecord:
             resource_type="auth",
             resource_id=1,
             details={},
+            ip_address=None,
+            user_agent=None,
             success=False,
             error_message="Invalid credentials",
             created_at=datetime.now(),
@@ -80,9 +88,10 @@ class TestAuditRecord:
             resource_type="session",
             resource_id=None,
             details={},
-            success=True,
             ip_address=None,
             user_agent=None,
+            success=True,
+            error_message=None,
             created_at=None,
         )
         # __post_init__ 会生成 record_id 和 created_at
