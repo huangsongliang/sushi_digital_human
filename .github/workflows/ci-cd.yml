@@ -12,6 +12,11 @@ env:
   NODE_VERSION: "20"
   DOCKER_REGISTRY: "ghcr.io"
 
+# 添加包推送权限
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   # ==================== 后端代码质量 ====================
   backend-lint:
