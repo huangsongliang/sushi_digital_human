@@ -400,21 +400,6 @@ function onRegPhonePasswordInput() {
   regErrors.value.phonePassword = ''
 }
 
-// --- 开始/停止倒计时 ---
-function startCountdown(current: ReturnType<typeof ref<number>>, timerRef: typeof loginSmsTimer) {
-  current.value = 60
-  if (timerRef) clearInterval(timerRef)
-  // eslint-disable-next-line no-param-reassign
-  timerRef = setInterval(() => {
-    current.value--
-    if (current.value <= 0) {
-      if (timerRef) clearInterval(timerRef)
-      // eslint-disable-next-line no-param-reassign
-      timerRef = null
-    }
-  }, 1000)
-}
-
 // --- 邮箱登录 ---
 async function handleEmailLogin() {
   clearAllErrors()

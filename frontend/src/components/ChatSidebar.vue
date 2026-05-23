@@ -12,16 +12,16 @@
     </div>
 
     <div class="nav-menu">
-      <button 
-        class="nav-item" 
+      <button
+        class="nav-item"
         :class="{ active: currentRoute === '/' }"
         @click="navigate('/')"
       >
         <span class="nav-icon">💬</span>
         <span>对话</span>
       </button>
-      <button 
-        class="nav-item" 
+      <button
+        class="nav-item"
         :class="{ active: currentRoute === '/documents' }"
         @click="navigate('/documents')"
       >
@@ -135,7 +135,7 @@ async function handleLogout() {
 }
 
 const emit = defineEmits<{
-  toggleSettings?: []
+  toggleSettings: []
 }>()
 
 function formatTime(date: Date): string {
