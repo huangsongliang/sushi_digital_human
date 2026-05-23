@@ -193,8 +193,8 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/backend:latest
-            ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/backend:${{ github.sha }}
+            ${{ env.DOCKER_REGISTRY }}/${{ github.actor }}/sushi-backend:latest
+            ${{ env.DOCKER_REGISTRY }}/${{ github.actor }}/sushi-backend:${{ github.sha }}
           build-args: |
             PYPI_MIRROR=https://pypi.tuna.tsinghua.edu.cn/simple
           cache-from: type=gha
