@@ -6,12 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
-from backend.audit.audit_logger import (
-    AuditAction,
-    AuditCategory,
-    AuditLogger,
-    get_audit_logger,
-)
+from backend.audit.audit_logger import AuditAction, AuditCategory, get_audit_logger
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -266,20 +261,10 @@ async def cleanup_old_logs(
 @router.get("/actions")
 async def get_action_types():
     """获取操作类型列表"""
-    return {
-        "actions": [
-            {"value": action.value, "name": action.name}
-            for action in AuditAction
-        ]
-    }
+    return {"actions": [{"value": action.value, "name": action.name} for action in AuditAction]}
 
 
 @router.get("/categories")
 async def get_category_types():
     """获取类别列表"""
-    return {
-        "categories": [
-            {"value": cat.value, "name": cat.name}
-            for cat in AuditCategory
-        ]
-    }
+    return {"categories": [{"value": cat.value, "name": cat.name} for cat in AuditCategory]}

@@ -1,9 +1,10 @@
 """双因素认证（MFA）模块"""
 
-import pyotp
-from typing import Optional, Dict
-from datetime import datetime, timedelta
+from datetime import datetime
+from typing import Dict, Optional
 from uuid import uuid4
+
+import pyotp
 
 from backend.models.database import db
 from backend.utils.logger import get_logger
@@ -34,6 +35,7 @@ class MFAManager:
     def generate_recovery_codes(self, count: int = 10) -> list:
         """生成恢复码"""
         import secrets
+
         recovery_codes = []
         for _ in range(count):
             code = secrets.token_hex(4).upper()
@@ -53,10 +55,7 @@ class MFAManager:
                 VALUES (%s, %s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE secret = %s, recovery_codes = %s, enabled = %s
                 """,
-                (
-                    mfa_id, user_id, secret, recovery_codes_hash,
-                    True, datetime.now(), secret, recovery_codes_hash, True
-                ),
+                (mfa_id, user_id, secret, recovery_codes_hash, True, datetime.now(), secret, recovery_codes_hash, True),
             )
             db.commit()
 

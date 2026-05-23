@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel, Field
 
-from backend.core.dify import DifyIntegration, DifyToolCall, get_dify_integration, get_webhook_handler
+from backend.core.dify import DifyToolCall, get_dify_integration, get_webhook_handler
 
 router = APIRouter(prefix="/api/dify", tags=["Dify 集成"])
 

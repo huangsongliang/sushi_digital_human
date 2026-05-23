@@ -8,8 +8,8 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.agents.messaging import AgentMessage, MessageType, message_queue
-from backend.agents.parallel_engine import ParallelEngine, parallel_engine
-from backend.agents.role_manager import AgentCapability, AgentRole, role_manager
+from backend.agents.parallel_engine import parallel_engine
+from backend.agents.role_manager import AgentCapability, role_manager
 from backend.agents.task_splitter import Task, TaskPriority, task_splitter
 from backend.database.session import get_db
 from backend.utils.logger import get_logger

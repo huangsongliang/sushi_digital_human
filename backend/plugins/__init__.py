@@ -9,13 +9,12 @@
 
 import asyncio
 import importlib
-import os
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional
 
 from backend.utils.logger import get_logger
 
@@ -80,12 +79,10 @@ class BasePlugin(ABC):
     @abstractmethod
     async def initialize(self, config: Dict[str, Any] = None):
         """初始化插件"""
-        pass
 
     @abstractmethod
     async def shutdown(self):
         """关闭插件"""
-        pass
 
     @abstractmethod
     async def health_check(self) -> bool:

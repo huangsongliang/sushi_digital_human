@@ -2,7 +2,6 @@
 支持从多种数据源导入文档到向量库
 """
 
-import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 

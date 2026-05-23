@@ -3,8 +3,7 @@
 """
 
 import base64
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from backend.utils.logger import get_logger
 
@@ -164,9 +163,7 @@ class VisionProcessor:
         else:
             raise Exception(f"Qwen API 错误: {response.message}")
 
-    def answer_about_image(
-        self, image_path: str, question: str, context: Optional[str] = None
-    ) -> str:
+    def answer_about_image(self, image_path: str, question: str, context: Optional[str] = None) -> str:
         """
         根据图片回答问题
 

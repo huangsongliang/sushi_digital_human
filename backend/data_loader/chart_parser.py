@@ -3,9 +3,7 @@
 """
 
 import base64
-import io
 from enum import Enum
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
@@ -289,9 +287,7 @@ class DataExtractor:
         """初始化数据提取器"""
         self.detector = ChartDetector()
 
-    def extract(
-        self, image_path: str, chart_type: Optional[ChartType] = None
-    ) -> Dict[str, Any]:
+    def extract(self, image_path: str, chart_type: Optional[ChartType] = None) -> Dict[str, Any]:
         """
         从图表中提取数据
 
@@ -328,9 +324,7 @@ class DataExtractor:
             logger.error(f"数据提取失败: {str(e)}")
             return {"status": "error", "message": f"数据提取失败: {str(e)}"}
 
-    def extract_from_bytes(
-        self, image_bytes: bytes, chart_type: Optional[ChartType] = None
-    ) -> Dict[str, Any]:
+    def extract_from_bytes(self, image_bytes: bytes, chart_type: Optional[ChartType] = None) -> Dict[str, Any]:
         """
         从字节数据提取图表数据
 
@@ -495,7 +489,7 @@ class ChartDescriber:
         """
         try:
             with open(image_path, "rb") as f:
-                image_base64 = base64.b64encode(f.read()).decode("utf-8")
+                _image_base64 = base64.b64encode(f.read()).decode("utf-8")  # noqa: F841
 
             if extracted_data is None:
                 extractor = DataExtractor()
@@ -533,7 +527,7 @@ class ChartDescriber:
             str: 图表描述文本
         """
         try:
-            image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+            _image_base64 = base64.b64encode(image_bytes).decode("utf-8")  # noqa: F841
 
             if extracted_data is None:
                 extractor = DataExtractor()
@@ -579,9 +573,7 @@ class ChartDescriber:
 
         return prompt
 
-    async def query(
-        self, image_path: str, question: str, chart_type: Optional[ChartType] = None
-    ) -> str:
+    async def query(self, image_path: str, question: str, chart_type: Optional[ChartType] = None) -> str:
         """
         对图表进行问答
 
@@ -598,7 +590,7 @@ class ChartDescriber:
             extracted_data = extractor.extract(image_path, chart_type)
 
             with open(image_path, "rb") as f:
-                image_base64 = base64.b64encode(f.read()).decode("utf-8")
+                _image_base64 = base64.b64encode(f.read()).decode("utf-8")  # noqa: F841
 
             prompt = f"""基于以下图表信息回答问题：
 
@@ -620,9 +612,7 @@ class ChartDescriber:
             logger.error(f"图表问答失败: {str(e)}")
             return f"图表问答失败: {str(e)}"
 
-    async def query_from_bytes(
-        self, image_bytes: bytes, question: str, chart_type: Optional[ChartType] = None
-    ) -> str:
+    async def query_from_bytes(self, image_bytes: bytes, question: str, chart_type: Optional[ChartType] = None) -> str:
         """
         从字节数据对图表进行问答
 
@@ -710,9 +700,7 @@ def analyze_chart(
     return result
 
 
-async def describe_chart_async(
-    image_path: str, chart_type: Optional[ChartType] = None
-) -> str:
+async def describe_chart_async(image_path: str, chart_type: Optional[ChartType] = None) -> str:
     """
     便捷函数：异步生成图表描述
 

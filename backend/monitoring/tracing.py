@@ -8,7 +8,6 @@
 """
 
 import functools
-import time
 import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -19,10 +18,11 @@ try:
     from opentelemetry import trace
     from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
     from opentelemetry.sdk.resources import Resource
-    from opentelemetry.sdk.trace import Span, SpanProcessor
+    from opentelemetry.sdk.trace import Span
     from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
     from opentelemetry.trace import Status, StatusCode
     from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
+
     OPENTELEMETRY_AVAILABLE = True
 except ImportError:
     OPENTELEMETRY_AVAILABLE = False
@@ -110,7 +110,7 @@ class TracingManager:
     def _initialize_tracer(self):
         """初始化OpenTelemetry追踪器"""
         try:
-            resource = Resource.create({"service.name": self.service_name})
+            Resource.create({"service.name": self.service_name})  # noqa: F841
             self._tracer = trace.get_tracer(self.service_name)
             self._initialized = True
             logger.info(f"追踪器初始化成功: {self.service_name}")

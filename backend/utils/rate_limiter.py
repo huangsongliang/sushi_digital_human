@@ -8,7 +8,7 @@
 import asyncio
 import time
 from asyncio import Queue, Task
-from typing import Dict, Optional, Set
+from typing import Dict, Set
 
 from fastapi import HTTPException, Request, status
 

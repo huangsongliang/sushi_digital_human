@@ -2,7 +2,6 @@
 支持 Word (.docx)、PowerPoint (.pptx) 文档解析
 """
 
-import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -152,9 +151,7 @@ class WordParser:
             logger.error(f"Word 元数据提取失败: {str(e)}")
             return {}
 
-    def process(
-        self, file_path: str, extract_tables: bool = True, extract_images: bool = False
-    ) -> Dict[str, Any]:
+    def process(self, file_path: str, extract_tables: bool = True, extract_images: bool = False) -> Dict[str, Any]:
         """完整处理 Word 文档"""
         result = {
             "file_path": file_path,
@@ -313,9 +310,7 @@ class PowerPointParser:
             logger.error(f"PowerPoint 元数据提取失败: {str(e)}")
             return {}
 
-    def process(
-        self, file_path: str, extract_notes: bool = True, extract_images: bool = False
-    ) -> Dict[str, Any]:
+    def process(self, file_path: str, extract_notes: bool = True, extract_images: bool = False) -> Dict[str, Any]:
         """完整处理 PowerPoint 文档"""
         result = {
             "file_path": file_path,

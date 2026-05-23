@@ -7,8 +7,6 @@ from typing import Optional
 class LoginValidationError(Exception):
     """登录验证异常"""
 
-    pass
-
 
 class LoginValidator:
     """用户登录验证器"""

@@ -8,7 +8,6 @@ from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.openapi.models import OAuthFlows, SecurityScheme
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
@@ -45,7 +44,7 @@ from backend.middleware.security import (
 )
 from backend.utils.alerting import start_alerting, stop_alerting
 from backend.utils.error_tracking import setup_exception_handlers
-from backend.utils.health import health_checker, perform_health_check, shutdown_manager
+from backend.utils.health import perform_health_check, shutdown_manager
 from backend.utils.logger import get_logger
 from backend.utils.performance import generate_prometheus_metrics, get_prometheus_content_type
 from backend.utils.rate_limiter import concurrency_limit_middleware, rate_limit_middleware

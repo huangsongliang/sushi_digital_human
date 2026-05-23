@@ -2,9 +2,8 @@
 支持 PDF 文本提取、OCR 识别、表格提取
 """
 
-import io
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from backend.utils.logger import get_logger
 

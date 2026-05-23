@@ -1,7 +1,5 @@
 """多模态问答 API 路由"""
 
-import base64
-import json
 import tempfile
 from pathlib import Path
 from typing import List, Optional

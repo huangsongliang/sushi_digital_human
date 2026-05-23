@@ -3,7 +3,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from backend.data_loader.manager import get_document_manager
 from backend.utils.logger import get_logger

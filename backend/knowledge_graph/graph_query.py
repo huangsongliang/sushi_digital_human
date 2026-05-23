@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Optional, Set
 
-from backend.knowledge_graph.graph_storage import Edge, GraphStorage, Node
+from backend.knowledge_graph.graph_storage import GraphStorage, Node
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -82,9 +82,7 @@ class GraphQuery:
         """模拟查找邻居"""
         return {}
 
-    def find_path(
-        self, source_id: str, target_id: str, max_length: int = 5
-    ) -> List[List[Dict[str, str]]]:
+    def find_path(self, source_id: str, target_id: str, max_length: int = 5) -> List[List[Dict[str, str]]]:
         """查找两点之间的所有路径
 
         Args:

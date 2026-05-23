@@ -8,11 +8,10 @@ from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field
 
 from backend.chain import get_rag_chain
 from backend.memory import ConversationMemory
-from backend.models.schemas import ErrorResponse
 from backend.retrieval import get_vector_store
 from backend.utils.logger import get_logger
 from backend.utils.performance import performance_monitor, timed_operation

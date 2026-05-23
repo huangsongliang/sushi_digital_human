@@ -1,10 +1,9 @@
 """WebSocket 连接管理器"""
 
-import asyncio
-from typing import Dict, List, Set
+from typing import Dict, List
 from uuid import uuid4
 
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket
 
 from backend.utils.logger import get_logger
 

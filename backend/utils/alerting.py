@@ -14,15 +14,13 @@ import smtplib
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
-from backend.core.config import settings
 from backend.utils.logger import get_logger
-from backend.utils.performance import performance_monitor
 
 logger = get_logger(__name__)
 

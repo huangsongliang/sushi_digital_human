@@ -2,11 +2,10 @@
 
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from backend.agent import get_agent_manager
-from backend.core.auth_manager import get_auth_manager
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)

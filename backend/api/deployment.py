@@ -7,13 +7,9 @@ from fastapi import APIRouter, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from backend.deployment import (
-    DeploymentVersion,
-    Experiment,
     ExperimentResult,
     ExperimentStatus,
-    TrafficController,
     TrafficStrategy,
-    VersionManager,
     VersionStatus,
     VersionType,
     get_deployment_ab_test_manager,

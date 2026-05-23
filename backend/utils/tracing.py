@@ -7,7 +7,6 @@
 - 提供可解释性
 """
 
-import json
 import uuid
 from dataclasses import dataclass
 from datetime import datetime

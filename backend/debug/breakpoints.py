@@ -2,7 +2,7 @@
 
 import uuid
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from backend.utils.logger import get_logger
 
@@ -11,6 +11,7 @@ logger = get_logger(__name__)
 
 class BreakpointStatus(str, Enum):
     """断点状态枚举"""
+
     ENABLED = "enabled"
     DISABLED = "disabled"
     CONDITIONAL = "conditional"

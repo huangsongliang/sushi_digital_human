@@ -4,7 +4,7 @@
 """
 
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 from uuid import uuid4
 
 from pydantic import BaseModel, Field

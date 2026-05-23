@@ -4,11 +4,9 @@
 
 import importlib
 import inspect
-import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Type
-from uuid import uuid4
 
 from backend.utils.logger import get_logger
 
@@ -27,16 +25,13 @@ class Plugin(ABC):
     @abstractmethod
     def initialize(self, config: Dict[str, Any]) -> bool:
         """初始化插件"""
-        pass
 
     @abstractmethod
     def execute(self, *args, **kwargs) -> Any:
         """执行插件功能"""
-        pass
 
     def shutdown(self):
         """关闭插件"""
-        pass
 
 
 class Hook:
@@ -190,12 +185,7 @@ class PluginManager:
                 module = importlib.import_module(module_name)
 
                 for name, obj in inspect.getmembers(module):
-                    if (
-                        inspect.isclass(obj)
-                        and issubclass(obj, Plugin)
-                        and obj != Plugin
-                        and hasattr(obj, 'name')
-                    ):
+                    if inspect.isclass(obj) and issubclass(obj, Plugin) and obj != Plugin and hasattr(obj, "name"):
                         discovered.append(obj)
 
             except Exception as e:

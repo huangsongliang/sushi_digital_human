@@ -1,6 +1,5 @@
 """Prompt调试模块 - 提供Prompt注入检测、模板调试和Token使用分析功能"""
 
-import json
 import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
@@ -13,6 +12,7 @@ logger = get_logger(__name__)
 @dataclass
 class TokenUsage:
     """Token使用统计"""
+
     prompt_tokens: int = 0
     completion_tokens: int = 0
     total_tokens: int = 0
@@ -22,6 +22,7 @@ class TokenUsage:
 @dataclass
 class PromptAnalysis:
     """Prompt分析结果"""
+
     injection_detected: bool = False
     injection_patterns: List[str] = None
     token_count: int = 0
@@ -190,7 +191,7 @@ class PromptDebugger:
         if len(prompt) < 10:
             issues.append({"type": "warning", "message": "Prompt过短，可能影响模型输出质量"})
 
-        if any(char in prompt for char in ['\x00', '\x01', '\x02']):
+        if any(char in prompt for char in ["\x00", "\x01", "\x02"]):
             issues.append({"type": "error", "message": "Prompt包含非法字符"})
 
         return {

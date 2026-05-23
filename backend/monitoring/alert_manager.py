@@ -9,15 +9,10 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
-from backend.monitoring.metrics_collector import get_metrics_collector
-from backend.monitoring.notification_gateway import (
-    NotificationGateway,
-    NotificationMessage,
-    NotificationChannel,
-    get_notification_gateway,
-)
-from backend.monitoring.rule_engine import AlertLevel, AlertRule, RuleEngine, get_rule_engine
 from backend.models.database import db
+from backend.monitoring.metrics_collector import get_metrics_collector
+from backend.monitoring.notification_gateway import NotificationChannel, NotificationMessage, get_notification_gateway
+from backend.monitoring.rule_engine import AlertLevel, AlertRule, get_rule_engine
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -248,9 +243,7 @@ class AlertManager:
                 stats["today_count"] += 1
 
         for status in AlertStatus:
-            stats["by_status"][status.value] = sum(
-                1 for a in active if a.status == status
-            )
+            stats["by_status"][status.value] = sum(1 for a in active if a.status == status)
 
         return stats
 
@@ -319,10 +312,7 @@ class AlertManager:
         cutoff_time = datetime.now().timestamp() - (max_age_days * 24 * 3600)
 
         original_length = len(self.alert_history)
-        self.alert_history = [
-            alert for alert in self.alert_history
-            if alert.triggered_at >= cutoff_time
-        ]
+        self.alert_history = [alert for alert in self.alert_history if alert.triggered_at >= cutoff_time]
 
         deleted_count = original_length - len(self.alert_history)
         if deleted_count > 0:

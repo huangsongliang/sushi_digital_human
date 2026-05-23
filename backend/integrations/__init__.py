@@ -7,7 +7,6 @@
 - Webhook 集成
 """
 
-import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
@@ -72,22 +71,18 @@ class BaseIntegration(ABC):
     @abstractmethod
     async def send_text(self, content: str, **kwargs) -> MessageResult:
         """发送文本消息"""
-        pass
 
     @abstractmethod
     async def send_markdown(self, content: str, title: Optional[str] = None, **kwargs) -> MessageResult:
         """发送 Markdown 消息"""
-        pass
 
     @abstractmethod
     async def send_link(self, title: str, text: str, url: str, pic_url: Optional[str] = None) -> MessageResult:
         """发送链接消息"""
-        pass
 
     @abstractmethod
     async def send_card(self, card_data: Dict[str, Any]) -> MessageResult:
         """发送卡片消息"""
-        pass
 
     def is_enabled(self) -> bool:
         """检查是否启用"""

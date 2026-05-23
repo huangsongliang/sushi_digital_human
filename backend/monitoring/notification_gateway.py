@@ -3,14 +3,13 @@
 """
 
 import asyncio
-import json
+import smtplib
 from dataclasses import dataclass, field
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from enum import Enum
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 import httpx
 
@@ -50,11 +49,7 @@ class NotificationGateway:
         self.notification_history: List[Dict[str, Any]] = []
         self.max_history_size = 1000
 
-    def configure_channel(
-        self,
-        channel: NotificationChannel,
-        config: Dict[str, Any]
-    ) -> bool:
+    def configure_channel(self, channel: NotificationChannel, config: Dict[str, Any]) -> bool:
         """配置通知渠道"""
         try:
             self.channels[channel] = config
@@ -100,12 +95,12 @@ class NotificationGateway:
             if not email_config:
                 return {"success": False, "error": "邮件渠道未配置"}
 
-            msg = MIMEMultipart('alternative')
-            msg['Subject'] = message.title
-            msg['From'] = email_config.get('sender_email')
-            msg['To'] = ', '.join(message.recipients)
+            msg = MIMEMultipart("alternative")
+            msg["Subject"] = message.title
+            msg["From"] = email_config.get("sender_email")
+            msg["To"] = ", ".join(message.recipients)
 
-            text_part = MIMEText(message.content, 'plain', 'utf-8')
+            text_part = MIMEText(message.content, "plain", "utf-8")
             html_part = MIMEText(
                 f"""
                 <html>
@@ -117,22 +112,16 @@ class NotificationGateway:
                 </body>
                 </html>
                 """,
-                'html',
-                'utf-8'
+                "html",
+                "utf-8",
             )
 
             msg.attach(text_part)
             msg.attach(html_part)
 
-            with smtplib.SMTP(
-                email_config['smtp_host'],
-                email_config.get('smtp_port', 587)
-            ) as server:
+            with smtplib.SMTP(email_config["smtp_host"], email_config.get("smtp_port", 587)) as server:
                 server.starttls()
-                server.login(
-                    email_config['sender_email'],
-                    email_config['sender_password']
-                )
+                server.login(email_config["sender_email"], email_config["sender_password"])
                 server.send_message(msg)
 
             logger.info(f"邮件发送成功: {message.recipients}")
@@ -149,7 +138,7 @@ class NotificationGateway:
             if not dingtalk_config:
                 return {"success": False, "error": "钉钉渠道未配置"}
 
-            webhook_url = dingtalk_config.get('webhook_url')
+            webhook_url = dingtalk_config.get("webhook_url")
             if not webhook_url:
                 return {"success": False, "error": "钉钉 Webhook URL 未配置"}
 
@@ -174,11 +163,11 @@ class NotificationGateway:
                 response = await client.post(webhook_url, json=payload)
                 result = response.json()
 
-                if result.get('errcode') == 0:
+                if result.get("errcode") == 0:
                     logger.info("钉钉通知发送成功")
                     return {"success": True}
                 else:
-                    return {"success": False, "error": result.get('errmsg', 'Unknown error')}
+                    return {"success": False, "error": result.get("errmsg", "Unknown error")}
 
         except Exception as e:
             logger.error(f"钉钉通知发送失败: {str(e)}")
@@ -191,7 +180,7 @@ class NotificationGateway:
             if not wecom_config:
                 return {"success": False, "error": "企业微信渠道未配置"}
 
-            webhook_url = wecom_config.get('webhook_url')
+            webhook_url = wecom_config.get("webhook_url")
             if not webhook_url:
                 return {"success": False, "error": "企业微信 Webhook URL 未配置"}
 
@@ -206,11 +195,11 @@ class NotificationGateway:
                 response = await client.post(webhook_url, json=payload)
                 result = response.json()
 
-                if result.get('errcode') == 0:
+                if result.get("errcode") == 0:
                     logger.info("企业微信通知发送成功")
                     return {"success": True}
                 else:
-                    return {"success": False, "error": result.get('errmsg', 'Unknown error')}
+                    return {"success": False, "error": result.get("errmsg", "Unknown error")}
 
         except Exception as e:
             logger.error(f"企业微信通知发送失败: {str(e)}")
@@ -223,7 +212,7 @@ class NotificationGateway:
             if not feishu_config:
                 return {"success": False, "error": "飞书渠道未配置"}
 
-            webhook_url = feishu_config.get('webhook_url')
+            webhook_url = feishu_config.get("webhook_url")
             if not webhook_url:
                 return {"success": False, "error": "飞书 Webhook URL 未配置"}
 
@@ -252,11 +241,11 @@ class NotificationGateway:
                 response = await client.post(webhook_url, json=payload)
                 result = response.json()
 
-                if result.get('code') == 0 or result.get('StatusCode') == 0:
+                if result.get("code") == 0 or result.get("StatusCode") == 0:
                     logger.info("飞书通知发送成功")
                     return {"success": True}
                 else:
-                    return {"success": False, "error": result.get('msg', 'Unknown error')}
+                    return {"success": False, "error": result.get("msg", "Unknown error")}
 
         except Exception as e:
             logger.error(f"飞书通知发送失败: {str(e)}")
@@ -266,7 +255,7 @@ class NotificationGateway:
         """发送 Webhook 通知"""
         try:
             webhook_config = self.channels.get(NotificationChannel.WEBHOOK, {})
-            webhook_url = webhook_config.get('url')
+            webhook_url = webhook_config.get("url")
 
             if not webhook_url:
                 return {"success": False, "error": "Webhook URL 未配置"}
@@ -291,11 +280,7 @@ class NotificationGateway:
             logger.error(f"Webhook 通知发送失败: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    def _record_notification(
-        self,
-        message: NotificationMessage,
-        results: Dict[str, Any]
-    ):
+    def _record_notification(self, message: NotificationMessage, results: Dict[str, Any]):
         """记录通知历史"""
         record = {
             "id": str(uuid4()),
@@ -330,7 +315,7 @@ class NotificationGateway:
         config = self.channels.get(channel)
         if config:
             safe_config = config.copy()
-            for key in ['sender_password', 'api_key', 'secret']:
+            for key in ["sender_password", "api_key", "secret"]:
                 if key in safe_config:
                     safe_config[key] = "********"
             return safe_config

@@ -8,7 +8,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
-from backend.api.websocket import NotificationWebSocket, manager
+from backend.api.websocket import manager
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)

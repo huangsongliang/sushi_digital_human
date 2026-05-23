@@ -1,7 +1,6 @@
 """幻觉检测器 - 用于检测AI响应中的幻觉和事实错误"""
 
-import asyncio
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -12,6 +11,7 @@ logger = get_logger(__name__)
 
 class FactCheckResult(BaseModel):
     """事实核查结果"""
+
     claim: str = Field(..., description="被核查的声明")
     is_factual: bool = Field(..., description="是否事实正确")
     confidence: float = Field(..., ge=0.0, le=1.0, description="置信度")
@@ -21,6 +21,7 @@ class FactCheckResult(BaseModel):
 
 class ConsistencyResult(BaseModel):
     """一致性检测结果"""
+
     is_consistent: bool = Field(..., description="是否一致")
     conflicts: List[str] = Field(default_factory=list, description="冲突列表")
     confidence: float = Field(..., ge=0.0, le=1.0, description="置信度")
@@ -28,6 +29,7 @@ class ConsistencyResult(BaseModel):
 
 class SourceValidationResult(BaseModel):
     """来源验证结果"""
+
     source: str = Field(..., description="来源标识")
     is_valid: bool = Field(..., description="来源是否有效")
     reliability_score: float = Field(..., ge=0.0, le=1.0, description="可靠性评分")
@@ -37,6 +39,7 @@ class SourceValidationResult(BaseModel):
 
 class HallucinationTestResult(BaseModel):
     """幻觉检测测试结果"""
+
     test_id: str = Field(..., description="测试ID")
     test_name: str = Field(..., description="测试名称")
     test_type: str = Field(..., description="测试类型")
@@ -139,26 +142,11 @@ class HallucinationDetector:
         ]
 
         if any(keyword in claim_lower for keyword in factual_keywords):
-            return FactCheckResult(
-                claim=claim,
-                is_factual=True,
-                confidence=0.95,
-                evidence="已知事实"
-            )
+            return FactCheckResult(claim=claim, is_factual=True, confidence=0.95, evidence="已知事实")
         elif any(keyword in claim_lower for keyword in false_keywords):
-            return FactCheckResult(
-                claim=claim,
-                is_factual=False,
-                confidence=0.95,
-                evidence="与已知事实矛盾"
-            )
+            return FactCheckResult(claim=claim, is_factual=False, confidence=0.95, evidence="与已知事实矛盾")
         else:
-            return FactCheckResult(
-                claim=claim,
-                is_factual=True,
-                confidence=0.6,
-                evidence="无法验证，假设为真"
-            )
+            return FactCheckResult(claim=claim, is_factual=True, confidence=0.6, evidence="无法验证，假设为真")
 
     async def consistency_check(self, statements: List[str]) -> ConsistencyResult:
         """检测一组陈述的一致性
@@ -183,11 +171,7 @@ class HallucinationDetector:
             if all(s in statement_set for s in pattern):
                 conflicts.extend(expected_conflicts)
 
-        return ConsistencyResult(
-            is_consistent=len(conflicts) == 0,
-            conflicts=conflicts,
-            confidence=0.85
-        )
+        return ConsistencyResult(is_consistent=len(conflicts) == 0, conflicts=conflicts, confidence=0.85)
 
     async def validate_sources(self, sources: List[str]) -> List[SourceValidationResult]:
         """验证信息来源的可靠性
@@ -225,7 +209,7 @@ class HallucinationDetector:
             is_valid=is_valid,
             reliability_score=reliability_score,
             freshness_score=0.7,
-            metadata={"domain": source.split("//")[-1].split("/")[0] if "//" in source else source}
+            metadata={"domain": source.split("//")[-1].split("/")[0] if "//" in source else source},
         )
 
     async def run_all_fact_check_tests(self) -> List[HallucinationTestResult]:
@@ -239,6 +223,7 @@ class HallucinationDetector:
     async def _run_fact_check_test(self, test_case: Dict[str, Any]) -> HallucinationTestResult:
         """运行单个事实核查测试用例"""
         import time
+
         start_time = time.time()
 
         fact_check_results = await self.fact_check([c["claim"] for c in test_case["claims"]])
@@ -276,6 +261,7 @@ class HallucinationDetector:
     async def _run_consistency_test(self, test_case: Dict[str, Any]) -> HallucinationTestResult:
         """运行单个一致性检测测试用例"""
         import time
+
         start_time = time.time()
 
         consistency_result = await self.consistency_check(test_case["statements"])
@@ -308,6 +294,7 @@ class HallucinationDetector:
     async def _run_source_validation_test(self, test_case: Dict[str, Any]) -> HallucinationTestResult:
         """运行单个来源验证测试用例"""
         import time
+
         start_time = time.time()
 
         source_validation_results = await self.validate_sources([s["source"] for s in test_case["sources"]])

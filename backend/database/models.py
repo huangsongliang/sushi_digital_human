@@ -1,25 +1,14 @@
 """数据库模型定义"""
 
 from datetime import datetime
-from typing import Optional
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Text,
-    DateTime,
-    ForeignKey,
-    Boolean,
-    Float,
-)
+
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 
 class Base(AsyncAttrs, DeclarativeBase):
     """基础模型类"""
-
-    pass
 
 
 class User(Base):

@@ -168,7 +168,7 @@ class CacheManager:
         """更新查询统计（用于智能缓存策略）"""
         try:
             client = await redis_conn.get_client()
-            timestamp = datetime.now().isoformat()
+            _timestamp = datetime.now().isoformat()  # noqa: F841
 
             # 记录查询频率
             await client.zincrby(self.QUERY_STATS_KEY, 1, query)

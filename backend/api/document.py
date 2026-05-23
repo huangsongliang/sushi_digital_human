@@ -3,7 +3,7 @@
 import os
 import tempfile
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel

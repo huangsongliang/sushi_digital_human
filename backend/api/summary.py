@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from backend.summarizer.summary_generator import SummaryGenerator, SummaryType, get_summary_generator
+from backend.summarizer.summary_generator import SummaryType, get_summary_generator
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)

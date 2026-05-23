@@ -4,7 +4,6 @@
 """
 
 import asyncio
-import json
 import time
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
@@ -239,7 +238,6 @@ class MessageQueue:
             agent_id: Agent ID
             handler: 消息处理函数
         """
-        pass
 
     def unregister_message_handler(self, agent_id: str, handler):
         """取消注册消息处理器（预留接口）
@@ -248,7 +246,6 @@ class MessageQueue:
             agent_id: Agent ID
             handler: 消息处理函数
         """
-        pass
 
     async def _persist_message(self, message: AgentMessage):
         """持久化消息到Redis

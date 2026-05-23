@@ -11,7 +11,7 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from backend.utils.logger import get_logger
 
@@ -381,7 +381,9 @@ class PerformanceMonitor:
         now = datetime.now()
         cutoff_time = now - timedelta(minutes=time_window) if time_window else None
 
-        recent_metrics = self._metrics if not cutoff_time else [m for m in self._metrics if m.timestamp >= cutoff_time]
+        _recent_metrics = (
+            self._metrics if not cutoff_time else [m for m in self._metrics if m.timestamp >= cutoff_time]
+        )  # noqa: F841
         recent_requests = (
             list(self._request_metrics.values())
             if not cutoff_time

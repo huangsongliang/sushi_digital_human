@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from backend.core.config import settings
-from backend.database.pool import DatabasePoolMonitor, OptimizedDatabaseSessionManager
+from backend.database.pool import DatabasePoolMonitor
 
 
 class DatabaseSessionManager:
@@ -47,7 +47,7 @@ class DatabaseSessionManager:
         async with self._session_factory() as session:
             try:
                 yield session
-            except Exception as e:
+            except Exception:
                 await session.rollback()
                 raise
             finally:

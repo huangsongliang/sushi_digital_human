@@ -1,6 +1,5 @@
 """图表内容解析 API 路由"""
 
-import base64
 import tempfile
 from pathlib import Path
 from typing import List, Optional
@@ -8,16 +7,7 @@ from typing import List, Optional
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
-from backend.data_loader.chart_parser import (
-    ChartClassifier,
-    ChartDescriber,
-    ChartDetectionResult,
-    ChartDetector,
-    ChartType,
-    DataExtractor,
-    analyze_chart,
-    describe_chart_async,
-)
+from backend.data_loader.chart_parser import ChartClassifier, ChartDescriber, ChartDetector, ChartType, DataExtractor
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)

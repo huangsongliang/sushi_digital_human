@@ -206,7 +206,7 @@ async def get_current_user_id(
                 detail="令牌无效",
             )
         return int(user_id)
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="令牌无效或已过期",

@@ -66,9 +66,10 @@ class DeploymentVersion:
         if isinstance(self.status, str):
             self.status = VersionStatus(self.status)
         if not isinstance(self.metadata, VersionMetadata):
-            self.metadata = VersionMetadata(**self.metadata) if isinstance(self.metadata, dict) else VersionMetadata(
-                created_at=datetime.now(),
-                created_by="system"
+            self.metadata = (
+                VersionMetadata(**self.metadata)
+                if isinstance(self.metadata, dict)
+                else VersionMetadata(created_at=datetime.now(), created_by="system")
             )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -104,6 +105,7 @@ class DeploymentVersion:
              0: version1 == version2
              1: version1 > version2
         """
+
         def parse_version(v: str) -> tuple:
             parts = v.lstrip("vV").split(".")
             return tuple(int(p) for p in parts[:3]) + (0,) * (3 - len(parts[:3]))
@@ -280,9 +282,7 @@ class VersionManager:
         added = {k: config1[k] for k in config1 if k not in config2}
         removed = {k: config2[k] for k in config2 if k not in config1}
         modified = {
-            k: {"old": config2[k], "new": config1[k]}
-            for k in config1
-            if k in config2 and config1[k] != config2[k]
+            k: {"old": config2[k], "new": config1[k]} for k in config1 if k in config2 and config1[k] != config2[k]
         }
 
         return {
@@ -321,9 +321,7 @@ class VersionManager:
 
     def get_latest_production_version(self) -> Optional[DeploymentVersion]:
         """获取最新的生产版本"""
-        production_versions = [
-            v for v in self._versions.values() if v.status == VersionStatus.PRODUCTION
-        ]
+        production_versions = [v for v in self._versions.values() if v.status == VersionStatus.PRODUCTION]
         if not production_versions:
             return None
 
@@ -334,7 +332,7 @@ class VersionManager:
         if version_id not in self._versions:
             return False
 
-        version = self._versions[version_id]
+        _version = self._versions[version_id]  # noqa: F841
         return self.update_version_status(version_id, VersionStatus.ROLLBACK)
 
 

@@ -1,13 +1,11 @@
 """认证与权限管理服务"""
 
-import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.core.config import settings
 from backend.core.security import create_access_token, get_password_hash, verify_password, verify_token
 from backend.database.models import Permission, Role, RolePermission, User, UserRole
 from backend.database.session import get_db_session

@@ -5,12 +5,10 @@ Dify 平台集成模块
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import requests
 
-from backend.core.config import settings
 from backend.retrieval import get_hybrid_retriever
 from backend.utils.logger import get_logger
 

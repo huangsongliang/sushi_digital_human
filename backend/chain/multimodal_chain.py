@@ -3,10 +3,10 @@
 """
 
 import asyncio
-from typing import Any, AsyncGenerator, Dict, List, Optional, Union
+from typing import Any, AsyncGenerator, Dict, List, Optional
 
 from backend.chain.rag_chain import RAGChain
-from backend.multimodal.vision_processor import VisionProcessor, get_vision_processor
+from backend.multimodal.vision_processor import get_vision_processor
 from backend.prompt import default_prompts
 from backend.utils.logger import get_logger
 from backend.utils.performance import timed_operation
@@ -46,9 +46,7 @@ class MultimodalRAGChain:
 
         return descriptions
 
-    def build_multimodal_context(
-        self, text_context: str, image_descriptions: List[str]
-    ) -> str:
+    def build_multimodal_context(self, text_context: str, image_descriptions: List[str]) -> str:
         """构建多模态上下文"""
         context_parts = [text_context]
 
@@ -133,9 +131,7 @@ class MultimodalRAGChain:
             image_descriptions = []
             if image_paths:
                 loop = asyncio.get_event_loop()
-                image_descriptions = await loop.run_in_executor(
-                    None, self.describe_images, image_paths
-                )
+                image_descriptions = await loop.run_in_executor(None, self.describe_images, image_paths)
 
             answer = await self.async_generate_answer(
                 query=query,
@@ -222,9 +218,7 @@ class MultimodalRAGChain:
             return "请提供图片"
 
         loop = asyncio.get_event_loop()
-        image_descriptions = await loop.run_in_executor(
-            None, self.describe_images, image_paths
-        )
+        image_descriptions = await loop.run_in_executor(None, self.describe_images, image_paths)
 
         answer = await self.async_generate_answer(
             query=query,

@@ -1,16 +1,12 @@
 """CI/CD API 端点 - 提供自动化测试和部署能力"""
 
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
-from backend.cicd import (
-    BoundaryTester,
-    HallucinationDetector,
-    TestReportGenerator,
-)
+from backend.cicd import BoundaryTester, HallucinationDetector, TestReportGenerator
 from backend.cicd.hallucination_detector import HallucinationTestResult
 from backend.cicd.test_report import TestResult
 
@@ -22,15 +18,14 @@ report_generator = TestReportGenerator()
 
 class RunTestsRequest(BaseModel):
     """运行测试请求"""
-    test_types: Optional[List[str]] = Field(
-        default=None,
-        description="测试类型列表: hallucination, boundary, all"
-    )
+
+    test_types: Optional[List[str]] = Field(default=None, description="测试类型列表: hallucination, boundary, all")
     include_trends: bool = Field(default=True, description="是否包含趋势分析")
 
 
 class DeployRequest(BaseModel):
     """部署请求"""
+
     version: str = Field(..., min_length=1, max_length=50, description="部署版本")
     environment: str = Field(..., description="部署环境: test, staging, production")
     strategy: str = Field(default="rolling", description="部署策略: rolling, blue_green, canary")
@@ -39,6 +34,7 @@ class DeployRequest(BaseModel):
 
 class HallucinationTestRequest(BaseModel):
     """幻觉检测测试请求"""
+
     claims: Optional[List[str]] = Field(default=None, description="需要核查的声明列表")
     statements: Optional[List[str]] = Field(default=None, description="需要检测一致性的陈述列表")
     sources: Optional[List[str]] = Field(default=None, description="需要验证的来源列表")
@@ -46,6 +42,7 @@ class HallucinationTestRequest(BaseModel):
 
 class DeployResponse(BaseModel):
     """部署响应"""
+
     success: bool = Field(..., description="是否成功")
     deployment_id: str = Field(..., description="部署ID")
     message: str = Field(..., description="部署消息")
@@ -63,39 +60,43 @@ async def run_tests(request: RunTestsRequest):
             detector = HallucinationDetector()
             hallucination_results = await detector.run_all_tests()
             for r in hallucination_results:
-                results.append(TestResult(
-                    test_id=r.test_id,
-                    test_name=r.test_name,
-                    test_type=r.test_type,
-                    passed=r.passed,
-                    score=r.score,
-                    duration_ms=r.duration_ms,
-                    timestamp=r.timestamp,
-                    details={
-                        "fact_check_results": [fr.dict() for fr in r.fact_check_results],
-                        "consistency_result": r.consistency_result.dict() if r.consistency_result else None,
-                        "source_validation_results": [sr.dict() for sr in r.source_validation_results],
-                    },
-                ))
+                results.append(
+                    TestResult(
+                        test_id=r.test_id,
+                        test_name=r.test_name,
+                        test_type=r.test_type,
+                        passed=r.passed,
+                        score=r.score,
+                        duration_ms=r.duration_ms,
+                        timestamp=r.timestamp,
+                        details={
+                            "fact_check_results": [fr.dict() for fr in r.fact_check_results],
+                            "consistency_result": r.consistency_result.dict() if r.consistency_result else None,
+                            "source_validation_results": [sr.dict() for sr in r.source_validation_results],
+                        },
+                    )
+                )
 
         if "boundary" in test_types or "all" in test_types:
             tester = BoundaryTester()
             boundary_results = await tester.run_all_tests()
             for r in boundary_results:
-                results.append(TestResult(
-                    test_id=r.test_id,
-                    test_name=r.test_name,
-                    test_type=r.test_type,
-                    passed=r.passed,
-                    score=r.score,
-                    duration_ms=r.duration_ms,
-                    timestamp=r.timestamp,
-                    details={
-                        "extreme_input_results": [er.dict() for er in r.extreme_input_results],
-                        "performance_results": [pr.dict() for pr in r.performance_results],
-                        "error_handling_results": [er.dict() for er in r.error_handling_results],
-                    },
-                ))
+                results.append(
+                    TestResult(
+                        test_id=r.test_id,
+                        test_name=r.test_name,
+                        test_type=r.test_type,
+                        passed=r.passed,
+                        score=r.score,
+                        duration_ms=r.duration_ms,
+                        timestamp=r.timestamp,
+                        details={
+                            "extreme_input_results": [er.dict() for er in r.extreme_input_results],
+                            "performance_results": [pr.dict() for pr in r.performance_results],
+                            "error_handling_results": [er.dict() for er in r.error_handling_results],
+                        },
+                    )
+                )
 
         report = report_generator.generate_report(results, "CI/CD 测试报告")
 
@@ -228,42 +229,50 @@ async def hallucination_test(request: HallucinationTestRequest):
 
         if request.claims:
             fact_check_results = await detector.fact_check(request.claims)
-            results.append(HallucinationTestResult(
-                test_id="fact_check_custom",
-                test_name="自定义事实核查",
-                test_type="fact_check",
-                passed=all(r.is_factual for r in fact_check_results),
-                fact_check_results=fact_check_results,
-                score=sum(r.confidence for r in fact_check_results) / len(fact_check_results) * 100,
-                timestamp=0,
-                duration_ms=0,
-            ))
+            results.append(
+                HallucinationTestResult(
+                    test_id="fact_check_custom",
+                    test_name="自定义事实核查",
+                    test_type="fact_check",
+                    passed=all(r.is_factual for r in fact_check_results),
+                    fact_check_results=fact_check_results,
+                    score=sum(r.confidence for r in fact_check_results) / len(fact_check_results) * 100,
+                    timestamp=0,
+                    duration_ms=0,
+                )
+            )
 
         if request.statements:
             consistency_result = await detector.consistency_check(request.statements)
-            results.append(HallucinationTestResult(
-                test_id="consistency_custom",
-                test_name="自定义一致性检测",
-                test_type="consistency",
-                passed=consistency_result.is_consistent,
-                consistency_result=consistency_result,
-                score=consistency_result.confidence * 100,
-                timestamp=0,
-                duration_ms=0,
-            ))
+            results.append(
+                HallucinationTestResult(
+                    test_id="consistency_custom",
+                    test_name="自定义一致性检测",
+                    test_type="consistency",
+                    passed=consistency_result.is_consistent,
+                    consistency_result=consistency_result,
+                    score=consistency_result.confidence * 100,
+                    timestamp=0,
+                    duration_ms=0,
+                )
+            )
 
         if request.sources:
             source_validation_results = await detector.validate_sources(request.sources)
-            results.append(HallucinationTestResult(
-                test_id="source_validation_custom",
-                test_name="自定义来源验证",
-                test_type="source_validation",
-                passed=all(r.is_valid for r in source_validation_results),
-                source_validation_results=source_validation_results,
-                score=sum(r.reliability_score for r in source_validation_results) / len(source_validation_results) * 100,
-                timestamp=0,
-                duration_ms=0,
-            ))
+            results.append(
+                HallucinationTestResult(
+                    test_id="source_validation_custom",
+                    test_name="自定义来源验证",
+                    test_type="source_validation",
+                    passed=all(r.is_valid for r in source_validation_results),
+                    source_validation_results=source_validation_results,
+                    score=sum(r.reliability_score for r in source_validation_results)
+                    / len(source_validation_results)
+                    * 100,
+                    timestamp=0,
+                    duration_ms=0,
+                )
+            )
 
         return {
             "success": True,

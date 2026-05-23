@@ -1,6 +1,5 @@
 """边界测试器 - 用于测试系统在极端条件下的行为"""
 
-import asyncio
 import json
 import random
 import string
@@ -15,6 +14,7 @@ logger = get_logger(__name__)
 
 class ExtremeInputTestResult(BaseModel):
     """极端输入测试结果"""
+
     test_id: str = Field(..., description="测试ID")
     test_name: str = Field(..., description="测试名称")
     input_type: str = Field(..., description="输入类型")
@@ -26,6 +26,7 @@ class ExtremeInputTestResult(BaseModel):
 
 class PerformanceBoundaryResult(BaseModel):
     """性能边界测试结果"""
+
     test_id: str = Field(..., description="测试ID")
     test_name: str = Field(..., description="测试名称")
     metric: str = Field(..., description="测试指标")
@@ -37,6 +38,7 @@ class PerformanceBoundaryResult(BaseModel):
 
 class ErrorHandlingResult(BaseModel):
     """错误处理测试结果"""
+
     test_id: str = Field(..., description="测试ID")
     test_name: str = Field(..., description="测试名称")
     error_type: str = Field(..., description="错误类型")
@@ -48,6 +50,7 @@ class ErrorHandlingResult(BaseModel):
 
 class BoundaryTestResult(BaseModel):
     """边界测试综合结果"""
+
     test_id: str = Field(..., description="测试ID")
     test_name: str = Field(..., description="测试名称")
     test_type: str = Field(..., description="测试类型")
@@ -69,7 +72,7 @@ class BoundaryTester:
                 "id": "extreme_001",
                 "name": "超长文本输入",
                 "input_type": "text",
-                "generator": lambda: ''.join(random.choices(string.ascii_letters, k=100000)),
+                "generator": lambda: "".join(random.choices(string.ascii_letters, k=100000)),
                 "expected": "should_handle",
             },
             {
@@ -170,6 +173,7 @@ class BoundaryTester:
             极端输入测试结果
         """
         import time
+
         start_time = time.time()
 
         try:
@@ -217,6 +221,7 @@ class BoundaryTester:
     async def _run_extreme_input_test(self, test_case: Dict[str, Any]) -> BoundaryTestResult:
         """运行单个极端输入测试用例"""
         import time
+
         start_time = time.time()
 
         input_value = test_case["generator"]()
@@ -248,6 +253,7 @@ class BoundaryTester:
             性能边界测试结果
         """
         import time
+
         import psutil
 
         metric = test_case["metric"]
@@ -292,6 +298,7 @@ class BoundaryTester:
     async def _run_performance_test(self, test_case: Dict[str, Any]) -> BoundaryTestResult:
         """运行单个性能边界测试用例"""
         import time
+
         start_time = time.time()
 
         result = await self.test_performance_boundary(test_case)
@@ -353,6 +360,7 @@ class BoundaryTester:
     async def _run_error_handling_test(self, test_case: Dict[str, Any]) -> BoundaryTestResult:
         """运行单个错误处理测试用例"""
         import time
+
         start_time = time.time()
 
         result = await self.test_error_handling(test_case["error_type"], test_case["expected_code"])

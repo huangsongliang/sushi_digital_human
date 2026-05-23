@@ -3,7 +3,7 @@
 import asyncio
 import uuid
 from enum import Enum
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Dict, Optional
 
 from backend.utils.logger import get_logger
 
@@ -12,6 +12,7 @@ logger = get_logger(__name__)
 
 class ExecutionState(str, Enum):
     """执行状态枚举"""
+
     RUNNING = "running"
     PAUSED = "paused"
     STOPPED = "stopped"
@@ -20,6 +21,7 @@ class ExecutionState(str, Enum):
 
 class StepMode(str, Enum):
     """单步执行模式"""
+
     STEP_INTO = "step_into"
     STEP_OVER = "step_over"
     STEP_OUT = "step_out"
@@ -161,10 +163,7 @@ class Debugger:
     async def cleanup_completed(self):
         """清理已完成的执行上下文"""
         async with self._lock:
-            completed_ids = [
-                eid for eid, ctx in self.contexts.items()
-                if ctx.state == ExecutionState.COMPLETED
-            ]
+            completed_ids = [eid for eid, ctx in self.contexts.items() if ctx.state == ExecutionState.COMPLETED]
             for eid in completed_ids:
                 ctx = self.contexts.pop(eid)
                 ctx.clear()

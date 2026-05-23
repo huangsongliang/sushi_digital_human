@@ -6,7 +6,7 @@ import hmac
 import json
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 import httpx

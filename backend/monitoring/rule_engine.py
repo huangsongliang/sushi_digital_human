@@ -5,7 +5,7 @@
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from backend.monitoring.metrics_collector import get_metrics_collector
@@ -132,8 +132,7 @@ class RuleEngine:
     def _check_condition(self, condition: RuleCondition) -> bool:
         """检查条件"""
         stats = self.metrics_collector.get_metric_statistics(
-            condition.metric_name,
-            window_seconds=condition.window_seconds
+            condition.metric_name, window_seconds=condition.window_seconds
         )
 
         if not stats or stats["count"] == 0:

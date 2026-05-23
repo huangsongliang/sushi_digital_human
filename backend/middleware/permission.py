@@ -2,7 +2,7 @@
 
 import re
 from functools import wraps
-from typing import Callable, List, Optional, Set
+from typing import Callable, List, Optional
 
 from fastapi import HTTPException, Request, status
 from jose import JWTError, jwt
@@ -404,27 +404,63 @@ class RBACMiddleware:
         # 格式: [{"pattern": "路径模式", "methods": ["GET"], "resource_type": ..., "action": ...}]
         self.permission_rules = [
             # 文档管理权限
-            {"pattern": r"^/api/documents/[^/]+$", "methods": ["GET"],
-             "resource_type": PermissionResource.DOCUMENT, "action": PermissionAction.READ},
-            {"pattern": r"^/api/documents/[^/]+$", "methods": ["PUT", "PATCH"],
-             "resource_type": PermissionResource.DOCUMENT, "action": PermissionAction.UPDATE},
-            {"pattern": r"^/api/documents/[^/]+$", "methods": ["DELETE"],
-             "resource_type": PermissionResource.DOCUMENT, "action": PermissionAction.DELETE},
+            {
+                "pattern": r"^/api/documents/[^/]+$",
+                "methods": ["GET"],
+                "resource_type": PermissionResource.DOCUMENT,
+                "action": PermissionAction.READ,
+            },
+            {
+                "pattern": r"^/api/documents/[^/]+$",
+                "methods": ["PUT", "PATCH"],
+                "resource_type": PermissionResource.DOCUMENT,
+                "action": PermissionAction.UPDATE,
+            },
+            {
+                "pattern": r"^/api/documents/[^/]+$",
+                "methods": ["DELETE"],
+                "resource_type": PermissionResource.DOCUMENT,
+                "action": PermissionAction.DELETE,
+            },
             # 文件夹权限
-            {"pattern": r"^/api/folders/[^/]+$", "methods": ["GET"],
-             "resource_type": PermissionResource.FOLDER, "action": PermissionAction.READ},
-            {"pattern": r"^/api/folders/[^/]+$", "methods": ["PUT", "PATCH", "DELETE"],
-             "resource_type": PermissionResource.FOLDER, "action": PermissionAction.UPDATE},
+            {
+                "pattern": r"^/api/folders/[^/]+$",
+                "methods": ["GET"],
+                "resource_type": PermissionResource.FOLDER,
+                "action": PermissionAction.READ,
+            },
+            {
+                "pattern": r"^/api/folders/[^/]+$",
+                "methods": ["PUT", "PATCH", "DELETE"],
+                "resource_type": PermissionResource.FOLDER,
+                "action": PermissionAction.UPDATE,
+            },
             # 工作流权限
-            {"pattern": r"^/api/workflows/[^/]+$", "methods": ["GET"],
-             "resource_type": PermissionResource.WORKFLOW, "action": PermissionAction.READ},
-            {"pattern": r"^/api/workflows/[^/]+$", "methods": ["PUT", "PATCH", "DELETE", "POST"],
-             "resource_type": PermissionResource.WORKFLOW, "action": PermissionAction.UPDATE},
+            {
+                "pattern": r"^/api/workflows/[^/]+$",
+                "methods": ["GET"],
+                "resource_type": PermissionResource.WORKFLOW,
+                "action": PermissionAction.READ,
+            },
+            {
+                "pattern": r"^/api/workflows/[^/]+$",
+                "methods": ["PUT", "PATCH", "DELETE", "POST"],
+                "resource_type": PermissionResource.WORKFLOW,
+                "action": PermissionAction.UPDATE,
+            },
             # Agent 权限
-            {"pattern": r"^/api/agents/[^/]+$", "methods": ["GET"],
-             "resource_type": PermissionResource.AGENT, "action": PermissionAction.READ},
-            {"pattern": r"^/api/agents/[^/]+$", "methods": ["PUT", "PATCH", "DELETE"],
-             "resource_type": PermissionResource.AGENT, "action": PermissionAction.UPDATE},
+            {
+                "pattern": r"^/api/agents/[^/]+$",
+                "methods": ["GET"],
+                "resource_type": PermissionResource.AGENT,
+                "action": PermissionAction.READ,
+            },
+            {
+                "pattern": r"^/api/agents/[^/]+$",
+                "methods": ["PUT", "PATCH", "DELETE"],
+                "resource_type": PermissionResource.AGENT,
+                "action": PermissionAction.UPDATE,
+            },
         ]
 
         # 需要管理员角色的路径

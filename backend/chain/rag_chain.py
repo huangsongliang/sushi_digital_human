@@ -4,8 +4,7 @@
 使用混合检索器（BM25 + 向量 + RRF + 重排序）提升检索质量
 """
 
-import asyncio
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List
 
 from backend.chain.rag_cache import get_rag_cache
 from backend.core.config import settings

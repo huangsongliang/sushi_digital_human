@@ -6,11 +6,11 @@
 - 回滚功能
 """
 
-import json
 import time
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+
 from backend.utils.logger import get_logger
 from backend.workflow.definition import WorkflowDefinition, WorkflowParser
 
@@ -146,7 +146,7 @@ class WorkflowVersionManager:
 
         # 更新版本的活跃状态
         for v in versions:
-            v["is_active"] = (v["version"] == target_version)
+            v["is_active"] = v["version"] == target_version
 
         logger.info(f"流程 {workflow_id} 已回滚到版本 {target_version}")
         return True

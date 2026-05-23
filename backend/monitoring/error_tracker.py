@@ -288,9 +288,7 @@ class ErrorTracker:
         errors.sort(key=lambda x: x.timestamp, reverse=True)
         return [e.to_dict() for e in errors[:limit]]
 
-    def get_aggregated_errors(
-        self, min_count: int = 1, sort_by: str = "count"
-    ) -> List[Dict[str, Any]]:
+    def get_aggregated_errors(self, min_count: int = 1, sort_by: str = "count") -> List[Dict[str, Any]]:
         """获取聚合后的错误信息
 
         Args:

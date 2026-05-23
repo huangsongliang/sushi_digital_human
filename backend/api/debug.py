@@ -1,12 +1,12 @@
 """调试工具链API路由"""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
 from backend.debug.breakpoints import breakpoint_manager
-from backend.debug.debugger import debugger, StepMode
+from backend.debug.debugger import StepMode, debugger
 from backend.debug.prompt_debugger import prompt_debugger
 from backend.debug.state_visualizer import state_visualizer
 
@@ -15,22 +15,26 @@ router = APIRouter(prefix="/api/debug", tags=["debug"])
 
 class StepRequest(BaseModel):
     """单步执行请求"""
+
     execution_id: str = Field(..., description="执行ID")
     mode: str = Field(default="step_over", description="单步模式：step_into/step_over/step_out")
 
 
 class ContinueRequest(BaseModel):
     """继续执行请求"""
+
     execution_id: str = Field(..., description="执行ID")
 
 
 class PauseRequest(BaseModel):
     """暂停执行请求"""
+
     execution_id: str = Field(..., description="执行ID")
 
 
 class BreakpointRequest(BaseModel):
     """断点设置请求"""
+
     location: str = Field(..., description="断点位置")
     condition: Optional[str] = Field(default=None, description="条件表达式")
     enabled: bool = Field(default=True, description="是否启用")
@@ -38,6 +42,7 @@ class BreakpointRequest(BaseModel):
 
 class PromptAnalysisRequest(BaseModel):
     """Prompt分析请求"""
+
     prompt: str = Field(..., description="要分析的Prompt内容")
     template_variables: Optional[Dict[str, Any]] = Field(default=None, description="模板变量")
 
@@ -53,16 +58,12 @@ async def step_execution(req: StepRequest):
 
     mode = mode_map.get(req.mode)
     if not mode:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"无效的单步模式: {req.mode}"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"无效的单步模式: {req.mode}")
 
     success = await debugger.step_execution(req.execution_id, mode)
     if not success:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"执行 {req.execution_id} 未找到或无法单步执行"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"执行 {req.execution_id} 未找到或无法单步执行"
         )
 
     return {"code": 200, "message": "success", "data": {"execution_id": req.execution_id, "mode": req.mode}}
@@ -73,10 +74,7 @@ async def continue_execution(req: ContinueRequest):
     """继续执行"""
     success = await debugger.resume_execution(req.execution_id)
     if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"执行 {req.execution_id} 未找到或无法继续"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"执行 {req.execution_id} 未找到或无法继续")
 
     return {"code": 200, "message": "success", "data": {"execution_id": req.execution_id}}
 
@@ -86,10 +84,7 @@ async def pause_execution(req: PauseRequest):
     """暂停执行"""
     success = await debugger.pause_execution(req.execution_id)
     if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"执行 {req.execution_id} 未找到或无法暂停"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"执行 {req.execution_id} 未找到或无法暂停")
 
     return {"code": 200, "message": "success", "data": {"execution_id": req.execution_id}}
 
@@ -118,10 +113,7 @@ async def delete_breakpoint(breakpoint_id: str):
     """删除断点"""
     success = breakpoint_manager.remove_breakpoint(breakpoint_id)
     if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"断点 {breakpoint_id} 未找到"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"断点 {breakpoint_id} 未找到")
 
     return {"code": 200, "message": "success", "data": {"breakpoint_id": breakpoint_id}}
 
@@ -131,10 +123,7 @@ async def get_execution_state(execution_id: str):
     """获取执行状态"""
     state = await debugger.get_execution_state(execution_id)
     if state is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"执行 {execution_id} 未找到"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"执行 {execution_id} 未找到")
 
     summary = state_visualizer.get_state_summary(execution_id)
     if "error" in summary:
@@ -150,10 +139,7 @@ async def get_execution_trace(execution_id: str):
     """获取执行轨迹"""
     trace = state_visualizer.get_trace(execution_id)
     if not trace:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"执行轨迹 {execution_id} 未找到"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"执行轨迹 {execution_id} 未找到")
 
     return {"code": 200, "message": "success", "data": trace.serialize()}
 
@@ -181,10 +167,7 @@ async def get_breakpoint(breakpoint_id: str):
     """获取单个断点详情"""
     bp = breakpoint_manager.get_breakpoint(breakpoint_id)
     if not bp:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"断点 {breakpoint_id} 未找到"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"断点 {breakpoint_id} 未找到")
 
     return {"code": 200, "message": "success", "data": bp.to_dict()}
 
@@ -198,10 +181,7 @@ async def update_breakpoint(breakpoint_id: str, req: BreakpointRequest):
         enabled=req.enabled,
     )
     if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"断点 {breakpoint_id} 未找到"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"断点 {breakpoint_id} 未找到")
 
     bp = breakpoint_manager.get_breakpoint(breakpoint_id)
     return {"code": 200, "message": "success", "data": bp.to_dict()}

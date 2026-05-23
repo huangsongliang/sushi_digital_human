@@ -5,15 +5,14 @@
 
 import asyncio
 import time
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
-from uuid import uuid4
+from typing import Any, Callable, Dict, List, Optional, Set
 
 from pydantic import BaseModel, Field
 
 from backend.utils.circuit_breaker import CircuitBreaker
 from backend.utils.logger import get_logger
 
-from .task_splitter import Task, TaskPriority, TaskStatus
+from .task_splitter import Task, TaskStatus
 
 logger = get_logger(__name__)
 

@@ -7,7 +7,6 @@
 - GET /api/tracing/errors - 错误列表
 """
 
-from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query

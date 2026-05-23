@@ -1,6 +1,5 @@
 """文件上传模块"""
 
-import os
 import uuid
 from dataclasses import dataclass
 from datetime import datetime

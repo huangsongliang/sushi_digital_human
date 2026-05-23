@@ -6,7 +6,6 @@ LLM 依赖模块
 
 import asyncio
 import os
-import threading
 from asyncio import Queue
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
@@ -22,7 +21,7 @@ if settings.dashscope_api_key:
     os.environ["DASHSCOPE_API_KEY"] = settings.dashscope_api_key
 
 # 容错机制
-from backend.generator.llm_fault_tolerance import create_safe_llm, get_circuit_breaker
+from backend.generator.llm_fault_tolerance import create_safe_llm
 
 
 class AsyncLLM:

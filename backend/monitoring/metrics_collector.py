@@ -2,12 +2,12 @@
 收集系统指标和业务指标，支持自定义指标
 """
 
-import psutil
 import time
-from datetime import datetime
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, asdict
 from collections import defaultdict
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Optional
+
+import psutil
 
 from backend.utils.logger import get_logger
 
@@ -45,7 +45,7 @@ class MetricsCollector:
         """收集系统指标"""
         try:
             memory = psutil.virtual_memory()
-            disk = psutil.disk_usage('/')
+            disk = psutil.disk_usage("/")
             net_io = psutil.net_io_counters()
 
             metrics = SystemMetrics(
@@ -76,7 +76,7 @@ class MetricsCollector:
     def _get_total_threads(self) -> int:
         """获取总线程数"""
         total_threads = 0
-        for proc in psutil.process_iter(['pid', 'name']):
+        for proc in psutil.process_iter(["pid", "name"]):
             try:
                 total_threads += proc.num_threads()
             except (psutil.NoSuchProcess, psutil.AccessDenied):
@@ -91,18 +91,15 @@ class MetricsCollector:
             self.custom_metrics[metric_name].pop(0)
 
         if tags:
-            self.business_metrics[f"{metric_name}_with_tags"].append({
-                "value": value,
-                "tags": tags,
-                "timestamp": time.time(),
-            })
+            self.business_metrics[f"{metric_name}_with_tags"].append(
+                {
+                    "value": value,
+                    "tags": tags,
+                    "timestamp": time.time(),
+                }
+            )
 
-    def record_business_metric(
-        self,
-        metric_name: str,
-        value: float,
-        metadata: Optional[Dict[str, Any]] = None
-    ):
+    def record_business_metric(self, metric_name: str, value: float, metadata: Optional[Dict[str, Any]] = None):
         """记录业务指标"""
         metric_entry = {
             "value": value,
@@ -121,14 +118,10 @@ class MetricsCollector:
         cutoff_time = current_time - window_seconds
 
         if metric_name in self.custom_metrics:
-            values = [
-                v for v in self.custom_metrics[metric_name]
-                if v >= cutoff_time
-            ]
+            values = [v for v in self.custom_metrics[metric_name] if v >= cutoff_time]
         elif metric_name in self.business_metrics:
             values = [
-                entry["value"] for entry in self.business_metrics[metric_name]
-                if entry["timestamp"] >= cutoff_time
+                entry["value"] for entry in self.business_metrics[metric_name] if entry["timestamp"] >= cutoff_time
             ]
         else:
             return {}
@@ -151,14 +144,8 @@ class MetricsCollector:
 
         return {
             "system": asdict(system_metrics),
-            "custom_metrics": {
-                name: self.get_metric_statistics(name)
-                for name in self.custom_metrics.keys()
-            },
-            "business_metrics": {
-                name: self.get_metric_statistics(name)
-                for name in self.business_metrics.keys()
-            },
+            "custom_metrics": {name: self.get_metric_statistics(name) for name in self.custom_metrics.keys()},
+            "business_metrics": {name: self.get_metric_statistics(name) for name in self.business_metrics.keys()},
         }
 
     def get_metric_trend(self, metric_name: str, points: int = 10) -> List[float]:
@@ -166,10 +153,7 @@ class MetricsCollector:
         if metric_name in self.custom_metrics:
             values = self.custom_metrics[metric_name][-points:]
         elif metric_name in self.business_metrics:
-            values = [
-                entry["value"]
-                for entry in self.business_metrics[metric_name][-points:]
-            ]
+            values = [entry["value"] for entry in self.business_metrics[metric_name][-points:]]
         else:
             return []
 
@@ -180,27 +164,19 @@ class MetricsCollector:
         metrics = self.collect_system_metrics()
 
         status = {
-            "cpu": (
-                "healthy" if metrics.cpu_percent < 80
-                else "warning" if metrics.cpu_percent < 95
-                else "critical"
-            ),
+            "cpu": ("healthy" if metrics.cpu_percent < 80 else "warning" if metrics.cpu_percent < 95 else "critical"),
             "memory": (
-                "healthy" if metrics.memory_percent < 80
-                else "warning" if metrics.memory_percent < 95
-                else "critical"
+                "healthy" if metrics.memory_percent < 80 else "warning" if metrics.memory_percent < 95 else "critical"
             ),
             "disk": (
-                "healthy" if metrics.disk_percent < 80
-                else "warning" if metrics.disk_percent < 95
-                else "critical"
+                "healthy" if metrics.disk_percent < 80 else "warning" if metrics.disk_percent < 95 else "critical"
             ),
         }
 
         overall = (
-            "healthy" if all(s == "healthy" for s in status.values())
-            else "warning" if "critical" not in status.values()
-            else "critical"
+            "healthy"
+            if all(s == "healthy" for s in status.values())
+            else "warning" if "critical" not in status.values() else "critical"
         )
 
         return {
@@ -216,8 +192,7 @@ class MetricsCollector:
 
         for metric_name in list(self.business_metrics.keys()):
             self.business_metrics[metric_name] = [
-                entry for entry in self.business_metrics[metric_name]
-                if entry["timestamp"] >= cutoff_time
+                entry for entry in self.business_metrics[metric_name] if entry["timestamp"] >= cutoff_time
             ]
 
         logger.info("清理旧指标完成")

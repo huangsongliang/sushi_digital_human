@@ -1,7 +1,7 @@
 """使用统计和分析模块"""
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 from uuid import uuid4
 
 from backend.models.database import db
@@ -83,10 +83,7 @@ class StatsCollector:
                 """,
                 (user_id, start_time),
             )
-            stats["daily_usage"] = [
-                {"date": str(row[0]), "count": row[1]}
-                for row in result.fetchall()
-            ]
+            stats["daily_usage"] = [{"date": str(row[0]), "count": row[1]} for row in result.fetchall()]
 
             return stats
 
@@ -130,10 +127,7 @@ class StatsCollector:
                 """,
                 (start_time,),
             )
-            stats["top_events"] = [
-                {"type": row[0], "count": row[1]}
-                for row in result.fetchall()
-            ]
+            stats["top_events"] = [{"type": row[0], "count": row[1]} for row in result.fetchall()]
 
             return stats
 
