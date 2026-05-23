@@ -42,7 +42,7 @@ services:
       dockerfile: Dockerfile
       target: production
     environment:
-      - DATABASE_URL=mysql+pymysql://root:7531188@host.docker.internal:3306/sushi_db
+      - DATABASE_URL=${DATABASE_URL:-mysql+pymysql://root:7531188@host.docker.internal:3306/sushi_db}
       - ENV=production
       - REDIS_URL=redis://redis:6379/0
       - USE_REDIS_STORAGE=true

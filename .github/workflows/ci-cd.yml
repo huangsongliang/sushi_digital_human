@@ -299,6 +299,9 @@ jobs:
           path: frontend/dist/
 
       - name: Start services
+        env:
+          DATABASE_URL: sqlite:///./data/sushi.db
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
         run: |
           docker compose -f docker-compose.prod.yml up -d --scale api=1 redis api
           sleep 30
