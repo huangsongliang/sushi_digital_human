@@ -87,4 +87,4 @@ omit = ["backend/__init__.py", "backend/*/__init__.py"]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 30  # 跨平台差异大 (CI 44%, 本地 36%)，设 30 保证通过
+fail_under = 50  # 从 36% 提升到 50% — 为 6 个 0% 模块补了测试
