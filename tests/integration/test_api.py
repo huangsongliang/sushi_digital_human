@@ -187,32 +187,32 @@ class TestAlertsEndpoints:
     """告警管理端点测试"""
 
     def test_get_alert_summary(self):
-        response = client.get("/alerts/summary")
+        response = client.get("/api/alerts/summary")
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "success"
 
     def test_get_active_alerts(self):
-        response = client.get("/alerts/active")
+        response = client.get("/api/alerts/active")
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "success"
 
     def test_get_alert_history(self):
-        response = client.get("/alerts/history")
+        response = client.get("/api/alerts/history")
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "success"
 
     def test_get_alert_rules(self):
-        response = client.get("/alerts/rules")
+        response = client.get("/api/alerts/rules")
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "success"
 
     def test_create_and_delete_alert_rule(self):
         create_response = client.post(
-            "/alerts/rules",
+            "/api/alerts/rules",
             json={
                 "name": "test_rule",
                 "severity": "warning",
@@ -223,7 +223,7 @@ class TestAlertsEndpoints:
         )
         assert create_response.status_code == 200
 
-        delete_response = client.delete("/alerts/rules/test_rule")
+        delete_response = client.delete("/api/alerts/rules/test_rule")
         assert delete_response.status_code == 200
 
 
@@ -232,21 +232,21 @@ class TestSummaryEndpoints:
 
     def test_summarize_text(self):
         response = client.post(
-            "/summary/text",
+            "/api/summary/text",
             json={"content": "这是一段测试文本，用于测试总结功能。", "type": "brief"}
         )
         assert response.status_code in [200, 500]
 
     def test_extract_key_points(self):
         response = client.post(
-            "/summary/key-points",
+            "/api/summary/key-points",
             json={"content": "这是一段测试文本，包含多个关键点。关键点一：测试。关键点二：总结。", "max_points": 5}
         )
         assert response.status_code in [200, 500]
 
     def test_generate_title(self):
         response = client.post(
-            "/summary/title",
+            "/api/summary/title",
             json={"content": "这是一段测试文本，用于测试标题生成功能。", "max_length": 30}
         )
         assert response.status_code in [200, 500]
