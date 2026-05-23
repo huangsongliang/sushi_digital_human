@@ -277,6 +277,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+
       - name: Start services
         run: |
           docker compose -f docker-compose.prod.yml up -d redis api
