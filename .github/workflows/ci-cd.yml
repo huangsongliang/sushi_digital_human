@@ -103,10 +103,13 @@ jobs:
             langchain langchain-core langchain-community \
             httpx requests \
             redis sqlalchemy alembic aiomysql aiosqlite \
-            loguru jieba rank-bm25 chromadb dashscope \
+            loguru jieba rank-bm25 dashscope \
             python-jose passlib argon2-cffi email-validator \
             python-dotenv prometheus-client psutil \
             python-multipart cachetools pybreaker
+          # chromadb 单独装，不加 ML 全家桶（torch/cublas/cudnn 2GB+）
+          uv pip install chromadb --no-deps
+          uv pip install onnxruntime pypika numpy
 
       - name: Install test deps
         run: uv pip install pytest pytest-cov pytest-asyncio pytest-timeout httpx
