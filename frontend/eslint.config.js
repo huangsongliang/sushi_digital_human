@@ -21,6 +21,9 @@ const browserGlobals = {
   HTMLElement: 'readonly',
   HTMLInputElement: 'readonly',
   Event: 'readonly',
+  DragEvent: 'readonly',
+  DragEvent: 'readonly',
+  DataTransfer: 'readonly',
   NodeJS: 'readonly',
 };
 
