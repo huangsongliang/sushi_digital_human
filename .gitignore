@@ -54,7 +54,46 @@ ssl/
 *.crt
 *.csr
 
-# 临时文件
-*.tmp
-*.bak
-*.backup
+# 前端依赖
+frontend/node_modules/
+frontend/package-lock.json
+
+# CodeBuddy 本地规则（不应提交到仓库）
+.codebuddy/rules/
+
+# 图片/二进制文件
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.msi
+
+# 临时/测试文件
+tests/performance_test.py
+tests/stress_test_*.py
+test_*.py
+quick_*.py
+verify_*.py
+
+# 脚本文件（项目根目录下的临时脚本）
+*.bat
+scripts/
+
+# Playwright CLI 临时文件
+.playwright-cli/
+
+# Trae IDE 配置
+.trae/
+
+# CodeBuddy 计划文件（本地）
+.codebuddy/plans/
+
+# 根目录临时文件
+*.txt
+*.rdb
+agent.md
+
+# 虚拟环境
+venv/
+.venv/

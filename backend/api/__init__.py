@@ -16,7 +16,9 @@ from backend.api.document import router as document_router
 from backend.api.documents import router as documents_router
 from backend.api.knowledge_graph import router as knowledge_graph_router
 from backend.api.multimodal import router as multimodal_router
+from backend.api.notification import router as notification_router
 from backend.api.permission import router as permission_router
+from backend.api.plugins import router as plugins_router
 from backend.api.summary import router as summary_router
 from backend.api.tracing import router as tracing_router
 from backend.api.versioning import router as versioning_router
@@ -41,7 +43,9 @@ __all__ = [
     "audit_router",
     "document_router",
     "multimodal_router",
+    "notification_router",
     "permission_router",
+    "plugins_router",
     "tracing_router",
     "versioning_router",
 ]

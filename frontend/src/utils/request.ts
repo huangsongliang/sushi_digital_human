@@ -156,3 +156,11 @@ export async function get<T = unknown>(url: string, options?: RequestOptions): P
 export async function post<T = unknown>(url: string, body?: unknown, options?: RequestOptions): Promise<T> {
   return request<T>(url, { ...options, method: 'POST', body })
 }
+
+export async function put<T = unknown>(url: string, body?: unknown, options?: RequestOptions): Promise<T> {
+  return request<T>(url, { ...options, method: 'PUT', body })
+}
+
+export async function del<T = unknown>(url: string, options?: RequestOptions): Promise<T> {
+  return request<T>(url, { ...options, method: 'DELETE' })
+}

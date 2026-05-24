@@ -2,14 +2,14 @@
   <div class="notification-container">
     <transition-group name="notification-list">
       <el-alert
-        v-for="notification in store.notifications"
+        v-for="notification in store.toastNotifications"
         :key="notification.id"
         :type="notification.type"
         :closable="true"
         :title="notification.title"
         :description="notification.message"
         show-icon
-        @close="store.remove(notification.id)"
+        @close="store.removeToast(notification.id)"
         class="notification-item"
       />
     </transition-group>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNotificationStore } from '../stores/notification'
+import { useNotificationStore } from '@/stores/notification'
 
 const store = useNotificationStore()
 </script>

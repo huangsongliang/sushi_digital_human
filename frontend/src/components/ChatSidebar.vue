@@ -28,6 +28,49 @@
         <span class="nav-icon">📁</span>
         <span>文档管理</span>
       </button>
+      <button
+        class="nav-item"
+        :class="{ active: currentRoute === '/notifications' }"
+        @click="navigate('/notifications')"
+      >
+        <span class="nav-icon nav-icon-bell">🔔</span>
+        <span>通知</span>
+        <span v-if="notifStore.unreadCount > 0" class="notif-badge">
+          {{ notifStore.unreadCount > 99 ? '99+' : notifStore.unreadCount }}
+        </span>
+      </button>
+      <button
+        class="nav-item"
+        :class="{ active: currentRoute === '/audit' }"
+        @click="navigate('/audit')"
+      >
+        <span class="nav-icon">📋</span>
+        <span>审计日志</span>
+      </button>
+      <button
+        class="nav-item"
+        :class="{ active: currentRoute === '/permissions' }"
+        @click="navigate('/permissions')"
+      >
+        <span class="nav-icon">🔐</span>
+        <span>权限管理</span>
+      </button>
+      <button
+        class="nav-item"
+        :class="{ active: currentRoute === '/workflow' }"
+        @click="navigate('/workflow')"
+      >
+        <span class="nav-icon">⚡</span>
+        <span>工作流</span>
+      </button>
+      <button
+        class="nav-item"
+        :class="{ active: currentRoute === '/plugins' }"
+        @click="navigate('/plugins')"
+      >
+        <span class="nav-icon">🧩</span>
+        <span>插件市场</span>
+      </button>
     </div>
 
     <div class="chat-list">
@@ -78,20 +121,41 @@
 </template>
 
 <script setup lang="ts">
-import { watch, computed } from 'vue'
+import { watch, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notification'
 
 const store = useChatStore()
 const authStore = useAuthStore()
+const notifStore = useNotificationStore()
 const router = useRouter()
 
 const currentRoute = computed(() => router.currentRoute.value.path)
 
 console.log('[ChatSidebar] Mounted, sortedSessions:', store.sortedSessions.length)
 console.log('[ChatSidebar] currentSessionId:', store.currentSessionId)
+
+// 定期刷新未读通知数量
+let unreadTimer: ReturnType<typeof setInterval> | null = null
+
+onMounted(() => {
+  if (authStore.isLoggedIn) {
+    notifStore.fetchNotifications(false, 1) // 仅触发计数更新
+    unreadTimer = setInterval(() => {
+      notifStore.fetchNotifications(false, 1)
+    }, 30000) // 每 30 秒刷新
+  }
+})
+
+// 清理定时器
+onUnmounted(() => {
+  if (unreadTimer) {
+    clearInterval(unreadTimer)
+  }
+})
 
 watch(() => store.sortedSessions, (newVal) => {
   console.log('[ChatSidebar] sortedSessions changed:', newVal.length)
@@ -338,6 +402,32 @@ function toggleSettings() {
 
 .nav-icon {
   font-size: 18px;
+}
+
+.nav-icon-bell {
+  position: relative;
+}
+
+.notif-badge {
+  position: absolute;
+  top: 2px;
+  right: -6px;
+  background: var(--color-error);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  line-height: 1;
+}
+
+.nav-item {
+  position: relative;
 }
 
 .sidebar-footer {

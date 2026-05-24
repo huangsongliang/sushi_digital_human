@@ -28,7 +28,9 @@ from backend.api import (
     documents_router,
     knowledge_graph_router,
     multimodal_router,
+    notification_router,
     permission_router,
+    plugins_router,
     summary_router,
     tracing_router,
     versioning_router,
@@ -304,7 +306,9 @@ app.include_router(cicd_router)
 app.include_router(audit_router)
 app.include_router(document_router)
 app.include_router(multimodal_router)
+app.include_router(notification_router)
 app.include_router(permission_router)
+app.include_router(plugins_router)
 app.include_router(tracing_router)
 app.include_router(versioning_router)
 

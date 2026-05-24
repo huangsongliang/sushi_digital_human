@@ -289,3 +289,111 @@ html, body, #app {
     display: none !important;
   }
 }
+
+/* ===== v2.0 移动端响应式适配 ===== */
+@media (max-width: 768px) {
+  /* 页面头部紧凑 */
+  .page-header {
+    padding: 12px 14px !important;
+    gap: 8px !important;
+  }
+
+  .page-title {
+    font-size: 16px !important;
+  }
+
+  .back-btn {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+  }
+
+  /* Element Plus 表格水平滚动 */
+  .el-table {
+    font-size: 12px !important;
+  }
+
+  /* 筛选面板折行 */
+  .filter-panel .el-row {
+    flex-direction: column !important;
+  }
+
+  .filter-panel .el-col {
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 8px;
+  }
+
+  /* 统计卡片网格 */
+  .stats-summary {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 插件网格单列 */
+  .plugin-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 工作流编辑器 - 单列布局（手机） */
+  .wf-body {
+    flex-direction: column !important;
+  }
+
+  .wf-left, .wf-right {
+    width: 100% !important;
+    max-height: 200px;
+    border-right: none !important;
+    border-left: none !important;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+  }
+
+  .wf-canvas {
+    min-width: auto !important;
+  }
+
+  .wf-node-card {
+    position: static !important;
+    margin-bottom: 12px;
+    width: 100% !important;
+  }
+
+  .connectors {
+    display: none;
+  }
+
+  /* 通知/审计/权限标签页紧凑 */
+  .perm-tabs :deep(.el-tabs__header),
+  .audit-tabs :deep(.el-tabs__header) {
+    padding: 0 8px;
+  }
+
+  /* 弹窗全屏 */
+  .el-dialog {
+    width: 95% !important;
+    margin-top: 10px !important;
+  }
+
+  /* 侧边栏导航 - 底部 bar */
+  .sidebar .nav-menu {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+
+  .sidebar .nav-item {
+    flex: 1 1 auto !important;
+    min-width: 60px;
+    padding: 8px 6px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* 平板适配 */
+@media (max-width: 1024px) {
+  .stats-summary {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+
+  .plugin-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
