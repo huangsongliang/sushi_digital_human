@@ -1,4 +1,4 @@
-# 苏轼文化数字人问答系统 - 项目完整总结
+# 企业级智能文档问答平台 - 项目完整总结
 
 ## 目录
 
@@ -23,8 +23,8 @@
 
 ## 项目概述
 
-**项目名称**：苏轼文化数字人问答系统
-**项目目标**：构建一个基于苏东坡文化的智能问答系统，支持多轮对话、流式输出、混合检索增强
+**项目名称**：企业级智能文档问答平台
+**项目目标**：构建一个企业级的智能文档问答系统，支持多轮对话、流式输出、混合检索增强
 **核心功能**：RAG（检索增强生成）+ 多轮对话记忆 + 实时流式响应
 
 ---
@@ -134,7 +134,7 @@ class SimpleEmbeddings:
 - **原因**：缺少环境变量配置
 - **解决**：创建 `.env` 文件并配置
   ```env
-  DASHSCOPE_API_KEY=your-dashscope-api-key
+  DASHSCOPE_API_KEY=your-api-key-here
   ```
 
 #### 2.2 嵌入模型参数
@@ -625,7 +625,7 @@ HF_ENDPOINT: str = "https://hf-mirror.com"  # .env 中配置
 - **原因**：缺少环境变量
 - **解决**：创建 `.env` 文件
   ```env
-  DASHSCOPE_API_KEY=your-dashscope-api-key
+  DASHSCOPE_API_KEY=your-api-key-here
   ```
 
 #### 问题4：嵌入模型名称错误
@@ -742,7 +742,7 @@ sushi_digital_human/
 │   └── TECH_STACK.md           # 技术栈文档
 ├── data/
 │   ├── chroma_db/              # 向量数据库
-│   └── sushi_knowledge/        # 苏轼知识库
+│   └── enterprise_knowledge/        # 企业知识库
 ├── .env                       # 环境配置
 ├── uv.toml                    # uv 配置
 ├── pyproject.toml            # 项目配置
